@@ -1,0 +1,8 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Base dark minimal */
+:root { color-scheme: dark; }
+html, body { height: 100%; }
+body { background: #05060A; }
