@@ -1,5 +1,10 @@
 "use client";
 
+const BRAND = {
+  logoUrl: "", // si lo dejas vacío, el centro de la rueda muestra “ELITE”
+  heroImageUrl: "https://images.unsplash.com/photo-1511919884226-fd3cad34687c?q=80&w=1920&auto=format&fit=crop",
+};
+
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { motion, useScroll, useTransform, useMotionValue, useSpring } from "framer-motion";
 import {
