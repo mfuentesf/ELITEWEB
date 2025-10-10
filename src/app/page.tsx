@@ -109,12 +109,6 @@ const Section = ({ id, children, className = "" }) => (
   <section id={id} className={`py-16 md:py-24 ${className}`}>{children}</section>
 );
 
-const Badge = ({ children }) => (
-  <span className="inline-flex items-center rounded-full border border-[#e6e6e6]/40 bg-[#e6e6e6]/10 px-3 py-1 text-xs tracking-wide text-[#ffffff]">
-    {children}
-  </span>
-);
-
 // --- Página principal ---
 
 // Componente de grid filtrado
