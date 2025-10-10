@@ -1,13 +1,23 @@
 "use client";
 
 import React, { useEffect, useMemo, useRef, useState } from "react";
-import { motion, useScroll, useTransform, useMotionValue, useSpring } from "framer-motion";
+import { motion, useScroll, useTransform, useSpring } from "framer-motion";
 import {
-  Shield, Car, Crown, Hotel, UserCheck, Phone, MapPin, Clock, Calendar, ChevronRight, Star,
+  Shield,
+  Car,
+  Crown,
+  Hotel,
+  UserCheck,
+  Phone,
+  MapPin,
+  Clock,
+  Calendar,
+  ChevronRight,
+  Star,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge"; // si usas Badge en la página
+import { Badge } from "@/components/ui/badge";
 
 // --- Branding dinámico (logo + imagen de hero) ---
 const BRAND = {
@@ -26,9 +36,9 @@ const services = [
   },
   {
     title: "Camionetas Blandas",
-    desc: "SUVs premium con interiores ejecutivos y Wi‑Fi a bordo.",
+    desc: "SUVs premium con interiores ejecutivos y Wi-Fi a bordo.",
     icon: Car,
-    bullets: ["SUVs premium", "Interiores ejecutivos", "Wi‑Fi a bordo"],
+    bullets: ["SUVs premium", "Interiores ejecutivos", "Wi-Fi a bordo"],
   },
   {
     title: "Custodios / Escoltas",
@@ -58,7 +68,7 @@ const fleetData = [
     seats: 7,
     drive: "4x2",
     img: "https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?q=80&w=1600&auto=format&fit=crop",
-    tags: ["Nivel III+", "Hasta 7 pax", "Wi‑Fi"],
+    tags: ["Nivel III+", "Hasta 7 pax", "Wi-Fi"],
   },
   {
     name: "Toyota Land Cruiser Blindada",
@@ -70,7 +80,7 @@ const fleetData = [
     tags: ["Nivel IV", "4x4", "Clima trizona"],
   },
   {
-    name: "Mercedes‑Benz Sprinter Ejecutiva",
+    name: "Mercedes-Benz Sprinter Ejecutiva",
     category: "blanda",
     level: null,
     seats: 10,
@@ -85,7 +95,7 @@ const fleetData = [
     seats: 7,
     drive: "4x2",
     img: "https://images.unsplash.com/photo-1511919884226-fd3cad34687c?q=80&w=1600&auto=format&fit=crop",
-    tags: ["Hasta 7 pax", "Leather", "Wi‑Fi"],
+    tags: ["Hasta 7 pax", "Leather", "Wi-Fi"],
   },
 ];
 
@@ -104,21 +114,33 @@ const testimonials = [
   },
 ];
 
-// --- Componentes auxiliares ---
-const Section = ({ id, children, className = "" }) => (
-  <section id={id} className={`py-16 md:py-24 ${className}`}>{children}</section>
+// --- Componentes auxiliares tipados ---
+interface SectionProps {
+  id?: string;
+  children: React.ReactNode;
+  className?: string;
+}
+const Section: React.FC<SectionProps> = ({ id, children, className = "" }) => (
+  <section id={id} className={`py-16 md:py-24 ${className}`}>
+    {children}
+  </section>
 );
 
-// --- Página principal ---
+interface FleetGridProps {
+  category: "blindada" | "blanda";
+  seats: string; // "all" | "5" | "7" | "9"
+  drive4x4: boolean;
+  level: string; // "all" | "III+" | "IV" | "V"
+}
 
 // Componente de grid filtrado
-function FleetGrid({ category, seats, drive4x4, level }) {
+function FleetGrid({ category, seats, drive4x4, level }: FleetGridProps) {
   const filtered = useMemo(() => {
     return fleetData.filter((item) => {
       if (item.category !== category) return false;
-      if (seats !== 'all' && item.seats < Number(seats)) return false;
-      if (drive4x4 && item.drive !== '4x4') return false;
-      if (category === 'blindada' && level !== 'all' && item.level !== level) return false;
+      if (seats !== "all" && item.seats < Number(seats)) return false;
+      if (drive4x4 && item.drive !== "4x4") return false;
+      if (category === "blindada" && level !== "all" && item.level !== level) return false;
       return true;
     });
   }, [category, seats, drive4x4, level]);
@@ -146,16 +168,22 @@ function FleetGrid({ category, seats, drive4x4, level }) {
             <img src={f.img} alt={f.name} className="h-48 w-full object-cover" />
             <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
             {f.level && (
-              <span className="absolute left-3 top-3 rounded-full border border-[#e6e6e6]/30 bg-black/60 px-2 py-0.5 text-xs text-zinc-200">Nivel {f.level}</span>
+              <span className="absolute left-3 top-3 rounded-full border border-[#e6e6e6]/30 bg-black/60 px-2 py-0.5 text-xs text-zinc-200">
+                Nivel {f.level}
+              </span>
             )}
           </div>
           <div className="p-5">
-            <h3 className="text-lg font-medium bg-[linear-gradient(110deg,_#f7f7f7,_#cfcfcf_38%,_#9a9a9a_55%,_#ffffff_72%)] bg-clip-text text-transparent">{f.name}</h3>
+            <h3 className="text-lg font-medium bg-[linear-gradient(110deg,_#f7f7f7,_#cfcfcf_38%,_#9a9a9a_55%,_#ffffff_72%)] bg-clip-text text-transparent">
+              {f.name}
+            </h3>
             <div className="mt-3 flex flex-wrap items-center gap-2 text-xs text-zinc-300">
               <span className="rounded-full border border-zinc-700 px-2 py-1">{f.seats} pax</span>
               <span className="rounded-full border border-zinc-700 px-2 py-1">{f.drive}</span>
               {f.tags?.map((t) => (
-                <span key={t} className="rounded-full border border-zinc-700 px-2 py-1">{t}</span>
+                <span key={t} className="rounded-full border border-zinc-700 px-2 py-1">
+                  {t}
+                </span>
               ))}
             </div>
             <div className="mt-4 flex items-center justify-between">
@@ -172,24 +200,39 @@ function FleetGrid({ category, seats, drive4x4, level }) {
 }
 
 function ServicesWheel() {
-  const items = services.map(({ title, desc, icon, bullets }) => ({ title, desc, Icon: icon, bullets }));
+  const items = services.map(({ title, desc, icon, bullets }) => ({
+    title,
+    desc,
+    Icon: icon,
+    bullets,
+  }));
   const [active, setActive] = useState(0);
   const [guided, setGuided] = useState(true); // bloquea hasta revelar todo
   const stepAngle = 360 / items.length;
   const radius = 260;
 
-  // Altura total: N servicios + 1 escena final (zoom‑out)
+  // Altura total: N servicios + 1 escena final (zoom-out)
   const totalScenes = items.length + 1;
   const sectionRef = useRef<HTMLDivElement>(null);
-  const { scrollYProgress } = useScroll({ target: sectionRef, offset: ["start start", "end start"] });
-  const scene = useTransform(scrollYProgress, (p) => Math.min(totalScenes - 1, Math.floor(p * totalScenes)));
+  const { scrollYProgress } = useScroll({
+    target: sectionRef,
+    offset: ["start start", "end start"],
+  });
+  const scene = useTransform(scrollYProgress, (p) =>
+    Math.min(totalScenes - 1, Math.floor(p * totalScenes))
+  );
 
-  // Rotación con resorte + escala del zoom‑out
+  // Rotación con resorte + escala del zoom (entrada y lock)
   const rot = useSpring(0, { stiffness: 42, damping: 20 });
   const scale = useSpring(1, { stiffness: 50, damping: 18 });
-  // Zoom de entrada: al llegar a la sección hace un pequeño zoom‑in y luego se estabiliza
+
+  // Zoom inmediato al bloquear (lock)
   const lockThreshold = 0.06;
-  const lockedBoostRaw = useTransform(scrollYProgress, [0, lockThreshold, lockThreshold + 0.001, 1], [1, 1, 1.4, 1.4]);
+  const lockedBoostRaw = useTransform(
+    scrollYProgress,
+    [0, lockThreshold, lockThreshold + 0.001, 1],
+    [1, 1, 1.4, 1.4] // 40% más al fijarse
+  );
   const lockedBoost = useSpring(lockedBoostRaw, { stiffness: 120, damping: 18 });
   const wheelScale = useTransform([scale, lockedBoost], ([s, lb]) => s * lb);
 
@@ -201,24 +244,23 @@ function ServicesWheel() {
         setGuided(true);
         scale.set(1);
       } else {
-        // escena final → mostrar todo y hacer zoom‑out
+        // escena final → mostrar todo y hacer zoom-out
         setGuided(false);
         scale.set(0.86);
       }
     });
-    return () => { if (typeof unsub === 'function') unsub(); };
+    return () => {
+      if (typeof unsub === "function") unsub();
+    };
   }, [scene, items.length, stepAngle, rot, scale]);
 
-  const ActiveIcon = items[active].Icon;
-  
-
   return (
-    <div ref={sectionRef} className="relative" style={{ height: (totalScenes * 85) + 'vh' }}>
+    <div ref={sectionRef} className="relative" style={{ height: totalScenes * 85 + "vh" }}>
       {/* Sticky: bloquea scroll hasta terminar el reveal */}
       <div className="sticky top-[calc(50vh-40vmin+15px)] flex h-screen items-start justify-center">
-        {/* Full‑bleed container (la rueda ocupa el ancho visual) */}
+        {/* Contenedor */}
         <div className="flex w-full max-w-none flex-col items-center gap-8 px-4">
-          {/* Encabezado fijo arriba de la rueda: Alojamiento Lujoso */}
+          {/* Encabezado fijo arriba de la rueda (dinámico) */}
           <div className="mb-6 text-center">
             <Badge>Servicios integrales</Badge>
             <h3 className="mt-3 text-2xl font-semibold md:text-3xl bg-[linear-gradient(110deg,_#f7f7f7,_#cfcfcf_38%,_#9a9a9a_55%,_#ffffff_72%)] bg-clip-text text-transparent">
@@ -228,23 +270,41 @@ function ServicesWheel() {
             {!!items[active].bullets?.length && (
               <ul className="mx-auto mt-3 flex max-w-3xl flex-wrap items-center justify-center gap-2 text-sm text-zinc-300">
                 {items[active].bullets.map((b) => (
-                  <li key={b} className="flex items-center gap-2"><span className="inline-block h-1.5 w-1.5 rounded-full bg-white/70" />{b}</li>
+                  <li key={b} className="flex items-center gap-2">
+                    <span className="inline-block h-1.5 w-1.5 rounded-full bg-white/70" />
+                    {b}
+                  </li>
                 ))}
               </ul>
             )}
           </div>
+
           {/* Rueda */}
-          <motion.div style={{ scale: wheelScale, transformOrigin: '50% 30%' }} className="relative mt-10 md:mt-12 aspect-square w-[80vmin] max-w-[1100px] select-none">
+          <motion.div
+            style={{ scale: wheelScale, transformOrigin: "50% 30%" }}
+            className="relative mt-10 md:mt-12 aspect-square w-[80vmin] max-w-[1100px] select-none"
+          >
             {/* Aro base luxury */}
             <div className="absolute inset-0 rounded-full bg-[radial-gradient(closest-side,rgba(255,255,255,0.06),transparent_70%)] ring-1 ring-white/10" />
             {/* Ticks por servicio */}
             <div className="absolute inset-6">
               {Array.from({ length: items.length }).map((_, i) => (
-                <div key={i} className="absolute left-1/2 top-0 origin-bottom h-4 w-[2px] rounded bg-white/15" style={{ transform: `rotate(${i * stepAngle}deg) translateY(12px)` }} />
+                <div
+                  key={i}
+                  className="absolute left-1/2 top-0 origin-bottom h-4 w-[2px] rounded bg-white/15"
+                  style={{ transform: `rotate(${i * stepAngle}deg) translateY(12px)` }}
+                />
               ))}
             </div>
             {/* Progreso (reveal) */}
-            <div className="absolute inset-6 rounded-full" style={{ background: `conic-gradient(#f5f5f5 ${(Math.min(active + 1, items.length) / items.length) * 360}deg, rgba(255,255,255,0.08) 0)` }} />
+            <div
+              className="absolute inset-6 rounded-full"
+              style={{
+                background: `conic-gradient(#f5f5f5 ${
+                  ((Math.min(active + 1, items.length) / items.length) * 360).toFixed(2)
+                }deg, rgba(255,255,255,0.08) 0)`,
+              }}
+            />
             {/* Marcador superior */}
             <div className="absolute left-1/2 top-4 -translate-x-1/2 h-8 w-[3px] rounded-full bg-white/70 shadow-[0_0_20px_rgba(255,255,255,0.5)]" />
 
@@ -252,33 +312,45 @@ function ServicesWheel() {
             <motion.div className="absolute inset-10 rounded-full ring-1 ring-white/15 bg-black/30 backdrop-blur" style={{ rotate: rot }}>
               {items.map((it, i) => {
                 const angle = i * stepAngle;
-                const style = { transform: `rotate(${angle}deg) translate(${radius}px) rotate(${-angle}deg)` } as React.CSSProperties;
+                const style = {
+                  transform: `rotate(${angle}deg) translate(${radius}px) rotate(${-angle}deg)`,
+                } as React.CSSProperties;
                 const isActive = active === i;
                 const showOnlyCurrent = guided ? i === active : true; // en guided solo se ve el actual
+                const Icon = it.Icon;
                 return (
                   <button
                     key={it.title}
-                    onClick={() => { setActive(i); rot.set(-i * stepAngle); }}
-                    className={`absolute left-1/2 top-1/2 -ml-8 -mt-8 h-16 w-16 rounded-2xl border ${isActive ? 'border-white/70 bg-white/10' : 'border-white/20 bg-black/40'} backdrop-blur flex items-center justify-center shadow-[0_8px_30px_rgba(255,255,255,0.06)] transition-opacity duration-500 ${showOnlyCurrent ? 'opacity-100' : 'opacity-0'}`}
+                    onClick={() => {
+                      setActive(i);
+                      rot.set(-i * stepAngle);
+                    }}
+                    className={`absolute left-1/2 top-1/2 -ml-8 -mt-8 h-16 w-16 rounded-2xl border ${
+                      isActive ? "border-white/70 bg-white/10" : "border-white/20 bg-black/40"
+                    } backdrop-blur flex items-center justify-center shadow-[0_8px_30px_rgba(255,255,255,0.06)] transition-opacity duration-500 ${
+                      showOnlyCurrent ? "opacity-100" : "opacity-0"
+                    }`}
                     style={style}
                     aria-label={it.title}
                     aria-pressed={isActive}
                   >
-                    <it.Icon className={`h-6 w-6 ${isActive ? 'text-white' : 'text-zinc-300'}`} />
+                    <Icon className={`h-6 w-6 ${isActive ? "text-white" : "text-zinc-300"}`} />
                   </button>
                 );
               })}
             </motion.div>
 
-            {/* Centro: sólo logo o texto “ELITE” */}
-            <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none">
+            {/* Centro: logo o texto “ELITE” */}
+            <div className="pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
               <div className="relative h-48 w-48 rounded-full border border-white/10 bg-black/30 backdrop-blur-xl shadow-[0_20px_80px_rgba(255,255,255,0.05)]">
                 <div className="absolute inset-0 rounded-full bg-[radial-gradient(closest-side,rgba(255,255,255,0.10),transparent_70%)]" />
                 <div className="relative flex h-full items-center justify-center p-4">
                   {BRAND.logoUrl ? (
                     <img src={BRAND.logoUrl} alt="ELITE" className="h-16 w-auto opacity-90" />
                   ) : (
-                    <span className="text-2xl font-semibold tracking-[0.35em] bg-[linear-gradient(110deg,_#f7f7f7,_#dcdcdc_38%,_#9a9a9a_55%,_#ffffff_72%)] bg-clip-text text-transparent drop-shadow">ELITE</span>
+                    <span className="text-2xl font-semibold tracking-[0.35em] bg-[linear-gradient(110deg,_#f7f7f7,_#dcdcdc_38%,_#9a9a9a_55%,_#ffffff_72%)] bg-clip-text text-transparent drop-shadow">
+                      ELITE
+                    </span>
                   )}
                 </div>
               </div>
@@ -291,15 +363,13 @@ function ServicesWheel() {
 }
 
 export default function LuxuryTransportHome() {
-  const [category, setCategory] = useState('blindada');
-  const [seats, setSeats] = useState('all');
-  const [drive4x4, setDrive4x4] = useState(false);
-  const [level, setLevel] = useState('all');
+  const [category, setCategory] = useState<"blindada" | "blanda">("blindada");
+  const [seats, setSeats] = useState<string>("all");
+  const [drive4x4, setDrive4x4] = useState<boolean>(false);
+  const [level, setLevel] = useState<string>("all");
+
   return (
     <div className="min-h-screen bg-[#05060A] text-zinc-100 antialiased">
-      {/* Fondo fijo (parallax) */}
-      
-      
       {/* Glow decorativo */}
       <div className="pointer-events-none fixed inset-0 -z-10">
         <div className="absolute -top-24 left-1/2 h-72 w-72 -translate-x-1/2 rounded-full bg-[#e6e6e6]/10 blur-3xl" />
@@ -313,7 +383,9 @@ export default function LuxuryTransportHome() {
             {BRAND.logoUrl ? (
               <img src={BRAND.logoUrl} alt="Logo" className="h-10 w-auto rounded-xl" />
             ) : (
-              <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-gradient-to-br from-[#e6e6e6] to-[#ffffff] text-[#0a0d14] font-black">LX</div>
+              <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-gradient-to-br from-[#e6e6e6] to-[#ffffff] text-[#0a0d14] font-black">
+                LX
+              </div>
             )}
             <div>
               <p className="text-lg font-semibold tracking-wide">ELITE Transport</p>
@@ -321,10 +393,18 @@ export default function LuxuryTransportHome() {
             </div>
           </div>
           <nav className="hidden items-center gap-8 md:flex">
-            <a href="#servicios" className="text-sm text-zinc-300 hover:text-[#e6e6e6]">Servicios</a>
-            <a href="#flota" className="text-sm text-zinc-300 hover:text-[#e6e6e6]">Flota</a>
-            <a href="#seguridad" className="text-sm text-zinc-300 hover:text-[#e6e6e6]">Seguridad</a>
-            <a href="#testimonios" className="text-sm text-zinc-300 hover:text-[#e6e6e6]">Clientes</a>
+            <a href="#servicios" className="text-sm text-zinc-300 hover:text-[#e6e6e6]">
+              Servicios
+            </a>
+            <a href="#flota" className="text-sm text-zinc-300 hover:text-[#e6e6e6]">
+              Flota
+            </a>
+            <a href="#seguridad" className="text-sm text-zinc-300 hover:text-[#e6e6e6]">
+              Seguridad
+            </a>
+            <a href="#testimonios" className="text-sm text-zinc-300 hover:text-[#e6e6e6]">
+              Clientes
+            </a>
           </nav>
           <div className="flex items-center gap-3">
             <Button className="rounded-2xl bg-gradient-to-r from-[#e6e6e6] to-[#ffffff] text-[#0a0d14]">
@@ -337,10 +417,14 @@ export default function LuxuryTransportHome() {
       {/* Hero */}
       <div className="relative min-h-[80vh] md:min-h-[85vh]">
         <div className="absolute inset-0">
-          <img src={BRAND.heroImageUrl} alt="Suburban negra blindada" className="h-full w-full object-cover object-center" />
+          <img
+            src={BRAND.heroImageUrl}
+            alt="Suburban negra blindada"
+            className="h-full w-full object-cover object-center"
+          />
           <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/40 to-black/80" />
         </div>
-        
+
         <div className="relative z-10 mx-auto grid max-w-7xl grid-cols-1 items-start gap-8 px-4 pt-16 pb-12 md:grid-cols-2 md:pt-24">
           <div className="flex-1 md:col-start-1 md:row-start-1">
             <motion.h1
@@ -355,7 +439,8 @@ export default function LuxuryTransportHome() {
               </span>
             </motion.h1>
             <p className="mt-4 max-w-2xl text-lg text-zinc-300 md:text-xl">
-              Traslados ejecutivos, custodios certificados y hospedaje de alto nivel. Un solo equipo para todo tu itinerario.
+              Traslados ejecutivos, custodios certificados y hospedaje de alto nivel. Un solo equipo
+              para todo tu itinerario.
             </p>
             <div className="mt-6 flex flex-wrap items-center gap-3">
               <Badge>Disponibilidad 24/7</Badge>
@@ -366,7 +451,11 @@ export default function LuxuryTransportHome() {
               <Button size="lg" className="rounded-2xl bg-gradient-to-r from-[#e6e6e6] to-[#ffffff] text-[#0a0d14]">
                 Reservar traslado <ChevronRight className="ml-2 h-4 w-4" />
               </Button>
-              <Button size="lg" variant="outline" className="rounded-2xl border-zinc-700 bg-transparent text-zinc-200 hover:border-[#e6e6e6] hover:text-[#e6e6e6]">
+              <Button
+                size="lg"
+                variant="outline"
+                className="rounded-2xl border-zinc-700 bg-transparent text-zinc-200 hover:border-[#e6e6e6] hover:text-[#e6e6e6]"
+              >
                 Ver flota
               </Button>
             </div>
@@ -380,19 +469,25 @@ export default function LuxuryTransportHome() {
                 <div className="grid grid-cols-1 gap-4">
                   <div className="flex items-center gap-2 rounded-xl border border-zinc-700/60 bg-black/50 px-3 py-2">
                     <MapPin className="h-4 w-4 text-zinc-400" />
-                    <input className="w-full bg-transparent text-sm outline-none placeholder:text-zinc-500" placeholder="Origen / Ciudad" />
+                    <input
+                      className="w-full bg-transparent text-sm outline-none placeholder:text-zinc-500"
+                      placeholder="Origen / Ciudad"
+                    />
                   </div>
                   <div className="flex items-center gap-2 rounded-xl border border-zinc-700/60 bg-black/50 px-3 py-2">
                     <MapPin className="h-4 w-4 text-zinc-400" />
-                    <input className="w-full bg-transparent text-sm outline-none placeholder:text-zinc-500" placeholder="Destino" />
+                    <input
+                      className="w-full bg-transparent text-sm outline-none placeholder:text-zinc-500"
+                      placeholder="Destino"
+                    />
                   </div>
                   <div className="flex items-center gap-2 rounded-xl border border-zinc-700/60 bg-black/50 px-3 py-2">
                     <Calendar className="h-4 w-4 text-zinc-400" />
-                    <input type="date" className="w-full bg-transparent text-sm outline-none placeholder:text-zinc-500" />
+                    <input type="date" className="w-full bg-transparent text-sm outline-none" />
                   </div>
                   <div className="flex items-center gap-2 rounded-xl border border-zinc-700/60 bg-black/50 px-3 py-2">
                     <Clock className="h-4 w-4 text-zinc-400" />
-                    <input type="time" className="w-full bg-transparent text-sm outline-none placeholder:text-zinc-500" />
+                    <input type="time" className="w-full bg-transparent text-sm outline-none" />
                   </div>
                   <div className="flex items-center gap-2 rounded-xl border border-zinc-700/60 bg-black/50 px-3 py-2">
                     <Shield className="h-4 w-4 text-zinc-400" />
@@ -404,19 +499,18 @@ export default function LuxuryTransportHome() {
                       <option className="bg-black/50">Con Custodio</option>
                     </select>
                   </div>
-                  <Button className="w-full rounded-2xl bg-gradient-to-r from-[#e6e6e6] to-[#ffffff] text-[#0a0d14]">Solicitar cotización</Button>
+                  <Button className="w-full rounded-2xl bg-gradient-to-r from-[#e6e6e6] to-[#ffffff] text-[#0a0d14]">
+                    Solicitar cotización
+                  </Button>
                   <p className="-mt-1 text-center text-xs text-zinc-400">Respuesta promedio &lt; 10 min.</p>
                 </div>
               </CardContent>
             </Card>
           </div>
-
-          
         </div>
-
       </div>
 
-{/* Servicios */}
+      {/* Servicios */}
       <Section id="servicios" className="bg-transparent">
         <div className="mx-auto max-w-7xl px-4">
           <ServicesWheel />
@@ -430,29 +524,61 @@ export default function LuxuryTransportHome() {
             <div>
               <h2 className="text-2xl font-semibold md:text-3xl">Flota</h2>
               <div className="mt-2 h-0.5 w-12 rounded-full bg-gradient-to-r from-[#e6e6e6] to-transparent" />
-              <p className="mt-2 max-w-2xl text-zinc-400">Selecciona categoría y ajusta filtros para ver unidades disponibles.</p>
+              <p className="mt-2 max-w-2xl text-zinc-400">
+                Selecciona categoría y ajusta filtros para ver unidades disponibles.
+              </p>
             </div>
 
             {/* Controles */}
             <div className="rounded-2xl border border-zinc-800 bg-black/50 p-3">
               <div className="flex flex-wrap items-center gap-2">
-                <button onClick={() => setCategory('blindada')} className={`rounded-xl px-3 py-1 text-sm ${category==='blindada' ? 'bg-gradient-to-r from-[#e6e6e6] to-[#ffffff] text-[#0a0d14]' : 'border border-zinc-700 text-zinc-300 hover:border-zinc-600'}`}>Blindadas</button>
-                <button onClick={() => setCategory('blanda')} className={`rounded-xl px-3 py-1 text-sm ${category==='blanda' ? 'bg-gradient-to-r from-[#e6e6e6] to-[#ffffff] text-[#0a0d14]' : 'border border-zinc-700 text-zinc-300 hover:border-zinc-600'}`}>Blandas</button>
+                <button
+                  onClick={() => setCategory("blindada")}
+                  className={`rounded-xl px-3 py-1 text-sm ${
+                    category === "blindada"
+                      ? "bg-gradient-to-r from-[#e6e6e6] to-[#ffffff] text-[#0a0d14]"
+                      : "border border-zinc-700 text-zinc-300 hover:border-zinc-600"
+                  }`}
+                >
+                  Blindadas
+                </button>
+                <button
+                  onClick={() => setCategory("blanda")}
+                  className={`rounded-xl px-3 py-1 text-sm ${
+                    category === "blanda"
+                      ? "bg-gradient-to-r from-[#e6e6e6] to-[#ffffff] text-[#0a0d14]"
+                      : "border border-zinc-700 text-zinc-300 hover:border-zinc-600"
+                  }`}
+                >
+                  Blandas
+                </button>
 
                 <div className="mx-3 h-5 w-px bg-zinc-800" />
 
-                <select value={String(seats)} onChange={(e)=>setSeats(e.target.value)} className="rounded-xl border border-zinc-700 bg-black/60 px-2 py-1 text-sm">
+                <select
+                  value={String(seats)}
+                  onChange={(e) => setSeats(e.target.value)}
+                  className="rounded-xl border border-zinc-700 bg-black/60 px-2 py-1 text-sm"
+                >
                   <option value="all">Pasajeros</option>
                   <option value="5">≥ 5</option>
                   <option value="7">≥ 7</option>
                   <option value="9">≥ 9</option>
                 </select>
-                <select value={drive4x4? '4x4':'cualquiera'} onChange={(e)=>setDrive4x4(e.target.value==='4x4')} className="rounded-xl border border-zinc-700 bg-black/60 px-2 py-1 text-sm">
+                <select
+                  value={drive4x4 ? "4x4" : "cualquiera"}
+                  onChange={(e) => setDrive4x4(e.target.value === "4x4")}
+                  className="rounded-xl border border-zinc-700 bg-black/60 px-2 py-1 text-sm"
+                >
                   <option value="cualquiera">Tracción</option>
                   <option value="4x4">4x4</option>
                 </select>
-                {category==='blindada' && (
-                  <select value={level} onChange={(e)=>setLevel(e.target.value)} className="rounded-xl border border-zinc-700 bg-black/60 px-2 py-1 text-sm">
+                {category === "blindada" && (
+                  <select
+                    value={level}
+                    onChange={(e) => setLevel(e.target.value)}
+                    className="rounded-xl border border-zinc-700 bg-black/60 px-2 py-1 text-sm"
+                  >
                     <option value="all">Nivel</option>
                     <option value="III+">III+</option>
                     <option value="IV">IV</option>
@@ -475,14 +601,35 @@ export default function LuxuryTransportHome() {
               <h2 className="text-2xl font-semibold md:text-3xl">Operación con estándares de seguridad</h2>
               <div className="mt-2 h-0.5 w-12 rounded-full bg-gradient-to-r from-[#e6e6e6] to-transparent" />
               <ul className="mt-6 space-y-4 text-zinc-300">
-                <li className="flex gap-3"><Shield className="mt-0.5 h-5 w-5 text-[#e6e6e6]" /> Blindaje certificado (NIJ) y protocolos de ruta.</li>
-                <li className="flex gap-3"><UserCheck className="mt-0.5 h-5 w-5 text-[#e6e6e6]" /> Choferes y custodios con control de confianza.</li>
-                <li className="flex gap-3"><Clock className="mt-0.5 h-5 w-5 text-[#e6e6e6]" /> Monitoreo 24/7 y puntualidad garantizada.</li>
+                <li className="flex gap-3">
+                  <Shield className="mt-0.5 h-5 w-5 text-[#e6e6e6]" /> Blindaje certificado (NIJ) y
+                  protocolos de ruta.
+                </li>
+                <li className="flex gap-3">
+                  <UserCheck className="mt-0.5 h-5 w-5 text-[#e6e6e6]" /> Choferes y custodios con
+                  control de confianza.
+                </li>
+                <li className="flex gap-3">
+                  <Clock className="mt-0.5 h-5 w-5 text-[#e6e6e6]" /> Monitoreo 24/7 y puntualidad
+                  garantizada.
+                </li>
               </ul>
               <div className="mt-6 flex gap-3">
-                <img src="https://dummyimage.com/80x40/1c1f2b/ffffff&text=ISO" alt="Certificación" className="rounded" />
-                <img src="https://dummyimage.com/80x40/1c1f2b/ffffff&text=NIJ" alt="NIJ" className="rounded" />
-                <img src="https://dummyimage.com/80x40/1c1f2b/ffffff&text=I+V" alt="Nivel" className="rounded" />
+                <img
+                  src="https://dummyimage.com/80x40/1c1f2b/ffffff&text=ISO"
+                  alt="Certificación"
+                  className="rounded"
+                />
+                <img
+                  src="https://dummyimage.com/80x40/1c1f2b/ffffff&text=NIJ"
+                  alt="NIJ"
+                  className="rounded"
+                />
+                <img
+                  src="https://dummyimage.com/80x40/1c1f2b/ffffff&text=I+V"
+                  alt="Nivel"
+                  className="rounded"
+                />
               </div>
             </div>
             <div className="relative overflow-hidden rounded-2xl border border-zinc-800">
@@ -522,7 +669,9 @@ export default function LuxuryTransportHome() {
                 className="rounded-2xl border border-zinc-800 bg-black/50 p-6"
               >
                 <p className="text-zinc-200">“{t.quote}”</p>
-                <p className="mt-4 text-sm text-zinc-400">{t.author} · {t.role}</p>
+                <p className="mt-4 text-sm text-zinc-400">
+                  {t.author} · {t.role}
+                </p>
               </motion.div>
             ))}
           </div>
@@ -537,13 +686,18 @@ export default function LuxuryTransportHome() {
               <div>
                 <h3 className="text-2xl font-semibold md:text-3xl">Listos para tu próximo itinerario</h3>
                 <p className="mt-3 max-w-xl text-zinc-300">
-                  Coordinamos aeropuerto, agenda ejecutiva, custodios y hospedaje de lujo con un solo punto de contacto.
+                  Coordinamos aeropuerto, agenda ejecutiva, custodios y hospedaje de lujo con un solo
+                  punto de contacto.
                 </p>
                 <div className="mt-6 flex flex-wrap gap-3">
                   <Button size="lg" className="rounded-2xl bg-gradient-to-r from-[#e6e6e6] to-[#ffffff] text-[#0a0d14]">
                     Hablar con un asesor
                   </Button>
-                  <Button size="lg" variant="outline" className="rounded-2xl border-zinc-700 text-zinc-200 hover:border-[#e6e6e6] hover:text-[#e6e6e6]">
+                  <Button
+                    size="lg"
+                    variant="outline"
+                    className="rounded-2xl border-zinc-700 text-zinc-200 hover:border-[#e6e6e6] hover:text-[#e6e6e6]"
+                  >
                     Descargar brochure
                   </Button>
                 </div>
@@ -568,10 +722,12 @@ export default function LuxuryTransportHome() {
         <div className="mx-auto grid max-w-7xl grid-cols-1 gap-8 px-4 py-10 md:grid-cols-4">
           <div>
             {BRAND.logoUrl ? (
-            <img src={BRAND.logoUrl} alt="Logo" className="mb-3 h-10 w-auto rounded-xl" />
-          ) : (
-            <div className="mb-3 flex h-10 w-10 items-center justify-center rounded-2xl bg-gradient-to-br from-[#e6e6e6] to-[#ffffff] text-[#0a0d14] font-black">EL</div>
-          )}
+              <img src={BRAND.logoUrl} alt="Logo" className="mb-3 h-10 w-auto rounded-xl" />
+            ) : (
+              <div className="mb-3 flex h-10 w-10 items-center justify-center rounded-2xl bg-gradient-to-br from-[#e6e6e6] to-[#ffffff] text-[#0a0d14] font-black">
+                EL
+              </div>
+            )}
             <p className="text-sm text-zinc-400">
               Operador de transporte blindado y de lujo. Cobertura nacional y coordinación internacional.
             </p>
@@ -610,7 +766,7 @@ export default function LuxuryTransportHome() {
 
       {/* Botón flotante */}
       <div className="fixed bottom-5 right-5">
-        <Button size="lg" className="rounded-2xl bg-gradient-to-r from-[#e6e6e6] to-[#ffffff] shadow-xl shadow-[#e6e6e6]/20 text-[#0a0d14]">
+        <Button className="rounded-2xl bg-gradient-to-r from-[#e6e6e6] to-[#ffffff] shadow-xl shadow-[#e6e6e6]/20 text-[#0a0d14]">
           <Phone className="mr-2 h-4 w-4" /> Cotizar ahora
         </Button>
       </div>
