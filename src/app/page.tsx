@@ -222,7 +222,7 @@ function ServicesWheel() {
     Math.min(totalScenes - 1, Math.floor(p * totalScenes))
   );
 
-  // Detectar móvil (para ajustar umbrales y habilitar swipe)
+  // Detectar móvil
   const [isMobile, setIsMobile] = useState(false);
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -233,22 +233,26 @@ function ServicesWheel() {
     return () => mq.removeEventListener?.("change", apply);
   }, []);
 
-  // Rotación con resorte + escala del zoom (entrada y lock)
+  // Rotación + escala
   const rot = useSpring(0, { stiffness: 42, damping: 20 });
   const scale = useSpring(1, { stiffness: 50, damping: 18 });
 
-  // Zoom inmediato al bloquear (lock): en móvil lo disparamos un poco más tarde
-  const lockThreshold = isMobile ? 0.1 : 0.06;
+  // Zoom al fijarse (desktop por scroll)
+  const lockThreshold = 0.06;
   const lockedBoostRaw = useTransform(
     scrollYProgress,
     [0, lockThreshold, lockThreshold + 0.001, 1],
-    [1, 1, 1.4, 1.4] // 40% más al fijarse
+    [1, 1, 1.4, 1.4]
   );
   const lockedBoost = useSpring(lockedBoostRaw, { stiffness: 120, damping: 18 });
-  const wheelScale = useTransform([scale, lockedBoost], ([s, lb]) => (s as number) * (lb as number));
+  const wheelScaleDesktop = useTransform(
+    [scale, lockedBoost],
+    ([s, lb]) => (s as number) * (lb as number)
+  );
 
-  // Sincronizar escena con rotación y reveal
+  // Desktop: sincroniza por scroll
   useEffect(() => {
+    if (isMobile) return; // en mobile controlamos manualmente
     const unsub = scene.on("change", (v: number) => {
       const s = v;
       if (s < items.length) {
@@ -257,39 +261,113 @@ function ServicesWheel() {
         setGuided(true);
         scale.set(1);
       } else {
-        // escena final → mostrar todo y hacer zoom-out
         setGuided(false);
-        scale.set(0.86);
+        scale.set(0.86); // zoom-out final
       }
     });
     return () => {
       if (typeof unsub === "function") unsub();
     };
-  }, [scene, items.length, stepAngle, rot, scale]);
+  }, [scene, isMobile, items.length, stepAngle, rot, scale]);
 
-  // Swipe horizontal en móvil
-  const touchStartX = useRef<number | null>(null);
-  const onTouchStart = (e: React.TouchEvent) => {
-    touchStartX.current = e.touches[0].clientX;
+  // --- MOBILE: bloquear scroll vertical y avanzar por "scroll" dentro de la rueda ---
+  // Convertimos el gesto vertical en pasos de sección (sin dejar que la página avance)
+  const wheelStickyRef = useRef<HTMLDivElement>(null);
+  const accY = useRef(0);
+  const touchY = useRef<number | null>(null);
+  const [finished, setFinished] = useState(false); // se libera scroll al terminar
+
+  // Cambiar sección con una cantidad de desplazamiento (umbral)
+  const stepByDelta = (dy: number) => {
+    const TH = 70; // px de gesto para cambiar
+    accY.current += dy;
+    if (Math.abs(accY.current) < TH) return;
+
+    const dir = accY.current > 0 ? 1 : -1; // >0: scroll down → siguiente
+    const next = Math.min(Math.max(active + dir, 0), items.length - 1);
+
+    if (next !== active) {
+      setActive(next);
+      rot.set(-next * stepAngle);
+      // al llegar a la última sección aún seguimos "guided"
+      if (next === items.length - 1) {
+        setFinished(true); // siguiente gesto libera
+      }
+    } else if (finished && dir > 0) {
+      // ya vimos todas y usuario insiste en bajar → liberar
+      setGuided(false);
+      scale.set(0.86); // zoom-out
+    }
+    accY.current = 0;
   };
-  const onTouchEnd = (e: React.TouchEvent) => {
-    if (touchStartX.current == null) return;
-    const dx = e.changedTouches[0].clientX - touchStartX.current;
-    touchStartX.current = null;
-    if (Math.abs(dx) < 40) return; // umbral de swipe
-    const dir = dx < 0 ? 1 : -1; // izq → siguiente, der → anterior
-    const next = (active + dir + items.length) % items.length;
-    setActive(next);
-    rot.set(-next * stepAngle);
-  };
+
+  // Handlers de wheel/touch SOLO cuando isMobile && guided
+  useEffect(() => {
+    const el = wheelStickyRef.current;
+    if (!el) return;
+    if (!isMobile || !guided) return; // no interceptar si no es necesario
+
+    const onWheel = (e: WheelEvent) => {
+      // Bloquear scroll de la página mientras no terminamos
+      e.preventDefault();
+      stepByDelta(e.deltaY);
+    };
+
+    let lastY = 0;
+    const onTouchStart = (e: TouchEvent) => {
+      lastY = e.touches[0].clientY;
+      touchY.current = lastY;
+    };
+    const onTouchMove = (e: TouchEvent) => {
+      if (touchY.current == null) return;
+      // Bloquea el scroll nativo y convierte a pasos
+      e.preventDefault();
+      const y = e.touches[0].clientY;
+      const dy = lastY - y; // mover hacia arriba → dy positivo (siguiente)
+      lastY = y;
+      stepByDelta(dy);
+    };
+    const onTouchEnd = () => {
+      touchY.current = null;
+      accY.current = 0;
+    };
+
+    // listeners no pasivos para poder preventDefault
+    el.addEventListener("wheel", onWheel, { passive: false });
+    el.addEventListener("touchstart", onTouchStart, { passive: false });
+    el.addEventListener("touchmove", onTouchMove, { passive: false });
+    el.addEventListener("touchend", onTouchEnd, { passive: false });
+
+    return () => {
+      el.removeEventListener("wheel", onWheel);
+      el.removeEventListener("touchstart", onTouchStart);
+      el.removeEventListener("touchmove", onTouchMove);
+      el.removeEventListener("touchend", onTouchEnd);
+    };
+  }, [isMobile, guided, active, items.length, stepAngle, rot, scale, finished]);
+
+  // Escala final a usar: en mobile, mientras estamos guiados, fijamos 1.4
+  const scaleFinal =
+    isMobile && guided ? 1.4 : (wheelScaleDesktop as unknown as number | undefined);
 
   return (
-    <div ref={sectionRef} className="relative" style={{ height: totalScenes * 85 + "vh" }}>
+    <div
+      ref={sectionRef}
+      className="relative"
+      style={{ height: totalScenes * 85 + "vh" }}
+    >
       {/* Sticky: bloquea scroll hasta terminar el reveal */}
-      <div className="sticky top-[calc(50vh-40vmin+15px)] flex h-screen items-start justify-center">
-        {/* Contenedor */}
+      <div
+        ref={wheelStickyRef}
+        className="sticky top-[calc(50vh-40vmin+15px)] flex h-screen items-start justify-center"
+        style={{
+          // Evita overscroll y rebotes mientras guiamos en mobile
+          overscrollBehavior: isMobile && guided ? ("contain" as const) : ("auto" as const),
+          touchAction: isMobile && guided ? ("none" as const) : ("auto" as const),
+        }}
+      >
         <div className="flex w-full max-w-none flex-col items-center gap-8 px-4">
-          {/* Encabezado fijo arriba de la rueda (dinámico) */}
+          {/* Encabezado dinámico */}
           <div className="mb-6 text-center">
             <Badge>Servicios integrales</Badge>
             <h3 className="mt-3 text-2xl font-semibold md:text-3xl bg-[linear-gradient(110deg,_#f7f7f7,_#cfcfcf_38%,_#9a9a9a_55%,_#ffffff_72%)] bg-clip-text text-transparent">
@@ -310,14 +388,12 @@ function ServicesWheel() {
 
           {/* Rueda */}
           <motion.div
-            onTouchStart={onTouchStart}
-            onTouchEnd={onTouchEnd}
-            style={{ scale: wheelScale, transformOrigin: "50% 30%", touchAction: "pan-y" as React.CSSProperties["touchAction"] }}
+            style={{ scale: scaleFinal as any, transformOrigin: "50% 30%" }}
             className="relative mt-10 md:mt-12 aspect-square w-[80vmin] max-w-[1100px] select-none"
           >
-            {/* Aro base luxury */}
+            {/* Aro base */}
             <div className="absolute inset-0 rounded-full bg-[radial-gradient(closest-side,rgba(255,255,255,0.06),transparent_70%)] ring-1 ring-white/10" />
-            {/* Ticks por servicio */}
+            {/* Ticks */}
             <div className="absolute inset-6">
               {Array.from({ length: items.length }).map((_, i) => (
                 <div
@@ -327,7 +403,7 @@ function ServicesWheel() {
                 />
               ))}
             </div>
-            {/* Progreso (reveal) */}
+            {/* Progreso */}
             <div
               className="absolute inset-6 rounded-full"
               style={{
@@ -336,18 +412,21 @@ function ServicesWheel() {
                 }deg, rgba(255,255,255,0.08) 0)`,
               }}
             />
-            {/* Marcador superior */}
+            {/* Marcador */}
             <div className="absolute left-1/2 top-4 -translate-x-1/2 h-8 w-[3px] rounded-full bg-white/70 shadow-[0_0_20px_rgba(255,255,255,0.5)]" />
 
-            {/* Cinta giratoria con iconos */}
-            <motion.div className="absolute inset-10 rounded-full ring-1 ring-white/15 bg-black/30 backdrop-blur" style={{ rotate: rot }}>
+            {/* Cinta con iconos */}
+            <motion.div
+              className="absolute inset-10 rounded-full ring-1 ring-white/15 bg-black/30 backdrop-blur"
+              style={{ rotate: rot }}
+            >
               {items.map((it, i) => {
                 const angle = i * stepAngle;
                 const style = {
                   transform: `rotate(${angle}deg) translate(${radius}px) rotate(${-angle}deg)`,
                 } as React.CSSProperties;
                 const isActive = active === i;
-                const showOnlyCurrent = guided ? i === active : true; // en guided solo se ve el actual
+                const showOnlyCurrent = guided ? i === active : true;
                 const Icon = it.Icon;
                 return (
                   <button
@@ -371,7 +450,7 @@ function ServicesWheel() {
               })}
             </motion.div>
 
-            {/* Centro: logo o texto “ELITE” */}
+            {/* Centro */}
             <div className="pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
               <div className="relative h-48 w-48 rounded-full border border-white/10 bg-black/30 backdrop-blur-xl shadow-[0_20px_80px_rgba(255,255,255,0.05)]">
                 <div className="absolute inset-0 rounded-full bg-[radial-gradient(closest-side,rgba(255,255,255,0.10),transparent_70%)]" />
