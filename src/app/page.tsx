@@ -234,25 +234,23 @@ function ServicesWheel() {
     [1, 1, 1.4, 1.4] // 40% más al fijarse
   );
   const lockedBoost = useSpring(lockedBoostRaw, { stiffness: 120, damping: 18 });
-  const wheelScale = useTransform([scale, lockedBoost], ([s, lb]) => s * lb);
+const wheelScale = useTransform([scale, lockedBoost], ([s, lb]) => (s as number) * (lb as number));
 
   useEffect(() => {
-    const unsub = scene.on("change", (s) => {
-      if (s < items.length) {
-        setActive(s);
-        rot.set(-s * stepAngle);
-        setGuided(true);
-        scale.set(1);
-      } else {
-        // escena final → mostrar todo y hacer zoom-out
-        setGuided(false);
-        scale.set(0.86);
-      }
-    });
-    return () => {
-      if (typeof unsub === "function") unsub();
-    };
-  }, [scene, items.length, stepAngle, rot, scale]);
+  const unsub = scene.on("change", (v: number) => {
+    const s = v;
+    if (s < items.length) {
+      setActive(s);
+      rot.set(-s * stepAngle);
+      setGuided(true);
+      scale.set(1);
+    } else {
+      setGuided(false);
+      scale.set(0.86);
+    }
+  });
+  return () => { if (typeof unsub === "function") unsub(); };
+}, [scene, items.length, stepAngle, rot, scale]);
 
   return (
     <div ref={sectionRef} className="relative" style={{ height: totalScenes * 85 + "vh" }}>
