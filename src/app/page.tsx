@@ -206,21 +206,18 @@ function ServicesWheel() {
     Icon: icon,
     bullets,
   }));
-
   const [active, setActive] = useState(0);
-  const [guided, setGuided] = useState(true); // bloquea hasta revelar todo
+  const [guided, setGuided] = useState(true);
   const stepAngle = 360 / items.length;
   const radius = 260;
 
-  // Altura total: N servicios + 1 escena final (zoom-out para liberar scroll)
+  // escenas = N servicios + escena final (zoom-out/libera)
   const totalScenes = items.length + 1;
 
-  // --- Fix mobile viewport (iOS barras dinámicas) ---
+  // Fix vh real en móviles (iOS/Android)
   useEffect(() => {
     const setVh = () => {
-      // 1vh real en px
-      const vh = window.innerHeight * 0.01;
-      document.documentElement.style.setProperty("--vh", `${vh}px`);
+      document.documentElement.style.setProperty("--vh", `${window.innerHeight * 0.01}px`);
     };
     setVh();
     window.addEventListener("resize", setVh);
@@ -233,16 +230,16 @@ function ServicesWheel() {
     offset: ["start start", "end start"],
   });
 
-  // Escena discreta por progreso (igual en desktop y mobile)
+  // escena discreta (mismo comportamiento en desktop y mobile)
   const scene = useTransform(scrollYProgress, (p) =>
     Math.min(totalScenes - 1, Math.floor(p * totalScenes))
   );
 
-  // Rotación suave y escala (zoom lock al entrar)
+  // rotación y escala (zoom al fijarse)
   const rot = useSpring(0, { stiffness: 42, damping: 20 });
   const scale = useSpring(1, { stiffness: 50, damping: 18 });
 
-  // Zoom inmediato cuando se fija (lock) — igual para mobile/desktop
+  // Zoom lock en cuanto fija; zoom-out al liberar
   const lockThreshold = 0.06;
   const lockedBoostRaw = useTransform(
     scrollYProgress,
@@ -262,43 +259,30 @@ function ServicesWheel() {
         setGuided(true);
         scale.set(1);
       } else {
-        // escena final: mostrar todo y hacer zoom-out → libera scroll
         setGuided(false);
-        scale.set(0.86);
+        scale.set(0.86); // zoom-out final → libera
       }
     });
-    return () => {
-      if (typeof unsub === "function") unsub();
-    };
+    return () => { if (typeof unsub === "function") unsub(); };
   }, [scene, items.length, stepAngle, rot, scale]);
 
   return (
     <div
       ref={sectionRef}
       className="relative"
-      // Usamos --vh para que 1vh sea correcto en mobile
+      // altura suficiente para consumir scroll hasta revelar todas las escenas
       style={{
-        height: `calc(var(--vh, 1vh) * ${85 * totalScenes})`,
-        // evitar que el scroll “salte” fuera de la sección
+        height: `calc(var(--vh, 1vh) * ${100 * totalScenes})`,
         overscrollBehaviorY: "contain",
       }}
     >
-      {/* Sticky: bloquea scroll mientras se recorren las escenas */}
+      {/* Sticky: en mobile se fija arriba; en desktop al punto estético */}
       <div
-        className="
-          sticky
-          top-0
-          md:top-[calc(50vh-40vmin+15px)]
-          flex h-screen items-start justify-center
-        "
-        // h-screen basada en --vh para mobile
-        style={{
-          height: "calc(var(--vh, 1vh) * 100)",
-          touchAction: "pan-y",
-        }}
+        className="sticky top-0 md:top-[calc(50vh-40vmin+15px)] flex h-screen items-start justify-center"
+        style={{ height: "calc(var(--vh, 1vh) * 100)", touchAction: "pan-y" }}
       >
         <div className="flex w-full max-w-none flex-col items-center gap-8 px-4">
-          {/* Encabezado dinámico arriba de la rueda */}
+          {/* Encabezado dinámico */}
           <div className="mb-6 text-center">
             <Badge>Servicios integrales</Badge>
             <h3 className="mt-3 text-2xl font-semibold md:text-3xl bg-[linear-gradient(110deg,_#f7f7f7,_#cfcfcf_38%,_#9a9a9a_55%,_#ffffff_72%)] bg-clip-text text-transparent">
@@ -362,10 +346,7 @@ function ServicesWheel() {
                 return (
                   <button
                     key={it.title}
-                    onClick={() => {
-                      setActive(i);
-                      rot.set(-i * stepAngle);
-                    }}
+                    onClick={() => { setActive(i); rot.set(-i * stepAngle); }}
                     className={`absolute left-1/2 top-1/2 -ml-8 -mt-8 h-16 w-16 rounded-2xl border ${
                       isActive ? "border-white/70 bg-white/10" : "border-white/20 bg-black/40"
                     } backdrop-blur flex items-center justify-center shadow-[0_8px_30px_rgba(255,255,255,0.06)] transition-opacity duration-500 ${
@@ -402,8 +383,6 @@ function ServicesWheel() {
     </div>
   );
 }
-
-
 
 
 export default function LuxuryTransportHome() {
