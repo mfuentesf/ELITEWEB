@@ -1,32 +1,19 @@
 "use client";
 
-const BRAND = {
-  logoUrl: "", // si lo dejas vacío, el centro de la rueda muestra “ELITE”
-  heroImageUrl: "https://images.unsplash.com/photo-1511919884226-fd3cad34687c?q=80&w=1920&auto=format&fit=crop",
-};
-
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { motion, useScroll, useTransform, useMotionValue, useSpring } from "framer-motion";
 import {
-  Shield,
-  Car,
-  Crown,
-  Hotel,
-  UserCheck,
-  Phone,
-  MapPin,
-  Clock,
-  Calendar,
-  ChevronRight,
-  Star,
+  Shield, Car, Crown, Hotel, UserCheck, Phone, MapPin, Clock, Calendar, ChevronRight, Star,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge"; // si usas Badge en la página
 
 // --- Branding dinámico (logo + imagen de hero) ---
 const BRAND = {
-  logoUrl: "/elite-logo.jpeg", // ← Reemplázalo cuando subas tu logo (PNG/SVG)
-  heroImageUrl: "/suburban-hero.png", // Imagen acorde: chofer/SUV entorno premium
+  logoUrl: "", // centro de la rueda mostrará “ELITE”
+  heroImageUrl:
+    "https://images.unsplash.com/photo-1511919884226-fd3cad34687c?q=80&w=1920&auto=format&fit=crop",
 };
 
 // --- Datos configurables (fácil de escalar) ---
