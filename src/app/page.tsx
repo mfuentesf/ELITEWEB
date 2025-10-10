@@ -272,7 +272,7 @@ function ServicesWheel() {
       className="relative"
       // altura suficiente para consumir scroll hasta revelar todas las escenas
       style={{
-        height: `calc(var(--vh, 1vh) * ${100 * totalScenes})`,
+        height: `calc(var(--vh, 1vh) * ${130 * totalScenes})`,
         overscrollBehaviorY: "contain",
       }}
     >
