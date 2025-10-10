@@ -222,35 +222,66 @@ function ServicesWheel() {
     Math.min(totalScenes - 1, Math.floor(p * totalScenes))
   );
 
+  // Detectar móvil (para ajustar umbrales y habilitar swipe)
+  const [isMobile, setIsMobile] = useState(false);
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const mq = window.matchMedia("(max-width: 767px)");
+    const apply = () => setIsMobile(mq.matches);
+    apply();
+    mq.addEventListener?.("change", apply);
+    return () => mq.removeEventListener?.("change", apply);
+  }, []);
+
   // Rotación con resorte + escala del zoom (entrada y lock)
   const rot = useSpring(0, { stiffness: 42, damping: 20 });
   const scale = useSpring(1, { stiffness: 50, damping: 18 });
 
-  // Zoom inmediato al bloquear (lock)
-  const lockThreshold = 0.06;
+  // Zoom inmediato al bloquear (lock): en móvil lo disparamos un poco más tarde
+  const lockThreshold = isMobile ? 0.1 : 0.06;
   const lockedBoostRaw = useTransform(
     scrollYProgress,
     [0, lockThreshold, lockThreshold + 0.001, 1],
     [1, 1, 1.4, 1.4] // 40% más al fijarse
   );
   const lockedBoost = useSpring(lockedBoostRaw, { stiffness: 120, damping: 18 });
-const wheelScale = useTransform([scale, lockedBoost], ([s, lb]) => (s as number) * (lb as number));
+  const wheelScale = useTransform([scale, lockedBoost], ([s, lb]) => (s as number) * (lb as number));
 
+  // Sincronizar escena con rotación y reveal
   useEffect(() => {
-  const unsub = scene.on("change", (v: number) => {
-    const s = v;
-    if (s < items.length) {
-      setActive(s);
-      rot.set(-s * stepAngle);
-      setGuided(true);
-      scale.set(1);
-    } else {
-      setGuided(false);
-      scale.set(0.86);
-    }
-  });
-  return () => { if (typeof unsub === "function") unsub(); };
-}, [scene, items.length, stepAngle, rot, scale]);
+    const unsub = scene.on("change", (v: number) => {
+      const s = v;
+      if (s < items.length) {
+        setActive(s);
+        rot.set(-s * stepAngle);
+        setGuided(true);
+        scale.set(1);
+      } else {
+        // escena final → mostrar todo y hacer zoom-out
+        setGuided(false);
+        scale.set(0.86);
+      }
+    });
+    return () => {
+      if (typeof unsub === "function") unsub();
+    };
+  }, [scene, items.length, stepAngle, rot, scale]);
+
+  // Swipe horizontal en móvil
+  const touchStartX = useRef<number | null>(null);
+  const onTouchStart = (e: React.TouchEvent) => {
+    touchStartX.current = e.touches[0].clientX;
+  };
+  const onTouchEnd = (e: React.TouchEvent) => {
+    if (touchStartX.current == null) return;
+    const dx = e.changedTouches[0].clientX - touchStartX.current;
+    touchStartX.current = null;
+    if (Math.abs(dx) < 40) return; // umbral de swipe
+    const dir = dx < 0 ? 1 : -1; // izq → siguiente, der → anterior
+    const next = (active + dir + items.length) % items.length;
+    setActive(next);
+    rot.set(-next * stepAngle);
+  };
 
   return (
     <div ref={sectionRef} className="relative" style={{ height: totalScenes * 85 + "vh" }}>
@@ -279,7 +310,9 @@ const wheelScale = useTransform([scale, lockedBoost], ([s, lb]) => (s as number)
 
           {/* Rueda */}
           <motion.div
-            style={{ scale: wheelScale, transformOrigin: "50% 30%" }}
+            onTouchStart={onTouchStart}
+            onTouchEnd={onTouchEnd}
+            style={{ scale: wheelScale, transformOrigin: "50% 30%", touchAction: "pan-y" as React.CSSProperties["touchAction"] }}
             className="relative mt-10 md:mt-12 aspect-square w-[80vmin] max-w-[1100px] select-none"
           >
             {/* Aro base luxury */}
@@ -359,6 +392,7 @@ const wheelScale = useTransform([scale, lockedBoost], ([s, lb]) => (s as number)
     </div>
   );
 }
+
 
 export default function LuxuryTransportHome() {
   const [category, setCategory] = useState<"blindada" | "blanda">("blindada");
