@@ -215,13 +215,25 @@ function ServicesWheel() {
   // Altura total: N servicios + 1 escena final (zoom-out para liberar scroll)
   const totalScenes = items.length + 1;
 
+  // --- Fix mobile viewport (iOS barras dinámicas) ---
+  useEffect(() => {
+    const setVh = () => {
+      // 1vh real en px
+      const vh = window.innerHeight * 0.01;
+      document.documentElement.style.setProperty("--vh", `${vh}px`);
+    };
+    setVh();
+    window.addEventListener("resize", setVh);
+    return () => window.removeEventListener("resize", setVh);
+  }, []);
+
   const sectionRef = useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll({
     target: sectionRef,
-    offset: ["start start", "end start"], // sticky pin desde que entra hasta que termina
+    offset: ["start start", "end start"],
   });
 
-  // Escena discreta por progreso de scroll (igual en desktop y mobile)
+  // Escena discreta por progreso (igual en desktop y mobile)
   const scene = useTransform(scrollYProgress, (p) =>
     Math.min(totalScenes - 1, Math.floor(p * totalScenes))
   );
@@ -230,19 +242,17 @@ function ServicesWheel() {
   const rot = useSpring(0, { stiffness: 42, damping: 20 });
   const scale = useSpring(1, { stiffness: 50, damping: 18 });
 
-  // Zoom inmediato cuando se fija (lock)
-  const lockThreshold = 0.06; // mismo umbral para mobile/desktop
+  // Zoom inmediato cuando se fija (lock) — igual para mobile/desktop
+  const lockThreshold = 0.06;
   const lockedBoostRaw = useTransform(
     scrollYProgress,
     [0, lockThreshold, lockThreshold + 0.001, 1],
     [1, 1, 1.4, 1.4]
   );
   const lockedBoost = useSpring(lockedBoostRaw, { stiffness: 120, damping: 18 });
-
-  // TS estricto: tipa el tuple
   const wheelScale = useTransform([scale, lockedBoost], ([s, lb]) => (s as number) * (lb as number));
 
-  // Sincroniza escena → rotación/zoom/reveal (igual en mobile/desktop)
+  // Sincroniza escena → rotación/zoom/reveal
   useEffect(() => {
     const unsub = scene.on("change", (v: number) => {
       const s = v;
@@ -266,14 +276,26 @@ function ServicesWheel() {
     <div
       ref={sectionRef}
       className="relative"
-      // alto suficiente para ‘consumir’ scroll hasta ver todas las secciones
-      style={{ height: `${totalScenes * 85}vh` }}
+      // Usamos --vh para que 1vh sea correcto en mobile
+      style={{
+        height: `calc(var(--vh, 1vh) * ${85 * totalScenes})`,
+        // evitar que el scroll “salte” fuera de la sección
+        overscrollBehaviorY: "contain",
+      }}
     >
       {/* Sticky: bloquea scroll mientras se recorren las escenas */}
       <div
-        className="sticky top-[calc(50vh-40vmin+15px)] flex h-screen items-start justify-center"
-        // no bloqueamos gestos; permitimos pan vertical normal
-        style={{ touchAction: "pan-y", overscrollBehavior: "contain" as const }}
+        className="
+          sticky
+          top-0
+          md:top-[calc(50vh-40vmin+15px)]
+          flex h-screen items-start justify-center
+        "
+        // h-screen basada en --vh para mobile
+        style={{
+          height: "calc(var(--vh, 1vh) * 100)",
+          touchAction: "pan-y",
+        }}
       >
         <div className="flex w-full max-w-none flex-col items-center gap-8 px-4">
           {/* Encabezado dinámico arriba de la rueda */}
@@ -380,6 +402,7 @@ function ServicesWheel() {
     </div>
   );
 }
+
 
 
 
