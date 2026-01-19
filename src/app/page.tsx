@@ -19,8 +19,8 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 
 // --- WhatsApp helpers ---
-const WHATSAPP_NUMBER = "+52 55 1234 5678"; // <— cámbialo por tu número real
-const DEFAULT_WA_MESSAGE = "Hola, me interesa una cotización. ¿Me apoyas, por favor?";
+const WHATSAPP_NUMBER = "+52 1 56 2580 0567"; // <— cámbialo por tu número real
+const DEFAULT_WA_MESSAGE = "Hola, ¿Me podrías brindar información sobre los servicios";
 
 const WhatsAppIcon: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (
   <svg viewBox="0 0 32 32" fill="currentColor" aria-hidden="true" {...props}>
