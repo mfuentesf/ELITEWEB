@@ -28,17 +28,24 @@ const WhatsAppIcon: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (
   </svg>
 );
 
-const WhatsAppButton: React.FC<{
-  number?: string;
-  message?: string;
-  className?: string;
-  children?: React.ReactNode;
-}> = ({ number = WHATSAPP_NUMBER, message = DEFAULT_WA_MESSAGE, className = "", children }) => {
+type ShadcnButtonProps = React.ComponentProps<typeof Button>;
+
+const WhatsAppButton: React.FC<
+  {
+    number?: string;
+    message?: string;
+    className?: string;
+    children?: React.ReactNode;
+  } & Partial<ShadcnButtonProps>
+> = ({ number = WHATSAPP_NUMBER, message = DEFAULT_WA_MESSAGE, className = "", children, ...btnProps }) => {
   const digits = number.replace(/\D/g, "");
   const href = `https://wa.me/${digits}?text=${encodeURIComponent(message)}`;
   return (
     <a href={href} target="_blank" rel="noopener noreferrer" aria-label="Contactar por WhatsApp">
-      <Button className={`rounded-2xl bg-[#25D366] text-[#0a0d14] hover:brightness-110 ${className}`}>
+      <Button
+        {...btnProps}
+        className={`rounded-2xl bg-[#25D366] text-[#0a0d14] hover:brightness-110 ${className}`}
+      >
         <WhatsAppIcon className="mr-2 h-4 w-4" />
         {children ?? "WhatsApp"}
       </Button>
@@ -785,8 +792,7 @@ export default function LuxuryTransportHome() {
                   punto de contacto.
                 </p>
                 <div className="mt-6 flex flex-wrap gap-3">
-                  {/* CTA puede ir a WhatsApp también si quieres: */}
-                  <WhatsAppButton size={undefined as never as any}>
+                  <WhatsAppButton size="lg">
                     Hablar con un asesor
                   </WhatsAppButton>
                   <Button
