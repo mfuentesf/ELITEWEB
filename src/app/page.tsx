@@ -8,7 +8,6 @@ import {
   Crown,
   Hotel,
   UserCheck,
-  Phone,
   MapPin,
   Clock,
   Calendar,
@@ -18,6 +17,34 @@ import {
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+
+// --- WhatsApp helpers ---
+const WHATSAPP_NUMBER = "+52 55 1234 5678"; // <— cámbialo por tu número real
+const DEFAULT_WA_MESSAGE = "Hola, me interesa una cotización. ¿Me apoyas, por favor?";
+
+const WhatsAppIcon: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (
+  <svg viewBox="0 0 32 32" fill="currentColor" aria-hidden="true" {...props}>
+    <path d="M19.11 17.07c-.3-.15-1.77-.87-2.04-.97-.27-.1-.47-.15-.66.15-.2.3-.76.97-.93 1.17-.17.2-.34.22-.63.07-.3-.15-1.26-.46-2.4-1.47-.89-.79-1.49-1.77-1.66-2.07-.17-.3-.02-.47.13-.62.13-.13.3-.34.45-.52.15-.17.2-.3.3-.5.1-.2.05-.37-.02-.52-.07-.15-.66-1.6-.9-2.19-.24-.58-.48-.5-.66-.5h-.56c-.2 0-.52.07-.79.37-.27.3-1.04 1.02-1.04 2.48 0 1.45 1.07 2.85 1.22 3.04.15.2 2.12 3.24 5.14 4.54.72.31 1.28.5 1.72.64.72.23 1.38.2 1.9.12.58-.09 1.77-.72 2.02-1.42.25-.7.25-1.3.17-1.42-.07-.12-.27-.2-.57-.35zM16.02 28C9.93 28 5 23.07 5 17c0-3.1 1.21-5.98 3.41-8.16A11.52 11.52 0 0 1 16 5.5c6.07 0 11 4.93 11 11 0 6.07-4.93 11-10.98 11zm0-24.5C9.1 3.5 3.5 9.1 3.5 16c0 2.22.6 4.33 1.65 6.15L3 29l6.99-2.11A12.43 12.43 0 0 0 16.02 28C22.9 28 28.5 22.4 28.5 15.5S22.94 3.5 16.02 3.5z"/>
+  </svg>
+);
+
+const WhatsAppButton: React.FC<{
+  number?: string;
+  message?: string;
+  className?: string;
+  children?: React.ReactNode;
+}> = ({ number = WHATSAPP_NUMBER, message = DEFAULT_WA_MESSAGE, className = "", children }) => {
+  const digits = number.replace(/\D/g, "");
+  const href = `https://wa.me/${digits}?text=${encodeURIComponent(message)}`;
+  return (
+    <a href={href} target="_blank" rel="noopener noreferrer" aria-label="Contactar por WhatsApp">
+      <Button className={`rounded-2xl bg-[#25D366] text-[#0a0d14] hover:brightness-110 ${className}`}>
+        <WhatsAppIcon className="mr-2 h-4 w-4" />
+        {children ?? "WhatsApp"}
+      </Button>
+    </a>
+  );
+};
 
 // --- Branding dinámico (logo + imagen de hero) ---
 const BRAND = {
@@ -384,12 +411,35 @@ function ServicesWheel() {
   );
 }
 
-
 export default function LuxuryTransportHome() {
   const [category, setCategory] = useState<"blindada" | "blanda">("blindada");
   const [seats, setSeats] = useState<string>("all");
   const [drive4x4, setDrive4x4] = useState<boolean>(false);
   const [level, setLevel] = useState<string>("all");
+
+  // Estado del formulario de reserva rápida → para prellenar mensaje de WhatsApp
+  const [origin, setOrigin] = useState("");
+  const [destination, setDestination] = useState("");
+  const [date, setDate] = useState(""); // YYYY-MM-DD
+  const [time, setTime] = useState(""); // HH:mm
+  const [service, setService] = useState("Camioneta Blindada");
+
+  const reservationMessage = useMemo(() => {
+    const parts = [
+      "Hola, me interesa una cotización:",
+      `• Servicio: ${service}`,
+      origin ? `• Origen: ${origin}` : null,
+      destination ? `• Destino: ${destination}` : null,
+      date ? `• Fecha: ${new Date(date).toLocaleDateString()}` : null,
+      time ? `• Hora: ${time}` : null,
+    ].filter(Boolean);
+    return parts.join("\n");
+  }, [service, origin, destination, date, time]);
+
+  const reservationHref = useMemo(() => {
+    const digits = WHATSAPP_NUMBER.replace(/\D/g, "");
+    return `https://wa.me/${digits}?text=${encodeURIComponent(reservationMessage)}`;
+  }, [reservationMessage]);
 
   return (
     <div className="min-h-screen bg-[#05060A] text-zinc-100 antialiased">
@@ -430,9 +480,8 @@ export default function LuxuryTransportHome() {
             </a>
           </nav>
           <div className="flex items-center gap-3">
-            <Button className="rounded-2xl bg-gradient-to-r from-[#e6e6e6] to-[#ffffff] text-[#0a0d14]">
-              <Phone className="mr-2 h-4 w-4" /> Cotizar ahora
-            </Button>
+            {/* Reemplazo: WhatsApp en lugar de "Cotizar ahora" */}
+            <WhatsAppButton>WhatsApp</WhatsAppButton>
           </div>
         </div>
       </header>
@@ -495,6 +544,8 @@ export default function LuxuryTransportHome() {
                     <input
                       className="w-full bg-transparent text-sm outline-none placeholder:text-zinc-500"
                       placeholder="Origen / Ciudad"
+                      value={origin}
+                      onChange={(e) => setOrigin(e.target.value)}
                     />
                   </div>
                   <div className="flex items-center gap-2 rounded-xl border border-zinc-700/60 bg-black/50 px-3 py-2">
@@ -502,19 +553,35 @@ export default function LuxuryTransportHome() {
                     <input
                       className="w-full bg-transparent text-sm outline-none placeholder:text-zinc-500"
                       placeholder="Destino"
+                      value={destination}
+                      onChange={(e) => setDestination(e.target.value)}
                     />
                   </div>
                   <div className="flex items-center gap-2 rounded-xl border border-zinc-700/60 bg-black/50 px-3 py-2">
                     <Calendar className="h-4 w-4 text-zinc-400" />
-                    <input type="date" className="w-full bg-transparent text-sm outline-none" />
+                    <input
+                      type="date"
+                      className="w-full bg-transparent text-sm outline-none"
+                      value={date}
+                      onChange={(e) => setDate(e.target.value)}
+                    />
                   </div>
                   <div className="flex items-center gap-2 rounded-xl border border-zinc-700/60 bg-black/50 px-3 py-2">
                     <Clock className="h-4 w-4 text-zinc-400" />
-                    <input type="time" className="w-full bg-transparent text-sm outline-none" />
+                    <input
+                      type="time"
+                      className="w-full bg-transparent text-sm outline-none"
+                      value={time}
+                      onChange={(e) => setTime(e.target.value)}
+                    />
                   </div>
                   <div className="flex items-center gap-2 rounded-xl border border-zinc-700/60 bg-black/50 px-3 py-2">
                     <Shield className="h-4 w-4 text-zinc-400" />
-                    <select className="w-full bg-transparent text-sm outline-none">
+                    <select
+                      className="w-full bg-transparent text-sm outline-none"
+                      value={service}
+                      onChange={(e) => setService(e.target.value)}
+                    >
                       <option className="bg-black/50">Camioneta Blindada</option>
                       <option className="bg-black/50">Camioneta Blanda</option>
                       <option className="bg-black/50">Sedán de Lujo</option>
@@ -522,9 +589,14 @@ export default function LuxuryTransportHome() {
                       <option className="bg-black/50">Con Custodio</option>
                     </select>
                   </div>
-                  <Button className="w-full rounded-2xl bg-gradient-to-r from-[#e6e6e6] to-[#ffffff] text-[#0a0d14]">
-                    Solicitar cotización
-                  </Button>
+
+                  {/* Reemplazo: botón abre WhatsApp con mensaje prellenado */}
+                  <a href={reservationHref} target="_blank" rel="noopener noreferrer">
+                    <Button className="w-full rounded-2xl bg-[#25D366] text-[#0a0d14] hover:brightness-110">
+                      <WhatsAppIcon className="mr-2 h-4 w-4" /> Solicitar cotización
+                    </Button>
+                  </a>
+
                   <p className="-mt-1 text-center text-xs text-zinc-400">Respuesta promedio &lt; 10 min.</p>
                 </div>
               </CardContent>
@@ -713,9 +785,10 @@ export default function LuxuryTransportHome() {
                   punto de contacto.
                 </p>
                 <div className="mt-6 flex flex-wrap gap-3">
-                  <Button size="lg" className="rounded-2xl bg-gradient-to-r from-[#e6e6e6] to-[#ffffff] text-[#0a0d14]">
+                  {/* CTA puede ir a WhatsApp también si quieres: */}
+                  <WhatsAppButton size={undefined as never as any}>
                     Hablar con un asesor
-                  </Button>
+                  </WhatsAppButton>
                   <Button
                     size="lg"
                     variant="outline"
@@ -789,9 +862,8 @@ export default function LuxuryTransportHome() {
 
       {/* Botón flotante */}
       <div className="fixed bottom-5 right-5">
-        <Button className="rounded-2xl bg-gradient-to-r from-[#e6e6e6] to-[#ffffff] shadow-xl shadow-[#e6e6e6]/20 text-[#0a0d14]">
-          <Phone className="mr-2 h-4 w-4" /> Cotizar ahora
-        </Button>
+        {/* Reemplazo: WhatsApp flotante en lugar de "Cotizar ahora" */}
+        <WhatsAppButton className="shadow-xl shadow-[#25D366]/30">WhatsApp</WhatsAppButton>
       </div>
     </div>
   );
