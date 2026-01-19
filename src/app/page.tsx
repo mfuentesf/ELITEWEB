@@ -222,8 +222,10 @@ function FleetGrid({ category, seats, drive4x4, level }: FleetGridProps) {
             </div>
             <div className="mt-4 flex items-center justify-between">
               <p className="text-sm text-zinc-400">Disponible hoy</p>
-              <WhatsAppButton size="sm" message={`Hola, me interesa ${f.name}. ¿Podemos cotizar?`}
-          </div>
+              <WhatsAppButton size="sm" message={`Hola, me interesa ${f.name}. ¿Podemos cotizar?`}>
+                Cotizar
+              </WhatsAppButton>
+            </div>
         </motion.div>
       ))}
     </div>
