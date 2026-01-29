@@ -375,18 +375,19 @@ export default function LuxuryTransportHome() {
           <div className="flex items-center gap-3">
             {/* ✅ CAMBIO: logo grande sin hacer el header más alto (scale + wrapper ancho) */}
             {BRAND.logoUrl ? (
-              <div className="h-10 w-[260px] overflow-visible">
-                <img
-                  src={BRAND.logoUrl}
-                  alt="Logo ELITE"
-                  className="h-full w-auto object-contain origin-left scale-[2.6] md:scale-[2.9]"
-                />
-              </div>
-            ) : (
-              <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-gradient-to-br from-[#e6e6e6] to-[#ffffff] text-[#0a0d14] font-black">
-                LX
-              </div>
-            )}
+  <div className="h-10 w-fit overflow-visible -mr-2 md:-mr-3">
+    <img
+      src={BRAND.logoUrl}
+      alt="Logo ELITE"
+      className="h-full w-auto object-contain origin-left scale-[2.2] md:scale-[2.4]"
+    />
+  </div>
+) : (
+  <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-gradient-to-br from-[#e6e6e6] to-[#ffffff] text-[#0a0d14] font-black">
+    LX
+  </div>
+)}
+
 
             <div>
               <p className="text-lg font-semibold tracking-wide">ELITE</p>
