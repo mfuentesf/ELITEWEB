@@ -372,7 +372,7 @@ export default function LuxuryTransportHome() {
         <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-4">
           <div className="flex items-center gap-3">
             {BRAND.logoUrl ? (
-              <img src={BRAND.logoUrl} alt="Logo" className="h-10 w-auto rounded-xl" />
+              <img src={BRAND.logoUrl} alt="Logo" className="h-14 w-auto rounded-xl" />
             ) : (
               <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-gradient-to-br from-[#e6e6e6] to-[#ffffff] text-[#0a0d14] font-black">
                 LX
@@ -733,7 +733,7 @@ export default function LuxuryTransportHome() {
         <div className="mx-auto grid max-w-7xl grid-cols-1 gap-8 px-4 py-10 md:grid-cols-4">
           <div>
             {BRAND.logoUrl ? (
-              <img src={BRAND.logoUrl} alt="Logo" className="mb-3 h-10 w-auto rounded-xl" />
+              <img src={BRAND.logoUrl} alt="Logo" className="mb-3 h-14 w-auto rounded-xl" />
             ) : (
               <div className="mb-3 flex h-10 w-10 items-center justify-center rounded-2xl bg-gradient-to-br from-[#e6e6e6] to-[#ffffff] text-[#0a0d14] font-black">
                 EL
