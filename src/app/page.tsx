@@ -379,8 +379,8 @@ export default function LuxuryTransportHome() {
               </div>
             )}
             <div>
-              <p className="text-lg font-semibold tracking-wide">ELITE Transport</p>
-              <p className="text-xs text-zinc-400">Blindaje · Custodia · Hospitality</p>
+              <p className="text-lg font-semibold tracking-wide">ELITE</p>
+              <p className="text-xs text-zinc-400">Armored SUVs • Executive Services</p>
             </div>
           </div>
           <nav className="hidden items-center gap-8 md:flex">
