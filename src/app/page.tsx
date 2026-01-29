@@ -55,7 +55,8 @@ const WhatsAppButton: React.FC<
 
 // --- Branding dinámico (logo + imagen de hero) ---
 const BRAND = {
-  logoUrl: "", // centro de la cabecera mostrará “ELITE” si está vacío
+  logoUrl: "/Elitelogo.png"
+, // centro de la cabecera mostrará “ELITE” si está vacío
   heroImageUrl:
     "https://images.unsplash.com/photo-1511919884226-fd3cad34687c?q=80&w=1920&auto=format&fit=crop",
 };
