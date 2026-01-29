@@ -1,7 +1,7 @@
 "use client";
 
-import React, { useEffect, useMemo, useRef, useState } from "react";
-import { motion, useScroll, useTransform, useSpring } from "framer-motion";
+import React, { useEffect, useMemo, useState } from "react";
+import { motion } from "framer-motion";
 import {
   Shield,
   Car,
@@ -37,13 +37,7 @@ const WhatsAppButton: React.FC<
     className?: string;
     children?: React.ReactNode;
   } & Partial<ShadcnButtonProps>
-> = ({
-  number = WHATSAPP_NUMBER,
-  message = DEFAULT_WA_MESSAGE,
-  className = "",
-  children,
-  ...btnProps
-}) => {
+> = ({ number = WHATSAPP_NUMBER, message = DEFAULT_WA_MESSAGE, className = "", children, ...btnProps }) => {
   const digits = number.replace(/\D/g, "");
   const href = `https://wa.me/${digits}?text=${encodeURIComponent(message)}`;
   return (
@@ -61,7 +55,7 @@ const WhatsAppButton: React.FC<
 
 // --- Branding dinámico (logo + imagen de hero) ---
 const BRAND = {
-  logoUrl: "/Elitelogo.png", // si está vacío mostrará “LX”
+  logoUrl: "/Elitelogo.png", // public/Elitelogo.png
   heroImageUrl:
     "https://images.unsplash.com/photo-1511919884226-fd3cad34687c?q=80&w=1920&auto=format&fit=crop",
 };
@@ -146,8 +140,7 @@ const testimonials = [
     role: "Directora de Operaciones, Grupo Minero",
   },
   {
-    quote:
-      "La logística de aeropuerto a hotel y reuniones salió milimétrica. Choferes muy profesionales.",
+    quote: "La logística de aeropuerto a hotel y reuniones salió milimétrica. Choferes muy profesionales.",
     author: "Luis A.",
     role: "Coordinador de Eventos, Agencia BTL",
   },
@@ -167,9 +160,9 @@ const Section: React.FC<SectionProps> = ({ id, children, className = "" }) => (
 
 interface FleetGridProps {
   category: "blindada" | "blanda";
-  seats: string; // "all" | "5" | "7" | "9"
+  seats: string;
   drive4x4: boolean;
-  level: string; // "all" | "III+" | "IV" | "V"
+  level: string;
 }
 
 // Grid de flota filtrable
@@ -329,8 +322,8 @@ export default function LuxuryTransportHome() {
   // Reserva rápida → mensaje prellenado
   const [origin, setOrigin] = useState("");
   const [destination, setDestination] = useState("");
-  const [date, setDate] = useState(""); // YYYY-MM-DD
-  const [time, setTime] = useState(""); // HH:mm
+  const [date, setDate] = useState("");
+  const [time, setTime] = useState("");
   const [service, setService] = useState("Camioneta Blindada");
 
   const reservationMessage = useMemo(() => {
@@ -370,32 +363,30 @@ export default function LuxuryTransportHome() {
 
       {/* Navbar */}
       <header className="sticky top-0 z-50 backdrop-blur supports-[backdrop-filter]:bg-black/40">
-        {/* ✅ CAMBIO: quitamos justify-between para que no “salte” al quitar WhatsApp */}
         <div className="mx-auto flex max-w-7xl items-center px-4 py-4">
-          <div className="flex items-center gap-3">
-            {/* ✅ CAMBIO: logo grande sin hacer el header más alto (scale + wrapper ancho) */}
+          {/* ✅ Logo + texto pegados */}
+          <div className="flex items-center gap-2">
             {BRAND.logoUrl ? (
-  <div className="h-10 w-fit overflow-visible -mr-2 md:-mr-3">
-    <img
-      src={BRAND.logoUrl}
-      alt="Logo ELITE"
-      className="h-full w-auto object-contain origin-left scale-[2.2] md:scale-[2.4]"
-    />
-  </div>
-) : (
-  <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-gradient-to-br from-[#e6e6e6] to-[#ffffff] text-[#0a0d14] font-black">
-    LX
-  </div>
-)}
+              <div className="flex-none w-[140px] md:w-[170px]">
+                <img
+                  src={BRAND.logoUrl}
+                  alt="Logo ELITE"
+                  className="h-12 md:h-14 w-full object-contain object-left"
+                />
+              </div>
+            ) : (
+              <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-gradient-to-br from-[#e6e6e6] to-[#ffffff] text-[#0a0d14] font-black">
+                LX
+              </div>
+            )}
 
-
-            <div>
+            <div className="leading-tight">
               <p className="text-lg font-semibold tracking-wide">ELITE</p>
               <p className="text-xs text-zinc-400">Armored SUVs • Executive Services</p>
             </div>
           </div>
 
-          {/* ✅ CAMBIO: ml-auto empuja el menú a la derecha (sin necesitar botón WhatsApp) */}
+          {/* Menú a la derecha */}
           <nav className="hidden items-center gap-8 md:flex ml-auto">
             <a href="#servicios" className="text-sm text-zinc-300 hover:text-[#e6e6e6]">
               Servicios
@@ -520,7 +511,6 @@ export default function LuxuryTransportHome() {
                     </select>
                   </div>
 
-                  {/* Botón abre WhatsApp con mensaje prellenado */}
                   <a href={reservationHref} target="_blank" rel="noopener noreferrer">
                     <Button className="w-full rounded-2xl bg-[#25D366] text-[#0a0d14] hover:brightness-110">
                       <WhatsAppIcon className="mr-2 h-4 w-4" /> Solicitar cotización
@@ -556,7 +546,6 @@ export default function LuxuryTransportHome() {
               </p>
             </div>
 
-            {/* Controles */}
             <div className="rounded-2xl border border-zinc-800 bg-black/50 p-3">
               <div className="flex flex-wrap items-center gap-2">
                 <button
@@ -642,21 +631,9 @@ export default function LuxuryTransportHome() {
                 </li>
               </ul>
               <div className="mt-6 flex gap-3">
-                <img
-                  src="https://dummyimage.com/80x40/1c1f2b/ffffff&text=ISO"
-                  alt="Certificación"
-                  className="rounded"
-                />
-                <img
-                  src="https://dummyimage.com/80x40/1c1f2b/ffffff&text=NIJ"
-                  alt="NIJ"
-                  className="rounded"
-                />
-                <img
-                  src="https://dummyimage.com/80x40/1c1f2b/ffffff&text=I+V"
-                  alt="Nivel"
-                  className="rounded"
-                />
+                <img src="https://dummyimage.com/80x40/1c1f2b/ffffff&text=ISO" alt="Certificación" className="rounded" />
+                <img src="https://dummyimage.com/80x40/1c1f2b/ffffff&text=NIJ" alt="NIJ" className="rounded" />
+                <img src="https://dummyimage.com/80x40/1c1f2b/ffffff&text=I+V" alt="Nivel" className="rounded" />
               </div>
             </div>
             <div className="relative overflow-hidden rounded-2xl border border-zinc-800">
@@ -747,23 +724,18 @@ export default function LuxuryTransportHome() {
         <div className="mx-auto grid max-w-7xl grid-cols-1 gap-8 px-4 py-10 md:grid-cols-4">
           <div>
             {BRAND.logoUrl ? (
-  <div className="h-10 w-[120px] md:w-[140px] flex-none overflow-visible">
-    <img
-      src={BRAND.logoUrl}
-      alt="Logo ELITE"
-      className="h-full w-auto object-contain origin-left scale-[1.9] md:scale-[2.1]"
-    />
-  </div>
-) : (
-  <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-gradient-to-br from-[#e6e6e6] to-[#ffffff] text-[#0a0d14] font-black">
-    LX
-  </div>
-)}
+              <img src={BRAND.logoUrl} alt="Logo ELITE" className="mb-3 h-12 w-auto object-contain" />
+            ) : (
+              <div className="mb-3 flex h-10 w-10 items-center justify-center rounded-2xl bg-gradient-to-br from-[#e6e6e6] to-[#ffffff] text-[#0a0d14] font-black">
+                EL
+              </div>
+            )}
 
             <p className="text-sm text-zinc-400">
               Operador de transporte blindado y de lujo. Cobertura nacional y coordinación internacional.
             </p>
           </div>
+
           <div>
             <p className="mb-3 text-sm font-semibold text-zinc-200">Servicios</p>
             <ul className="space-y-2 text-sm text-zinc-400">
@@ -774,6 +746,7 @@ export default function LuxuryTransportHome() {
               <li>Sprinter Ejecutiva</li>
             </ul>
           </div>
+
           <div>
             <p className="mb-3 text-sm font-semibold text-zinc-200">Contacto</p>
             <ul className="space-y-2 text-sm text-zinc-400">
@@ -782,6 +755,7 @@ export default function LuxuryTransportHome() {
               <li>contacto@luxshield.mx</li>
             </ul>
           </div>
+
           <div>
             <p className="mb-3 text-sm font-semibold text-zinc-200">Legal</p>
             <ul className="space-y-2 text-sm text-zinc-400">
@@ -791,6 +765,7 @@ export default function LuxuryTransportHome() {
             </ul>
           </div>
         </div>
+
         <div className="border-t border-zinc-800 py-6 text-center text-xs text-zinc-500">
           © {new Date().getFullYear()} ELITE Transport · Todos los derechos reservados
         </div>
