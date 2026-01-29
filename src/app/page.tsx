@@ -747,12 +747,19 @@ export default function LuxuryTransportHome() {
         <div className="mx-auto grid max-w-7xl grid-cols-1 gap-8 px-4 py-10 md:grid-cols-4">
           <div>
             {BRAND.logoUrl ? (
-              <img src={BRAND.logoUrl} alt="Logo" className="mb-3 h-14 w-auto rounded-xl" />
-            ) : (
-              <div className="mb-3 flex h-10 w-10 items-center justify-center rounded-2xl bg-gradient-to-br from-[#e6e6e6] to-[#ffffff] text-[#0a0d14] font-black">
-                EL
-              </div>
-            )}
+  <div className="h-10 w-[120px] md:w-[140px] flex-none overflow-visible">
+    <img
+      src={BRAND.logoUrl}
+      alt="Logo ELITE"
+      className="h-full w-auto object-contain origin-left scale-[1.9] md:scale-[2.1]"
+    />
+  </div>
+) : (
+  <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-gradient-to-br from-[#e6e6e6] to-[#ffffff] text-[#0a0d14] font-black">
+    LX
+  </div>
+)}
+
             <p className="text-sm text-zinc-400">
               Operador de transporte blindado y de lujo. Cobertura nacional y coordinación internacional.
             </p>
