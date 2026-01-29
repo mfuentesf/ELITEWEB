@@ -20,11 +20,11 @@ import { Badge } from "@/components/ui/badge";
 
 // --- WhatsApp helpers ---
 const WHATSAPP_NUMBER = "+52 1 56 2580 0567"; // <— cámbialo por tu número real
-const DEFAULT_WA_MESSAGE = "Hola, me interesa una cotización. ¿Me apoyas, por favor}?";
+const DEFAULT_WA_MESSAGE = "Hola, me interesa una cotización. ¿Me apoyas, por favor?";
 
 const WhatsAppIcon: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (
   <svg viewBox="0 0 32 32" fill="currentColor" aria-hidden="true" {...props}>
-    <path d="M19.11 17.07c-.3-.15-1.77-.87-2.04-.97-.27-.1-.47-.15-.66.15-.2.3-.76.97-.93 1.17-.17.2-.34.22-.63.07-.3-.15-1.26-.46-2.4-1.47-.89-.79-1.49-1.77-1.66-2.07-.17-.3-.02-.47.13-.62.13-.13.3-.34.45-.52.15-.17.2-.3.3-.5.1-.2.05-.37-.02-.52-.07-.15-.66-1.6-.9-2.19-.24-.58-.48-.5-.66-.5h-.56c-.2 0-.52.07-.79.37-.27.3-1.04 1.02-1.04 2.48 0 1.45 1.07 2.85 1.22 3.04.15.2 2.12 3.24 5.14 4.54.72.31 1.28.5 1.72.64.72.23 1.38.2 1.9.12.58-.09 1.77-.72 2.02-1.42.25-.7.25-1.3.17-1.42-.07-.12-.27-.2-.57-.35zM16.02 28C9.93 28 5 23.07 5 17c0-3.1 1.21-5.98 3.41-8.16A11.52 11.52 0 0 1 16 5.5c6.07 0 11 4.93 11 11 0 6.07-4.93 11-10.98 11zm0-24.5C9.1 3.5 3.5 9.1 3.5 16c0 2.22.6 4.33 1.65 6.15L3 29l6.99-2.11A12.43 12.43 0 0 0 16.02 28C22.9 28 28.5 22.4 28.5 15.5S22.94 3.5 16.02 3.5z"/>
+    <path d="M19.11 17.07c-.3-.15-1.77-.87-2.04-.97-.27-.1-.47-.15-.66.15-.2.3-.76.97-.93 1.17-.17.2-.34.22-.63.07-.3-.15-1.26-.46-2.4-1.47-.89-.79-1.49-1.77-1.66-2.07-.17-.3-.02-.47.13-.62.13-.13.3-.34.45-.52.15-.17.2-.3.3-.5.1-.2.05-.37-.02-.52-.07-.15-.66-1.6-.9-2.19-.24-.58-.48-.5-.66-.5h-.56c-.2 0-.52.07-.79.37-.27.3-1.04 1.02-1.04 2.48 0 1.45 1.07 2.85 1.22 3.04.15.2 2.12 3.24 5.14 4.54.72.31 1.28.5 1.72.64.72.23 1.38.2 1.9.12.58-.09 1.77-.72 2.02-1.42.25-.7.25-1.3.17-1.42-.07-.12-.27-.2-.57-.35zM16.02 28C9.93 28 5 23.07 5 17c0-3.1 1.21-5.98 3.41-8.16A11.52 11.52 0 0 1 16 5.5c6.07 0 11 4.93 11 11 0 6.07-4.93 11-10.98 11zm0-24.5C9.1 3.5 3.5 9.1 3.5 16c0 2.22.6 4.33 1.65 6.15L3 29l6.99-2.11A12.43 12.43 0 0 0 16.02 28C22.9 28 28.5 22.4 28.5 15.5S22.94 3.5 16.02 3.5z" />
   </svg>
 );
 
@@ -37,7 +37,13 @@ const WhatsAppButton: React.FC<
     className?: string;
     children?: React.ReactNode;
   } & Partial<ShadcnButtonProps>
-> = ({ number = WHATSAPP_NUMBER, message = DEFAULT_WA_MESSAGE, className = "", children, ...btnProps }) => {
+> = ({
+  number = WHATSAPP_NUMBER,
+  message = DEFAULT_WA_MESSAGE,
+  className = "",
+  children,
+  ...btnProps
+}) => {
   const digits = number.replace(/\D/g, "");
   const href = `https://wa.me/${digits}?text=${encodeURIComponent(message)}`;
   return (
@@ -55,8 +61,7 @@ const WhatsAppButton: React.FC<
 
 // --- Branding dinámico (logo + imagen de hero) ---
 const BRAND = {
-  logoUrl: "/Elitelogo.png"
-, // centro de la cabecera mostrará “ELITE” si está vacío
+  logoUrl: "/Elitelogo.png", // si está vacío mostrará “LX”
   heroImageUrl:
     "https://images.unsplash.com/photo-1511919884226-fd3cad34687c?q=80&w=1920&auto=format&fit=crop",
 };
@@ -136,8 +141,7 @@ const fleetData = [
 
 const testimonials = [
   {
-    quote:
-      "Servicio impecable y seguridad total. La Suburban blindada fue perfecta para nuestro equipo.",
+    quote: "Servicio impecable y seguridad total. La Suburban blindada fue perfecta para nuestro equipo.",
     author: "Cynthia R.",
     role: "Directora de Operaciones, Grupo Minero",
   },
@@ -287,10 +291,7 @@ function ServicesTabs() {
               )}
             </div>
             <div className="shrink-0">
-              <WhatsAppButton
-                size="lg"
-                message={`Hola, me interesa ${active.title}. ¿Podemos cotizar?`}
-              >
+              <WhatsAppButton size="lg" message={`Hola, me interesa ${active.title}. ¿Podemos cotizar?`}>
                 Cotizar por WhatsApp
               </WhatsAppButton>
             </div>
@@ -369,28 +370,32 @@ export default function LuxuryTransportHome() {
 
       {/* Navbar */}
       <header className="sticky top-0 z-50 backdrop-blur supports-[backdrop-filter]:bg-black/40">
-        <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-4">
+        {/* ✅ CAMBIO: quitamos justify-between para que no “salte” al quitar WhatsApp */}
+        <div className="mx-auto flex max-w-7xl items-center px-4 py-4">
           <div className="flex items-center gap-3">
+            {/* ✅ CAMBIO: logo grande sin hacer el header más alto (scale + wrapper ancho) */}
             {BRAND.logoUrl ? (
-  <div className="h-10 w-[150px] overflow-visible">
-    <img
-      src={BRAND.logoUrl}
-      alt="Logo"
-      className="h-full w-auto object-contain origin-left scale-[1.35]"
-    />
-  </div>
-) : (
-  <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-gradient-to-br from-[#e6e6e6] to-[#ffffff] text-[#0a0d14] font-black">
-    LX
-  </div>
-)}
+              <div className="h-10 w-[260px] overflow-visible">
+                <img
+                  src={BRAND.logoUrl}
+                  alt="Logo ELITE"
+                  className="h-full w-auto object-contain origin-left scale-[2.6] md:scale-[2.9]"
+                />
+              </div>
+            ) : (
+              <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-gradient-to-br from-[#e6e6e6] to-[#ffffff] text-[#0a0d14] font-black">
+                LX
+              </div>
+            )}
 
             <div>
               <p className="text-lg font-semibold tracking-wide">ELITE</p>
               <p className="text-xs text-zinc-400">Armored SUVs • Executive Services</p>
             </div>
           </div>
-          <nav className="hidden items-center gap-8 md:flex">
+
+          {/* ✅ CAMBIO: ml-auto empuja el menú a la derecha (sin necesitar botón WhatsApp) */}
+          <nav className="hidden items-center gap-8 md:flex ml-auto">
             <a href="#servicios" className="text-sm text-zinc-300 hover:text-[#e6e6e6]">
               Servicios
             </a>
@@ -441,7 +446,10 @@ export default function LuxuryTransportHome() {
               <Badge>Facturación</Badge>
             </div>
             <div className="mt-8 flex flex-wrap gap-3">
-              <Button size="lg" className="rounded-2xl bg-gradient-to-r from-[#e6e6e6] to-[#ffffff] text-[#0a0d14]">
+              <Button
+                size="lg"
+                className="rounded-2xl bg-gradient-to-r from-[#e6e6e6] to-[#ffffff] text-[#0a0d14]"
+              >
                 Reservar traslado <ChevronRight className="ml-2 h-4 w-4" />
               </Button>
               <Button
@@ -518,7 +526,9 @@ export default function LuxuryTransportHome() {
                     </Button>
                   </a>
 
-                  <p className="-mt-1 text-center text-xs text-zinc-400">Respuesta promedio &lt; 10 min.</p>
+                  <p className="-mt-1 text-center text-xs text-zinc-400">
+                    Respuesta promedio &lt; 10 min.
+                  </p>
                 </div>
               </CardContent>
             </Card>
