@@ -364,14 +364,15 @@ export default function LuxuryTransportHome() {
       {/* Navbar */}
       <header className="sticky top-0 z-50 backdrop-blur supports-[backdrop-filter]:bg-black/40">
         <div className="mx-auto flex max-w-7xl items-center px-4 py-4">
-          {/* ✅ Logo + texto pegados */}
+          {/* ✅ CAMBIO: quitamos el texto duplicado, y ajustamos tamaño/espacio del logo */}
           <div className="flex items-center gap-2">
             {BRAND.logoUrl ? (
-              <div className="flex-none w-[140px] md:w-[170px]">
+              // Espacio reservado (moderado) + imagen alineada a la izquierda sin “aire”
+              <div className="flex-none h-10 w-[120px] md:h-11 md:w-[135px]">
                 <img
                   src={BRAND.logoUrl}
                   alt="Logo ELITE"
-                  className="h-12 md:h-14 w-full object-contain object-left"
+                  className="h-full w-full object-contain object-left"
                 />
               </div>
             ) : (
@@ -380,6 +381,7 @@ export default function LuxuryTransportHome() {
               </div>
             )}
 
+            {/* Texto pegado al logo */}
             <div className="leading-tight">
               <p className="text-lg font-semibold tracking-wide">ELITE</p>
               <p className="text-xs text-zinc-400">Armored SUVs • Executive Services</p>
