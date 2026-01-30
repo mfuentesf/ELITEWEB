@@ -365,7 +365,7 @@ export default function LuxuryTransportHome() {
       <header className="sticky top-0 z-50 backdrop-blur supports-[backdrop-filter]:bg-black/40">
         <div className="mx-auto flex max-w-7xl items-center px-4 py-4">
           {/* ✅ CAMBIO: quitamos el texto duplicado, y ajustamos tamaño/espacio del logo */}
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1">
             {BRAND.logoUrl ? (
               // Espacio reservado (moderado) + imagen alineada a la izquierda sin “aire”
               <div className="flex-none h-10 w-[120px] md:h-11 md:w-[135px]">
