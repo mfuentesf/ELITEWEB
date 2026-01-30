@@ -64,9 +64,13 @@ const FloatingWhatsAppButton: React.FC<{
       <Button
         type="button"
         className={[
+          // ✅ mismos colores que tu WhatsAppButton original
           "bg-[#25D366] text-[#0a0d14] hover:brightness-110",
+          // ✅ circular + compacto
           "h-14 w-14 rounded-full p-0",
+          // ✅ sombra premium (sin destello verde abajo)
           "shadow-xl shadow-black/40",
+          // ✅ feedback táctil
           "active:scale-95 transition",
           className,
         ].join(" ")}
@@ -83,37 +87,67 @@ const BRAND = {
   heroImageUrl: "/SUVHERO.png",
 };
 
-// --- Servicios (final) ---
+// --- Datos configurables (SERVICIOS con más diseño) ---
 const services = [
   {
     title: "Unidades Blindadas",
+    kicker: "Protección + confort premium",
     desc: "Blindaje de alto nivel con confort premium y ejecución impecable para agendas sensibles y traslados ejecutivos.",
     icon: Shield,
     bullets: ["Niveles III / IV / V / V+ según contexto", "Planeación operativa", "Privacidad y confort premium a bordo"],
+    highlights: ["Confidencialidad", "Coordinación 24/7", "Cobertura nacional"],
+    visual: {
+      img: "https://images.unsplash.com/photo-1525609004556-c46c7d6cf023?q=80&w=1600&auto=format&fit=crop",
+      caption: "Blindaje + experiencia ejecutiva",
+    },
   },
   {
     title: "Unidades Ejecutivas",
+    kicker: "Movilidad ejecutiva sin fricción",
     desc: "SUVs premium para agenda ejecutiva: puntualidad, confort y una experiencia fluida en cada traslado.",
     icon: Car,
     bullets: ["Interiores ejecutivos y máximo confort", "Planeación operativa", "Conectividad a bordo (carga y uso de dispositivos)"],
+    highlights: ["Puntualidad", "Confort premium", "Atención VIP"],
+    visual: {
+      img: "https://images.unsplash.com/photo-1511919884226-fd3cad34687c?q=80&w=1600&auto=format&fit=crop",
+      caption: "Interior premium y conectividad",
+    },
   },
   {
     title: "Custodia Ejecutiva",
+    kicker: "Acompañamiento profesional",
     desc: "Acompañamiento profesional con planeación previa y ejecución sobria, adaptada al nivel de exposición del evento.",
     icon: UserCheck,
-    bullets: ["Perfil ejecutivo o de alto impacto", "Planeación previa y coordinación operativa", "Coordinación con agenda", "Elementos verificados y comunicación operativa"],
+    bullets: ["Perfil ejecutivo o de alto impacto", "Planeación operativa", "Coordinación con agenda", "Elementos verificados y comunicación operativa"],
+    highlights: ["Perfiles por contexto", "Procesos de verificación", "Operación sobria"],
+    visual: {
+      img: "https://images.unsplash.com/photo-1550355291-bbee04a92027?q=80&w=1600&auto=format&fit=crop",
+      caption: "Coordinación y presencia profesional",
+    },
   },
   {
     title: "Sprinter & Vans",
+    kicker: "Comitivas y logística",
     desc: "Movilidad para comitivas y eventos: espacio, confort y logística coordinada para que tu grupo llegue junto y a tiempo.",
     icon: Crown,
     bullets: ["Configuración para 8–15 pasajeros", "Espacio para equipaje y comodidad", "Aeropuerto / eventos / roadshows", "Coordinación de pickups y horarios"],
+    highlights: ["8–15 pasajeros", "Equipaje", "Pickups coordinados"],
+    visual: {
+      img: "https://images.unsplash.com/photo-1465447142348-e9952c393450?q=80&w=1600&auto=format&fit=crop",
+      caption: "Espacio y logística coordinada",
+    },
   },
   {
     title: "Alojamientos de Alto Nivel",
+    kicker: "Privacidad + ubicación + servicio",
     desc: "Alojamientos para itinerarios exigentes: villas privadas y hotelería 5★ seleccionada por privacidad, ubicación y servicio.",
     icon: Hotel,
     bullets: ["Villas privadas u hotelería 5★", "Selección según ubicación y necesidades", "Privacidad y coordinación de accesos", "Coordinación de reservación y logística"],
+    highlights: ["Selección a medida", "Privacidad", "Accesos coordinados"],
+    visual: {
+      img: "https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?q=80&w=1600&auto=format&fit=crop",
+      caption: "Alojamientos con estándar ejecutivo",
+    },
   },
 ];
 
@@ -158,7 +192,7 @@ const fleetData: Array<{
     level: null,
     seats: 12,
     img: "https://images.unsplash.com/photo-1525609004556-c46c7d6cf023?q=80&w=1600&auto=format&fit=crop",
-    tags: ["Comitiva", "Espacio para equipaje", "Logística eventos"],
+    tags: ["Comitiva", "Espacio para equipaje", "Logística coordinada"],
   },
   {
     name: "Chevrolet Suburban Ejecutiva",
@@ -275,58 +309,165 @@ function FleetGrid({ category, seats, level }: FleetGridProps) {
 function ServicesTabs() {
   const [current, setCurrent] = useState(services[0].title);
   const active = services.find((s) => s.title === current)!;
-  const ActivePanelIcon = active.icon;
+  const ActivePanelIcon = active.icon as React.ElementType;
 
   return (
     <div className="mx-auto max-w-7xl">
-      <div className="flex flex-col gap-6">
-        <div className="flex flex-wrap gap-2">
-          {services.map((s) => {
-            const TabIcon = s.icon;
-            const isActive = s.title === current;
-            return (
-              <button
-                key={s.title}
-                onClick={() => setCurrent(s.title)}
-                className={`flex items-center gap-2 rounded-xl border px-3 py-2 text-sm transition
-                  ${
-                    isActive
-                      ? "border-[#e6e6e6] bg-white/10 text-white"
-                      : "border-zinc-700 bg-black/40 text-zinc-300 hover:border-zinc-600"
-                  }`}
-                aria-pressed={isActive}
-              >
-                <TabIcon className="h-4 w-4" />
-                {s.title}
-              </button>
-            );
-          })}
+      {/* Header de sección */}
+      <div className="mb-8 flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
+        <div>
+          <p className="text-xs uppercase tracking-[0.22em] text-zinc-500">Servicios</p>
+          <h2 className="mt-2 text-2xl font-semibold md:text-3xl">
+            Experiencia ejecutiva,{" "}
+            <span className="bg-[linear-gradient(110deg,_#f7f7f7,_#cfcfcf_38%,_#9a9a9a_55%,_#ffffff_72%)] bg-clip-text text-transparent">
+              con estándares de seguridad
+            </span>
+          </h2>
+          <p className="mt-2 max-w-2xl text-zinc-400">
+            Selecciona un servicio para ver el alcance exacto. Te guiamos según tu agenda.
+          </p>
         </div>
 
-        {/* ✅ SOLO PANEL (quitamos grid repetido) */}
-        <div className="rounded-2xl border border-zinc-800 bg-black/50 p-6">
-          <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
-            <div className="max-w-2xl">
-              <div className="flex items-center gap-2">
-                <ActivePanelIcon className="h-5 w-5 text-zinc-200" />
-                <h3 className="text-xl font-semibold">{active.title}</h3>
-              </div>
-              <p className="mt-2 text-zinc-300">{active.desc}</p>
-              {!!active.bullets?.length && (
-                <ul className="mt-3 grid grid-cols-1 gap-2 text-sm text-zinc-300 md:grid-cols-2">
-                  {active.bullets.map((b) => (
-                    <li key={b} className="flex items-center gap-2">
-                      <span className="inline-block h-1.5 w-1.5 rounded-full bg-white/70" />
-                      {b}
-                    </li>
-                  ))}
-                </ul>
+        <div className="flex items-center gap-2">
+          <span className="rounded-full border border-zinc-800 bg-black/50 px-3 py-1 text-xs text-zinc-300">
+            Cobertura nacional
+          </span>
+          <span className="rounded-full border border-zinc-800 bg-black/50 px-3 py-1 text-xs text-zinc-300">
+            Coordinación 24/7
+          </span>
+        </div>
+      </div>
+
+      {/* Tabs */}
+      <div className="flex flex-wrap gap-2">
+        {services.map((s) => {
+          const TabIcon = s.icon as React.ElementType;
+          const isActive = s.title === current;
+
+          return (
+            <button
+              key={s.title}
+              onClick={() => setCurrent(s.title)}
+              className={[
+                "group relative flex items-center gap-2 rounded-2xl border px-4 py-3 text-sm transition",
+                isActive
+                  ? "border-[#e6e6e6]/60 bg-white/10 text-white"
+                  : "border-zinc-800 bg-black/40 text-zinc-300 hover:border-zinc-700",
+              ].join(" ")}
+              aria-pressed={isActive}
+            >
+              <span className="flex h-9 w-9 items-center justify-center rounded-xl border border-zinc-800 bg-black/50">
+                <TabIcon className="h-4 w-4 text-zinc-200" />
+              </span>
+              <span className="text-left leading-tight">
+                <span className="block text-[13px] font-medium">{s.title}</span>
+                <span className="block text-[11px] text-zinc-500">{(s as any).kicker}</span>
+              </span>
+
+              {/* glow cuando está activo */}
+              {isActive && (
+                <span className="pointer-events-none absolute inset-0 rounded-2xl bg-[radial-gradient(closest-side,rgba(255,255,255,0.16),transparent_70%)]" />
               )}
+            </button>
+          );
+        })}
+      </div>
+
+      {/* Panel (2 columnas + visual) */}
+      <div className="mt-6 overflow-hidden rounded-3xl border border-zinc-800 bg-black/50">
+        <div className="grid grid-cols-1 md:grid-cols-5">
+          {/* Content */}
+          <div className="p-6 md:col-span-3 md:p-8">
+            <motion.div
+              key={active.title}
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.25 }}
+              className="flex items-start gap-4"
+            >
+              {/* Icon badge grande */}
+              <div className="relative">
+                <div className="pointer-events-none absolute -inset-2 rounded-2xl bg-[radial-gradient(closest-side,rgba(255,255,255,0.18),transparent_70%)] blur-md" />
+                <div className="relative flex h-12 w-12 items-center justify-center rounded-2xl border border-zinc-800 bg-black/60">
+                  <ActivePanelIcon className="h-6 w-6 text-zinc-100" />
+                </div>
+              </div>
+
+              <div className="flex-1">
+                <p className="text-xs uppercase tracking-[0.22em] text-zinc-500">{(active as any).kicker}</p>
+                <h3 className="mt-1 text-2xl font-semibold">{active.title}</h3>
+                <p className="mt-2 text-zinc-300">{(active as any).desc}</p>
+
+                {/* highlights */}
+                {!!(active as any).highlights?.length && (
+                  <div className="mt-4 flex flex-wrap gap-2">
+                    {(active as any).highlights.map((h: string) => (
+                      <span
+                        key={h}
+                        className="rounded-full border border-zinc-800 bg-black/40 px-3 py-1 text-xs text-zinc-300"
+                      >
+                        {h}
+                      </span>
+                    ))}
+                  </div>
+                )}
+
+                {/* bullets */}
+                {!!(active as any).bullets?.length && (
+                  <ul className="mt-5 grid grid-cols-1 gap-2 text-sm text-zinc-300 md:grid-cols-2">
+                    {(active as any).bullets.map((b: string) => (
+                      <li key={b} className="flex items-center gap-2">
+                        <span className="inline-block h-1.5 w-1.5 rounded-full bg-white/70" />
+                        {b}
+                      </li>
+                    ))}
+                  </ul>
+                )}
+
+                {/* CTA */}
+                <div className="mt-6 flex flex-wrap items-center gap-3">
+                  <WhatsAppButton
+                    size="lg"
+                    message={`Hola, me interesa ${active.title}. ¿Podemos coordinar una cotización?`}
+                  >
+                    Coordinar por WhatsApp
+                  </WhatsAppButton>
+                  <Button
+                    variant="outline"
+                    className="rounded-2xl border-zinc-700 bg-transparent text-zinc-200 hover:border-[#e6e6e6] hover:text-[#e6e6e6]"
+                    onClick={() =>
+                      document.getElementById("cotizar")?.scrollIntoView({ behavior: "smooth", block: "start" })
+                    }
+                  >
+                    Cotizar ahora
+                  </Button>
+                </div>
+              </div>
+            </motion.div>
+          </div>
+
+          {/* Visual */}
+          <div className="relative md:col-span-2">
+            <div className="absolute inset-0">
+              <img
+                src={(active as any).visual?.img}
+                alt={active.title}
+                className="h-full w-full object-cover"
+              />
+              <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/40 to-black/20" />
             </div>
-            <div className="shrink-0">
-              <WhatsAppButton size="lg" message={`Hola, me interesa ${active.title}. ¿Podemos coordinar una cotización?`}>
-                Coordinar por WhatsApp
-              </WhatsAppButton>
+
+            <div className="relative h-full p-6 md:p-8">
+              <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-black/50 px-3 py-1 text-xs text-zinc-200 backdrop-blur">
+                <span className="h-1.5 w-1.5 rounded-full bg-white/70" />
+                {(active as any).visual?.caption ?? "Servicio ejecutivo"}
+              </div>
+
+              <div className="mt-auto hidden h-full items-end md:flex">
+                <div className="rounded-2xl border border-white/10 bg-black/50 p-4 text-xs text-zinc-200 backdrop-blur">
+                  Recomendación: si no estás seguro, elegimos el nivel y configuración según tu agenda.
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -349,21 +490,21 @@ const UNIT_CARDS: Array<{
   {
     key: "Ejecutiva",
     title: "Ejecutiva",
-    desc: "Agenda diaria, puntualidad y confort.",
+    desc: "Agenda diaria y movilidad sin fricción.",
     icon: Car,
     hint: "Ideal para traslados y disposición.",
   },
   {
     key: "Blindada",
     title: "Blindada",
-    desc: "Agenda sensible o alto perfil.",
+    desc: "Protección reforzada para agendas sensibles.",
     icon: Shield,
     hint: "Selecciona nivel según contexto.",
   },
   {
     key: "Sprinter/Vans",
     title: "Sprinter/Vans",
-    desc: "Comitivas, equipaje, eventos.",
+    desc: "Comitivas, equipaje y logística coordinada.",
     icon: Crown,
     hint: "Recomendado 8+ pasajeros.",
   },
@@ -429,7 +570,7 @@ export default function LuxuryTransportHome() {
 
   // Custodia
   const [custodians, setCustodians] = useState<string>("1");
-  const [custodyProfile, setCustodyProfile] = useState<string>("Ejecutivo"); // ✅ sin "Discreto"
+  const [custodyProfile, setCustodyProfile] = useState<string>("Ejecutivo");
 
   const isTransfer = serviceType === "Traslado (A → B)";
   const isRent = serviceType !== "Traslado (A → B)";
@@ -450,7 +591,7 @@ export default function LuxuryTransportHome() {
     }
   }, [unitType]);
 
-  const step1Help = "Elige lo más cercano: traslado A→B o unidad por día (disposición).";
+  const step1Help = "Elige lo más cercano para cotizar rápido.";
   const step2Help = "No necesitas saber modelos: selecciona el tipo de unidad y te guiamos.";
   const step3Help = isTransfer
     ? "Completa los datos mínimos para cotizar el traslado."
@@ -511,12 +652,6 @@ export default function LuxuryTransportHome() {
     if (step === 3) return true;
     return true;
   }, [step, serviceType, unitType]);
-
-  const scrollToQuote = () => {
-    const el = document.getElementById("cotizar");
-    if (!el) return;
-    el.scrollIntoView({ behavior: "smooth", block: "start" });
-  };
 
   // Glow decorativo responsivo
   useEffect(() => {
@@ -596,7 +731,7 @@ export default function LuxuryTransportHome() {
             </motion.h1>
 
             <p className="mt-4 max-w-2xl text-lg text-zinc-300 md:text-xl">
-              Seguridad, lujo y puntualidad para moverte sin fricción: SUV blindadas, escoltas y alojamientos.
+              Seguridad, lujo y puntualidad para moverte sin fricción: SUV blindadas, escoltas y alojamiento.
             </p>
 
             <div className="mt-6 flex flex-wrap items-center gap-3">
@@ -642,31 +777,33 @@ export default function LuxuryTransportHome() {
                       <p className="mt-1 text-xs text-zinc-400">{step1Help}</p>
 
                       <div className="mt-4 grid grid-cols-1 gap-2">
-                        {(["Traslado (A → B)", "Renta por día (Disposición)", "Renta + Custodia"] as ServiceType[]).map((s) => {
-                          const active = serviceType === s;
-                          return (
-                            <button
-                              key={s}
-                              onClick={() => setServiceType(s)}
-                              className={`rounded-2xl border px-4 py-3 text-left transition
+                        {(["Traslado (A → B)", "Renta por día (Disposición)", "Renta + Custodia"] as ServiceType[]).map(
+                          (s) => {
+                            const activeSel = serviceType === s;
+                            return (
+                              <button
+                                key={s}
+                                onClick={() => setServiceType(s)}
+                                className={`rounded-2xl border px-4 py-3 text-left transition
                                 ${
-                                  active
+                                  activeSel
                                     ? "border-[#e6e6e6]/70 bg-white/10"
                                     : "border-zinc-700 bg-black/40 hover:border-zinc-600"
                                 }`}
-                              aria-pressed={active}
-                            >
-                              <p className={`text-sm ${active ? "text-white" : "text-zinc-200"}`}>{s}</p>
-                              <p className="mt-1 text-xs text-zinc-400">
-                                {s === "Traslado (A → B)"
-                                  ? "Coordinado entre puntos clave: aeropuerto, oficina, evento, etc."
-                                  : s === "Renta por día (Disposición)"
-                                  ? "Unidad a tu disposición por horas o días."
-                                  : "Disposición con custodia ejecutiva incluida."}
-                              </p>
-                            </button>
-                          );
-                        })}
+                                aria-pressed={activeSel}
+                              >
+                                <p className={`text-sm ${activeSel ? "text-white" : "text-zinc-200"}`}>{s}</p>
+                                <p className="mt-1 text-xs text-zinc-400">
+                                  {s === "Traslado (A → B)"
+                                    ? "Traslado ejecutivo coordinado."
+                                    : s === "Renta por día (Disposición)"
+                                    ? "Unidad por horas o por día."
+                                    : "Disposición con custodia incluida."}
+                                </p>
+                              </button>
+                            );
+                          }
+                        )}
                       </div>
                     </div>
                   )}
@@ -682,18 +819,18 @@ export default function LuxuryTransportHome() {
                       <div className="mt-4 grid grid-cols-1 gap-2">
                         {UNIT_CARDS.map((c) => {
                           const Icon = c.icon;
-                          const active = unitType === c.key;
+                          const activeSel = unitType === c.key;
                           return (
                             <button
                               key={c.key}
                               onClick={() => setUnitType(c.key)}
                               className={`rounded-2xl border px-4 py-3 text-left transition
                                 ${
-                                  active
+                                  activeSel
                                     ? "border-[#e6e6e6]/70 bg-white/10"
                                     : "border-zinc-700 bg-black/40 hover:border-zinc-600"
                                 }`}
-                              aria-pressed={active}
+                              aria-pressed={activeSel}
                             >
                               <div className="flex items-start justify-between gap-3">
                                 <div className="flex items-start gap-3">
@@ -706,7 +843,7 @@ export default function LuxuryTransportHome() {
                                     <p className="mt-1 text-[11px] text-zinc-500">{c.hint}</p>
                                   </div>
                                 </div>
-                                {active && <CheckCircle2 className="h-5 w-5 text-[#e6e6e6]" />}
+                                {activeSel && <CheckCircle2 className="h-5 w-5 text-[#e6e6e6]" />}
                               </div>
                             </button>
                           );
@@ -720,7 +857,8 @@ export default function LuxuryTransportHome() {
                             <p className="text-sm font-medium text-zinc-200">Nivel de blindaje</p>
                           </div>
                           <p className="mt-1 text-xs text-zinc-400">
-                            A mayor nivel, mayor protección. Si no estás seguro, IV suele funcionar bien para agenda ejecutiva.
+                            A mayor nivel, mayor protección. Si no estás seguro, IV suele funcionar bien para agenda
+                            ejecutiva.
                           </p>
 
                           <div className="mt-3 flex items-center gap-2 rounded-xl border border-zinc-700/60 bg-black/50 px-3 py-2">
@@ -777,7 +915,7 @@ export default function LuxuryTransportHome() {
                               <MapPin className="h-4 w-4 text-zinc-400" />
                               <input
                                 className="w-full bg-transparent text-sm outline-none placeholder:text-zinc-500"
-                                placeholder="Aeropuerto, punto clave o zona"
+                                placeholder="Aeropuerto, hotel o ciudad"
                                 value={origin}
                                 onChange={(e) => setOrigin(e.target.value)}
                                 aria-label="Origen"
@@ -791,7 +929,7 @@ export default function LuxuryTransportHome() {
                               <MapPin className="h-4 w-4 text-zinc-400" />
                               <input
                                 className="w-full bg-transparent text-sm outline-none placeholder:text-zinc-500"
-                                placeholder="Punto clave o zona"
+                                placeholder="Oficina o zona"
                                 value={destination}
                                 onChange={(e) => setDestination(e.target.value)}
                                 aria-label="Destino"
@@ -1017,7 +1155,9 @@ export default function LuxuryTransportHome() {
             <div>
               <h2 className="text-2xl font-semibold md:text-3xl">Flota</h2>
               <div className="mt-2 h-0.5 w-12 rounded-full bg-gradient-to-r from-[#e6e6e6] to-transparent" />
-              <p className="mt-2 max-w-2xl text-zinc-400">Selecciona categoría y ajusta filtros para ver unidades disponibles.</p>
+              <p className="mt-2 max-w-2xl text-zinc-400">
+                Selecciona categoría y ajusta filtros para ver unidades disponibles.
+              </p>
             </div>
 
             <div className="rounded-2xl border border-zinc-800 bg-black/50 p-3">
@@ -1090,7 +1230,7 @@ export default function LuxuryTransportHome() {
                   <Shield className="mt-0.5 h-5 w-5 text-[#e6e6e6]" /> Blindaje y protocolos operativos según el contexto.
                 </li>
                 <li className="flex gap-3">
-                  <UserCheck className="mt-0.5 h-5 w-5 text-[#e6e6e6]" /> Personal operativo y custodia con procesos de verificación.
+                  <UserCheck className="mt-0.5 h-5 w-5 text-[#e6e6e6]" /> Personal operativo con procesos de verificación.
                 </li>
                 <li className="flex gap-3">
                   <Clock className="mt-0.5 h-5 w-5 text-[#e6e6e6]" /> Coordinación 24/7 y puntualidad orientada a agenda ejecutiva.
@@ -1098,9 +1238,15 @@ export default function LuxuryTransportHome() {
               </ul>
 
               <div className="mt-6 flex flex-wrap gap-2">
-                <span className="rounded-full border border-zinc-700 px-3 py-1 text-xs text-zinc-300">Niveles: III · IV · V · V+</span>
-                <span className="rounded-full border border-zinc-700 px-3 py-1 text-xs text-zinc-300">Planeación operativa</span>
-                <span className="rounded-full border border-zinc-700 px-3 py-1 text-xs text-zinc-300">Coordinación nacional</span>
+                <span className="rounded-full border border-zinc-700 px-3 py-1 text-xs text-zinc-300">
+                  Niveles: III · IV · V · V+
+                </span>
+                <span className="rounded-full border border-zinc-700 px-3 py-1 text-xs text-zinc-300">
+                  Planeación operativa
+                </span>
+                <span className="rounded-full border border-zinc-700 px-3 py-1 text-xs text-zinc-300">
+                  Coordinación nacional
+                </span>
               </div>
             </div>
 
@@ -1159,7 +1305,7 @@ export default function LuxuryTransportHome() {
               <div>
                 <h3 className="text-2xl font-semibold md:text-3xl">Listos para tu próximo itinerario</h3>
                 <p className="mt-3 max-w-xl text-zinc-300">
-                  Coordinamos aeropuerto, agenda ejecutiva, custodia y alojamientos de alto nivel con un solo punto de contacto.
+                  Coordinamos aeropuerto, agenda ejecutiva, custodia y alojamiento de alto nivel con un solo punto de contacto.
                 </p>
                 <div className="mt-6 flex flex-wrap gap-3">
                   <WhatsAppButton size="lg">Hablar con un asesor</WhatsAppButton>
@@ -1167,9 +1313,8 @@ export default function LuxuryTransportHome() {
                     size="lg"
                     variant="outline"
                     className="rounded-2xl border-zinc-700 text-zinc-200 hover:border-[#e6e6e6] hover:text-[#e6e6e6]"
-                    onClick={scrollToQuote}
                   >
-                    Cotizar ahora
+                    Descargar brochure
                   </Button>
                 </div>
               </div>
@@ -1180,7 +1325,7 @@ export default function LuxuryTransportHome() {
                   className="h-64 w-full rounded-2xl object-cover md:h-72"
                 />
                 <div className="absolute inset-x-0 -bottom-6 mx-auto w-[90%] rounded-2xl border border-[#e6e6e6]/20 bg-black/70 p-4 text-xs text-zinc-300 backdrop-blur">
-                  Agenda tentativa: AICM → Reunión → Cena → Regreso
+                  Agenda tentativa: AICM → Hotel → Reunión → Cena → Hotel
                 </div>
               </div>
             </div>
