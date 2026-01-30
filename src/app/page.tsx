@@ -64,13 +64,9 @@ const FloatingWhatsAppButton: React.FC<{
       <Button
         type="button"
         className={[
-          // ✅ mismos colores que tu WhatsAppButton original
           "bg-[#25D366] text-[#0a0d14] hover:brightness-110",
-          // ✅ ahora circular + compacto
           "h-14 w-14 rounded-full p-0",
-          // ✅ sombra como el que traías
           "shadow-xl shadow-black/40",
-          // ✅ por si lo picas en móvil
           "active:scale-95 transition",
           className,
         ].join(" ")}
@@ -87,37 +83,37 @@ const BRAND = {
   heroImageUrl: "/SUVHERO.png",
 };
 
-// --- Datos configurables ---
+// --- Servicios (final) ---
 const services = [
   {
     title: "Unidades Blindadas",
-    desc: "Blindaje certificado en niveles III, IV, V y V+ con operación discreta y cobertura nacional.",
+    desc: "Blindaje de alto nivel con confort premium y ejecución impecable para agendas sensibles y traslados ejecutivos.",
     icon: Shield,
-    bullets: ["Niveles III / IV / V / V+", "Operación discreta", "Cobertura nacional"],
+    bullets: ["Niveles III / IV / V / V+ según contexto", "Planeación operativa", "Privacidad y confort premium a bordo"],
   },
   {
     title: "Unidades Ejecutivas",
-    desc: "SUVs premium con interiores ejecutivos y conectividad para agendas de alto nivel.",
+    desc: "SUVs premium para agenda ejecutiva: puntualidad, confort y una experiencia fluida en cada traslado.",
     icon: Car,
-    bullets: ["SUVs premium", "Interiores ejecutivos", "Conectividad a bordo"],
+    bullets: ["Interiores ejecutivos y máximo confort", "Planeación operativa", "Conectividad a bordo (carga y uso de dispositivos)"],
   },
   {
     title: "Custodia Ejecutiva",
-    desc: "Personal de seguridad certificado. Perfiles discretos o de alto impacto según el contexto.",
+    desc: "Acompañamiento profesional con planeación previa y ejecución sobria, adaptada al nivel de exposición del evento.",
     icon: UserCheck,
-    bullets: ["Certificados", "Perfil discreto o alto impacto", "Coordinación de ruta"],
+    bullets: ["Perfil ejecutivo o de alto impacto", "Planeación previa y coordinación operativa", "Coordinación con agenda", "Elementos verificados y comunicación operativa"],
   },
   {
     title: "Sprinter & Vans",
-    desc: "Soluciones para comitivas, aeropuerto y eventos: confort, espacio y logística coordinada.",
+    desc: "Movilidad para comitivas y eventos: espacio, confort y logística coordinada para que tu grupo llegue junto y a tiempo.",
     icon: Crown,
-    bullets: ["Comitivas y eventos", "Espacio para equipaje", "Logística coordinada"],
+    bullets: ["Configuración para 8–15 pasajeros", "Espacio para equipaje y comodidad", "Aeropuerto / eventos / roadshows", "Coordinación de pickups y horarios"],
   },
   {
-    title: "Hospedaje de Alto Nivel",
-    desc: "Villas privadas y hoteles 5★ seleccionados a medida de tu itinerario.",
+    title: "Alojamientos de Alto Nivel",
+    desc: "Alojamientos para itinerarios exigentes: villas privadas y hotelería 5★ seleccionada por privacidad, ubicación y servicio.",
     icon: Hotel,
-    bullets: ["Villas privadas", "Hoteles 5★", "Curaduría a medida"],
+    bullets: ["Villas privadas u hotelería 5★", "Selección según ubicación y necesidades", "Privacidad y coordinación de accesos", "Coordinación de reservación y logística"],
   },
 ];
 
@@ -146,7 +142,7 @@ const fleetData: Array<{
     level: "IV",
     seats: 5,
     img: "https://images.unsplash.com/photo-1525609004556-c46c7d6cf023?q=80&w=1600&auto=format&fit=crop",
-    tags: ["Nivel IV", "Perfil discreto", "Clima trizona"],
+    tags: ["Nivel IV", "Perfil ejecutivo", "Clima trizona"],
   },
   {
     name: "Mercedes-Benz Sprinter Ejecutiva",
@@ -307,6 +303,7 @@ function ServicesTabs() {
           })}
         </div>
 
+        {/* ✅ SOLO PANEL (quitamos grid repetido) */}
         <div className="rounded-2xl border border-zinc-800 bg-black/50 p-6">
           <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
             <div className="max-w-2xl">
@@ -333,23 +330,6 @@ function ServicesTabs() {
             </div>
           </div>
         </div>
-
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
-          {services.map((s) => (
-            <div key={s.title} className="rounded-2xl border border-zinc-800 bg-black/40 p-4">
-              <div className="flex items-center gap-2">
-                <s.icon className="h-4 w-4 text-zinc-200" />
-                <p className="font-medium">{s.title}</p>
-              </div>
-              <p className="mt-2 line-clamp-3 text-sm text-zinc-400">{s.desc}</p>
-              <div className="mt-3">
-                <WhatsAppButton size="sm" message={`Hola, me interesa ${s.title}. ¿Podemos coordinar una cotización?`}>
-                  Coordinar
-                </WhatsAppButton>
-              </div>
-            </div>
-          ))}
-        </div>
       </div>
     </div>
   );
@@ -369,14 +349,14 @@ const UNIT_CARDS: Array<{
   {
     key: "Ejecutiva",
     title: "Ejecutiva",
-    desc: "Agenda diaria, reuniones, discreción.",
+    desc: "Agenda diaria, puntualidad y confort.",
     icon: Car,
     hint: "Ideal para traslados y disposición.",
   },
   {
     key: "Blindada",
     title: "Blindada",
-    desc: "Traslados sensibles o alto perfil.",
+    desc: "Agenda sensible o alto perfil.",
     icon: Shield,
     hint: "Selecciona nivel según contexto.",
   },
@@ -449,7 +429,7 @@ export default function LuxuryTransportHome() {
 
   // Custodia
   const [custodians, setCustodians] = useState<string>("1");
-  const [custodyProfile, setCustodyProfile] = useState<string>("Discreto");
+  const [custodyProfile, setCustodyProfile] = useState<string>("Ejecutivo"); // ✅ sin "Discreto"
 
   const isTransfer = serviceType === "Traslado (A → B)";
   const isRent = serviceType !== "Traslado (A → B)";
@@ -616,7 +596,7 @@ export default function LuxuryTransportHome() {
             </motion.h1>
 
             <p className="mt-4 max-w-2xl text-lg text-zinc-300 md:text-xl">
-              Seguridad, lujo y puntualidad para moverte sin fricción: SUV blindadas, escoltas y hospedaje.
+              Seguridad, lujo y puntualidad para moverte sin fricción: SUV blindadas, escoltas y alojamientos.
             </p>
 
             <div className="mt-6 flex flex-wrap items-center gap-3">
@@ -624,8 +604,6 @@ export default function LuxuryTransportHome() {
               <Badge>Atención VIP</Badge>
               <Badge>Disponibilidad 24/7</Badge>
             </div>
-
-            {/* ✅ Quitamos CTAs debajo de los badges */}
           </div>
 
           {/* Wizard Card */}
@@ -664,33 +642,31 @@ export default function LuxuryTransportHome() {
                       <p className="mt-1 text-xs text-zinc-400">{step1Help}</p>
 
                       <div className="mt-4 grid grid-cols-1 gap-2">
-                        {(["Traslado (A → B)", "Renta por día (Disposición)", "Renta + Custodia"] as ServiceType[]).map(
-                          (s) => {
-                            const active = serviceType === s;
-                            return (
-                              <button
-                                key={s}
-                                onClick={() => setServiceType(s)}
-                                className={`rounded-2xl border px-4 py-3 text-left transition
+                        {(["Traslado (A → B)", "Renta por día (Disposición)", "Renta + Custodia"] as ServiceType[]).map((s) => {
+                          const active = serviceType === s;
+                          return (
+                            <button
+                              key={s}
+                              onClick={() => setServiceType(s)}
+                              className={`rounded-2xl border px-4 py-3 text-left transition
                                 ${
                                   active
                                     ? "border-[#e6e6e6]/70 bg-white/10"
                                     : "border-zinc-700 bg-black/40 hover:border-zinc-600"
                                 }`}
-                                aria-pressed={active}
-                              >
-                                <p className={`text-sm ${active ? "text-white" : "text-zinc-200"}`}>{s}</p>
-                                <p className="mt-1 text-xs text-zinc-400">
-                                  {s === "Traslado (A → B)"
-                                    ? "Punto a punto: aeropuerto, hotel, reuniones."
-                                    : s === "Renta por día (Disposición)"
-                                    ? "Unidad a tu disposición por horas o días."
-                                    : "Disposición con custodia ejecutiva incluida."}
-                                </p>
-                              </button>
-                            );
-                          }
-                        )}
+                              aria-pressed={active}
+                            >
+                              <p className={`text-sm ${active ? "text-white" : "text-zinc-200"}`}>{s}</p>
+                              <p className="mt-1 text-xs text-zinc-400">
+                                {s === "Traslado (A → B)"
+                                  ? "Coordinado entre puntos clave: aeropuerto, oficina, evento, etc."
+                                  : s === "Renta por día (Disposición)"
+                                  ? "Unidad a tu disposición por horas o días."
+                                  : "Disposición con custodia ejecutiva incluida."}
+                              </p>
+                            </button>
+                          );
+                        })}
                       </div>
                     </div>
                   )}
@@ -744,8 +720,7 @@ export default function LuxuryTransportHome() {
                             <p className="text-sm font-medium text-zinc-200">Nivel de blindaje</p>
                           </div>
                           <p className="mt-1 text-xs text-zinc-400">
-                            A mayor nivel, mayor protección. Si no estás seguro, IV suele funcionar bien para agenda
-                            ejecutiva.
+                            A mayor nivel, mayor protección. Si no estás seguro, IV suele funcionar bien para agenda ejecutiva.
                           </p>
 
                           <div className="mt-3 flex items-center gap-2 rounded-xl border border-zinc-700/60 bg-black/50 px-3 py-2">
@@ -802,7 +777,7 @@ export default function LuxuryTransportHome() {
                               <MapPin className="h-4 w-4 text-zinc-400" />
                               <input
                                 className="w-full bg-transparent text-sm outline-none placeholder:text-zinc-500"
-                                placeholder="Aeropuerto, hotel o ciudad"
+                                placeholder="Aeropuerto, punto clave o zona"
                                 value={origin}
                                 onChange={(e) => setOrigin(e.target.value)}
                                 aria-label="Origen"
@@ -816,7 +791,7 @@ export default function LuxuryTransportHome() {
                               <MapPin className="h-4 w-4 text-zinc-400" />
                               <input
                                 className="w-full bg-transparent text-sm outline-none placeholder:text-zinc-500"
-                                placeholder="Hotel, oficina o zona"
+                                placeholder="Punto clave o zona"
                                 value={destination}
                                 onChange={(e) => setDestination(e.target.value)}
                                 aria-label="Destino"
@@ -967,7 +942,6 @@ export default function LuxuryTransportHome() {
                                 onChange={(e) => setCustodyProfile(e.target.value)}
                                 aria-label="Perfil de custodia"
                               >
-                                <option className="bg-black/50">Discreto</option>
                                 <option className="bg-black/50">Ejecutivo</option>
                                 <option className="bg-black/50">Alto impacto</option>
                               </select>
@@ -1020,7 +994,7 @@ export default function LuxuryTransportHome() {
                   {/* Tiny reassurance */}
                   <p className="text-[11px] text-zinc-500">
                     Tip: si no estás seguro del nivel, elige “Blindada” + “IV” y nosotros ajustamos con base en tu
-                    ruta/agenda.
+                    agenda.
                   </p>
                 </div>
               </CardContent>
@@ -1113,7 +1087,7 @@ export default function LuxuryTransportHome() {
               <div className="mt-2 h-0.5 w-12 rounded-full bg-gradient-to-r from-[#e6e6e6] to-transparent" />
               <ul className="mt-6 space-y-4 text-zinc-300">
                 <li className="flex gap-3">
-                  <Shield className="mt-0.5 h-5 w-5 text-[#e6e6e6]" /> Blindaje y protocolos operativos según el contexto de ruta.
+                  <Shield className="mt-0.5 h-5 w-5 text-[#e6e6e6]" /> Blindaje y protocolos operativos según el contexto.
                 </li>
                 <li className="flex gap-3">
                   <UserCheck className="mt-0.5 h-5 w-5 text-[#e6e6e6]" /> Personal operativo y custodia con procesos de verificación.
@@ -1125,7 +1099,7 @@ export default function LuxuryTransportHome() {
 
               <div className="mt-6 flex flex-wrap gap-2">
                 <span className="rounded-full border border-zinc-700 px-3 py-1 text-xs text-zinc-300">Niveles: III · IV · V · V+</span>
-                <span className="rounded-full border border-zinc-700 px-3 py-1 text-xs text-zinc-300">Operación discreta</span>
+                <span className="rounded-full border border-zinc-700 px-3 py-1 text-xs text-zinc-300">Planeación operativa</span>
                 <span className="rounded-full border border-zinc-700 px-3 py-1 text-xs text-zinc-300">Coordinación nacional</span>
               </div>
             </div>
@@ -1185,7 +1159,7 @@ export default function LuxuryTransportHome() {
               <div>
                 <h3 className="text-2xl font-semibold md:text-3xl">Listos para tu próximo itinerario</h3>
                 <p className="mt-3 max-w-xl text-zinc-300">
-                  Coordinamos aeropuerto, agenda ejecutiva, custodia y hospedaje de alto nivel con un solo punto de contacto.
+                  Coordinamos aeropuerto, agenda ejecutiva, custodia y alojamientos de alto nivel con un solo punto de contacto.
                 </p>
                 <div className="mt-6 flex flex-wrap gap-3">
                   <WhatsAppButton size="lg">Hablar con un asesor</WhatsAppButton>
@@ -1193,8 +1167,9 @@ export default function LuxuryTransportHome() {
                     size="lg"
                     variant="outline"
                     className="rounded-2xl border-zinc-700 text-zinc-200 hover:border-[#e6e6e6] hover:text-[#e6e6e6]"
+                    onClick={scrollToQuote}
                   >
-                    Descargar brochure
+                    Cotizar ahora
                   </Button>
                 </div>
               </div>
@@ -1205,7 +1180,7 @@ export default function LuxuryTransportHome() {
                   className="h-64 w-full rounded-2xl object-cover md:h-72"
                 />
                 <div className="absolute inset-x-0 -bottom-6 mx-auto w-[90%] rounded-2xl border border-[#e6e6e6]/20 bg-black/70 p-4 text-xs text-zinc-300 backdrop-blur">
-                  Agenda tentativa: AICM → Hotel → Reunión → Cena → Hotel
+                  Agenda tentativa: AICM → Reunión → Cena → Regreso
                 </div>
               </div>
             </div>
@@ -1236,7 +1211,7 @@ export default function LuxuryTransportHome() {
               <li>Unidades Ejecutivas</li>
               <li>Custodia Ejecutiva</li>
               <li>Sprinter & Vans</li>
-              <li>Hospedaje de Alto Nivel</li>
+              <li>Alojamientos de Alto Nivel</li>
             </ul>
           </div>
 
@@ -1265,9 +1240,9 @@ export default function LuxuryTransportHome() {
       </footer>
 
       {/* Botón flotante */}
-<div className="fixed bottom-5 right-5 z-50">
-  <FloatingWhatsAppButton />
-</div>
+      <div className="fixed bottom-5 right-5 z-50">
+        <FloatingWhatsAppButton />
+      </div>
     </div>
   );
 }
