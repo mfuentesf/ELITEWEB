@@ -304,39 +304,29 @@ function FleetGrid({ category, seats, level }: FleetGridProps) {
 }
 
 function ServicesTabs() {
-  const [current, setCurrent] = useState(services[0].title);
-  const active = services.find((s) => s.title === current)!;
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const active = services[currentIndex];
   const ActivePanelIcon = active.icon as React.ElementType;
 
-  // ✅ Carrusel + flechas (móvil)
+  // --- Tabs row (móvil) ---
   const tabsRef = useRef<HTMLDivElement | null>(null);
   const [canLeft, setCanLeft] = useState(false);
   const [canRight, setCanRight] = useState(true);
 
-  const updateArrows = () => {
+  // --- Cards carousel (móvil) ---
+  const cardsRef = useRef<HTMLDivElement | null>(null);
+  const cardRefs = useRef<Array<HTMLDivElement | null>>([]);
+
+  const isMobile = () =>
+    typeof window !== "undefined" && window.matchMedia("(max-width: 767px)").matches;
+
+  const updateTabArrows = () => {
     const el = tabsRef.current;
     if (!el) return;
     const maxScroll = el.scrollWidth - el.clientWidth;
     setCanLeft(el.scrollLeft > 8);
     setCanRight(el.scrollLeft < maxScroll - 8);
   };
-
-  useEffect(() => {
-    updateArrows();
-    const el = tabsRef.current;
-    if (!el) return;
-
-    const onScroll = () => updateArrows();
-    el.addEventListener("scroll", onScroll, { passive: true });
-
-    const onResize = () => updateArrows();
-    window.addEventListener("resize", onResize);
-
-    return () => {
-      el.removeEventListener("scroll", onScroll);
-      window.removeEventListener("resize", onResize);
-    };
-  }, []);
 
   const scrollTabs = (dir: "left" | "right") => {
     const el = tabsRef.current;
@@ -345,9 +335,84 @@ function ServicesTabs() {
     el.scrollBy({ left: dir === "left" ? -amount : amount, behavior: "smooth" });
   };
 
+  const scrollToCard = (index: number) => {
+    const card = cardRefs.current[index];
+    if (!card) return;
+    card.scrollIntoView({ behavior: "smooth", inline: "start", block: "nearest" });
+  };
+
+  const scrollToTab = (index: number) => {
+    // hace que la pill activa quede visible en el carrusel
+    const el = tabsRef.current;
+    if (!el) return;
+    const tab = el.querySelector<HTMLButtonElement>(`button[data-tab-index="${index}"]`);
+    tab?.scrollIntoView({ behavior: "smooth", inline: "center", block: "nearest" });
+  };
+
+  const selectService = (index: number) => {
+    setCurrentIndex(index);
+    if (isMobile()) {
+      scrollToCard(index);
+      scrollToTab(index);
+    }
+  };
+
+  // Mantener arrows de tabs actualizados
+  useEffect(() => {
+    updateTabArrows();
+    const el = tabsRef.current;
+    if (!el) return;
+
+    const onScroll = () => updateTabArrows();
+    el.addEventListener("scroll", onScroll, { passive: true });
+
+    const onResize = () => updateTabArrows();
+    window.addEventListener("resize", onResize);
+
+    return () => {
+      el.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onResize);
+    };
+  }, []);
+
+  // ✅ Detectar card activa cuando el usuario hace swipe (móvil)
+  useEffect(() => {
+    if (!isMobile()) return;
+
+    const root = cardsRef.current;
+    if (!root) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        // elige la más visible
+        const best = entries
+          .filter((e) => e.isIntersecting)
+          .sort((a, b) => (b.intersectionRatio ?? 0) - (a.intersectionRatio ?? 0))[0];
+
+        if (!best) return;
+
+        const idx = Number((best.target as HTMLElement).dataset.cardIndex);
+        if (!Number.isNaN(idx)) {
+          setCurrentIndex(idx);
+          // sincroniza las pills
+          scrollToTab(idx);
+        }
+      },
+      {
+        root,
+        threshold: [0.55, 0.65, 0.75],
+      }
+    );
+
+    cardRefs.current.forEach((node) => node && observer.observe(node));
+    return () => observer.disconnect();
+  }, []);
+
+  // ✅ ocultar scrollbar del carrusel (tabs y cards)
+  // (solo para esta sección)
+  // Nota: lo dejo aquí para que no toques globals.css
   return (
     <div className="mx-auto max-w-7xl">
-      {/* ✅ ocultar scrollbar del carrusel (solo para esta sección) */}
       <style jsx global>{`
         .elite-scroll::-webkit-scrollbar {
           display: none;
@@ -358,7 +423,7 @@ function ServicesTabs() {
         }
       `}</style>
 
-      {/* Header de sección */}
+      {/* Header */}
       <div className="mb-8 flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
         <div>
           <p className="text-xs uppercase tracking-[0.22em] text-zinc-500">Servicios</p>
@@ -368,16 +433,22 @@ function ServicesTabs() {
               con estándares de seguridad
             </span>
           </h2>
-          <p className="mt-2 max-w-2xl text-zinc-400">Selecciona un servicio para ver el alcance exacto. Te guiamos según tu agenda.</p>
+          <p className="mt-2 max-w-2xl text-zinc-400">
+            Selecciona un servicio para ver el alcance exacto. Te guiamos según tu agenda.
+          </p>
         </div>
 
         <div className="flex items-center gap-2">
-          <span className="rounded-full border border-zinc-800 bg-black/50 px-3 py-1 text-xs text-zinc-300">Cobertura nacional</span>
-          <span className="rounded-full border border-zinc-800 bg-black/50 px-3 py-1 text-xs text-zinc-300">Coordinación 24/7</span>
+          <span className="rounded-full border border-zinc-800 bg-black/50 px-3 py-1 text-xs text-zinc-300">
+            Cobertura nacional
+          </span>
+          <span className="rounded-full border border-zinc-800 bg-black/50 px-3 py-1 text-xs text-zinc-300">
+            Coordinación 24/7
+          </span>
         </div>
       </div>
 
-      {/* Tabs (✅ móvil carrusel + flechas; desktop wrap) */}
+      {/* Pills (móvil carrusel + flechas; desktop wrap) */}
       <div className="relative">
         {/* Flecha izquierda */}
         <button
@@ -385,15 +456,14 @@ function ServicesTabs() {
           onClick={() => scrollTabs("left")}
           disabled={!canLeft}
           className={[
-  "md:hidden absolute left-0 top-1/2 -translate-y-1/2 z-10",
-  "h-10 w-10 rounded-full border border-white/10 bg-black/40 backdrop-blur",
-  "grid place-items-center shadow-lg shadow-black/30",
-  "transition duration-200",
-  "opacity-30 hover:opacity-85 active:opacity-90",
-  "hover:bg-black/55 active:bg-black/60",
-  canLeft ? "pointer-events-auto" : "opacity-0 pointer-events-none",
-].join(" ")}
-
+            "md:hidden absolute left-0 top-1/2 -translate-y-1/2 z-10",
+            "h-10 w-10 rounded-full border border-white/10 bg-black/40 backdrop-blur",
+            "grid place-items-center shadow-lg shadow-black/30",
+            "transition duration-200",
+            "opacity-45 hover:opacity-85 active:opacity-90",
+            "hover:bg-black/55 active:bg-black/60",
+            canLeft ? "pointer-events-auto" : "opacity-0 pointer-events-none",
+          ].join(" ")}
           aria-label="Ver servicios anteriores"
         >
           <ChevronLeft className="h-5 w-5 text-zinc-200" />
@@ -405,15 +475,14 @@ function ServicesTabs() {
           onClick={() => scrollTabs("right")}
           disabled={!canRight}
           className={[
-  "md:hidden absolute right-0 top-1/2 -translate-y-1/2 z-10",
-  "h-10 w-10 rounded-full border border-white/10 bg-black/40 backdrop-blur",
-  "grid place-items-center shadow-lg shadow-black/30",
-  "transition duration-200",
-  "opacity-30 hover:opacity-85 active:opacity-90",
-  "hover:bg-black/55 active:bg-black/60",
-  canRight ? "pointer-events-auto" : "opacity-0 pointer-events-none",
-].join(" ")}
-
+            "md:hidden absolute right-0 top-1/2 -translate-y-1/2 z-10",
+            "h-10 w-10 rounded-full border border-white/10 bg-black/40 backdrop-blur",
+            "grid place-items-center shadow-lg shadow-black/30",
+            "transition duration-200",
+            "opacity-45 hover:opacity-85 active:opacity-90",
+            "hover:bg-black/55 active:bg-black/60",
+            canRight ? "pointer-events-auto" : "opacity-0 pointer-events-none",
+          ].join(" ")}
           aria-label="Ver más servicios"
         >
           <ChevronRight className="h-5 w-5 text-zinc-200" />
@@ -428,18 +497,17 @@ function ServicesTabs() {
             "md:mx-0 md:px-0 md:flex-wrap md:overflow-visible md:py-0",
           ].join(" ")}
         >
-          {services.map((s) => {
+          {services.map((s, idx) => {
             const TabIcon = s.icon as React.ElementType;
-            const isActive = s.title === current;
+            const isActive = idx === currentIndex;
 
             return (
               <button
                 key={s.title}
-                onClick={() => setCurrent(s.title)}
+                data-tab-index={idx}
+                onClick={() => selectService(idx)}
                 className={[
-                  // ✅ carrusel: cada tab se “snapea” y no se encoge
                   "snap-start shrink-0 md:shrink",
-                  // ✅ más compacto en móvil
                   "min-w-[210px] sm:min-w-[240px] md:min-w-0",
                   "group relative flex items-center gap-2 rounded-2xl border px-3 py-2 text-sm transition md:px-4 md:py-3",
                   isActive
@@ -456,7 +524,6 @@ function ServicesTabs() {
                   <span className="block text-[10px] md:text-[11px] text-zinc-500">{(s as any).kicker}</span>
                 </span>
 
-                {/* glow cuando está activo */}
                 {isActive && (
                   <span className="pointer-events-none absolute inset-0 rounded-2xl bg-[radial-gradient(closest-side,rgba(255,255,255,0.16),transparent_70%)]" />
                 )}
@@ -466,81 +533,180 @@ function ServicesTabs() {
         </div>
       </div>
 
-      {/* Panel (✅ móvil: imagen de fondo + card con fade; desktop igual) */}
-      <div className="mt-6 relative overflow-hidden rounded-3xl border border-zinc-800 bg-black/40 md:bg-black/50">
-        {/* ✅ Fondo de imagen solo en móvil */}
-        <div className="absolute inset-0 md:hidden">
-          <img src={(active as any).visual?.img} alt={active.title} className="h-full w-full object-cover opacity-55" />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/35 to-black/25" />
-        </div>
+      {/* ✅ MOBILE: carrusel de cards (swipe) + sincronizado */}
+      <div className="mt-6 md:hidden">
+        <div
+          ref={cardsRef}
+          className={[
+            "elite-scroll -mx-4 px-4",
+            "flex gap-4 overflow-x-auto",
+            "snap-x snap-mandatory",
+          ].join(" ")}
+        >
+          {services.map((s, idx) => {
+            const Icon = s.icon as React.ElementType;
+            const isActive = idx === currentIndex;
 
-        <div className="relative z-10 grid grid-cols-1 md:grid-cols-5">
-          {/* Content */}
-          <div className="p-6 md:col-span-3 md:p-8">
-            {/* ✅ wrapper que en móvil hace fade y deja ver la imagen abajo */}
-            <div className="rounded-3xl -m-6 p-6 md:m-0 md:p-0 md:rounded-none md:bg-transparent bg-[linear-gradient(to_bottom,rgba(0,0,0,0.74),rgba(0,0,0,0.42),rgba(0,0,0,0))] backdrop-blur-sm md:backdrop-blur-0">
-              <motion.div
-                key={active.title}
-                initial={{ opacity: 0, y: 8 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.25 }}
-                className="flex items-start gap-4"
+            return (
+              <div
+                key={s.title}
+                data-card-index={idx}
+                ref={(el) => {
+                  cardRefs.current[idx] = el;
+                }}
+                className="snap-start shrink-0 w-[88%] sm:w-[78%]"
               >
-                {/* Icon badge grande */}
-                <div className="relative">
-                  <div className="pointer-events-none absolute -inset-2 rounded-2xl bg-[radial-gradient(closest-side,rgba(255,255,255,0.18),transparent_70%)] blur-md" />
-                  <div className="relative flex h-12 w-12 items-center justify-center rounded-2xl border border-zinc-800 bg-black/60">
-                    <ActivePanelIcon className="h-6 w-6 text-zinc-100" />
+                <div className="relative overflow-hidden rounded-3xl border border-zinc-800 bg-black/40">
+                  {/* bg image */}
+                  <div className="absolute inset-0">
+                    <img src={(s as any).visual?.img} alt={s.title} className="h-full w-full object-cover opacity-55" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/35 to-black/25" />
                   </div>
-                </div>
 
-                <div className="flex-1">
-                  <p className="text-xs uppercase tracking-[0.22em] text-zinc-500">{(active as any).kicker}</p>
-                  <h3 className="mt-1 text-2xl font-semibold">{active.title}</h3>
-                  <p className="mt-2 text-zinc-200 md:text-zinc-300">{(active as any).desc}</p>
+                  <div className="relative z-10 p-6">
+                    <div className="flex items-start gap-4">
+                      <div className="relative">
+                        <div className="pointer-events-none absolute -inset-2 rounded-2xl bg-[radial-gradient(closest-side,rgba(255,255,255,0.18),transparent_70%)] blur-md" />
+                        <div className="relative flex h-12 w-12 items-center justify-center rounded-2xl border border-zinc-800 bg-black/60">
+                          <Icon className="h-6 w-6 text-zinc-100" />
+                        </div>
+                      </div>
 
-                  {/* highlights */}
-                  {!!(active as any).highlights?.length && (
-                    <div className="mt-4 flex flex-wrap gap-2">
-                      {(active as any).highlights.map((h: string) => (
-                        <span
-                          key={h}
-                          className="rounded-full border border-zinc-800 bg-black/40 px-3 py-1 text-xs text-zinc-200 md:text-zinc-300"
-                        >
-                          {h}
-                        </span>
-                      ))}
+                      <div className="flex-1">
+                        <p className="text-xs uppercase tracking-[0.22em] text-zinc-500">{(s as any).kicker}</p>
+                        <h3 className="mt-1 text-2xl font-semibold">{s.title}</h3>
+                        <p className="mt-2 text-zinc-200">{(s as any).desc}</p>
+
+                        {!!(s as any).highlights?.length && (
+                          <div className="mt-4 flex flex-wrap gap-2">
+                            {(s as any).highlights.map((h: string) => (
+                              <span
+                                key={h}
+                                className="rounded-full border border-zinc-800 bg-black/40 px-3 py-1 text-xs text-zinc-200"
+                              >
+                                {h}
+                              </span>
+                            ))}
+                          </div>
+                        )}
+
+                        {!!(s as any).bullets?.length && (
+                          <ul className="mt-5 grid grid-cols-1 gap-2 text-sm text-zinc-200">
+                            {(s as any).bullets.map((b: string) => (
+                              <li key={b} className="flex items-center gap-2">
+                                <span className="inline-block h-1.5 w-1.5 rounded-full bg-white/70" />
+                                {b}
+                              </li>
+                            ))}
+                          </ul>
+                        )}
+
+                        <div className="mt-6">
+                          <WhatsAppButton
+                            size="lg"
+                            message={`Hola, me interesa ${s.title}. ¿Podemos coordinar una cotización?`}
+                            className="w-full justify-center"
+                          >
+                            Coordinar por WhatsApp
+                          </WhatsAppButton>
+                        </div>
+
+                        {/* indicador sutil */}
+                        <div className="mt-4 flex justify-center gap-1.5">
+                          {services.map((_, dot) => (
+                            <span
+                              key={dot}
+                              className={[
+                                "h-1.5 w-1.5 rounded-full",
+                                dot === currentIndex ? "bg-white/80" : "bg-white/25",
+                              ].join(" ")}
+                              aria-hidden="true"
+                            />
+                          ))}
+                        </div>
+
+                        {/* si quieres que al tocar una card también la seleccione (extra) */}
+                        {isActive ? null : (
+                          <button
+                            type="button"
+                            className="sr-only"
+                            onClick={() => selectService(idx)}
+                            aria-label={`Seleccionar ${s.title}`}
+                          />
+                        )}
+                      </div>
                     </div>
-                  )}
 
-                  {/* bullets */}
-                  {!!(active as any).bullets?.length && (
-                    <ul className="mt-5 grid grid-cols-1 gap-2 text-sm text-zinc-200 md:text-zinc-300 md:grid-cols-2">
-                      {(active as any).bullets.map((b: string) => (
-                        <li key={b} className="flex items-center gap-2">
-                          <span className="inline-block h-1.5 w-1.5 rounded-full bg-white/70" />
-                          {b}
-                        </li>
-                      ))}
-                    </ul>
-                  )}
-
-                  {/* CTA (✅ solo WhatsApp) */}
-                  <div className="mt-6 flex flex-wrap items-center gap-3">
-                    <WhatsAppButton
-                      size="lg"
-                      message={`Hola, me interesa ${active.title}. ¿Podemos coordinar una cotización?`}
-                    >
-                      Coordinar por WhatsApp
-                    </WhatsAppButton>
+                    {/* ✅ fade abajo para ver imagen */}
+                    <div className="pointer-events-none absolute inset-x-0 bottom-0 h-16 bg-[linear-gradient(to_top,rgba(0,0,0,0.55),transparent)]" />
                   </div>
                 </div>
-              </motion.div>
-            </div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* ✅ DESKTOP: panel clásico (como ya lo tenías) */}
+      <div className="mt-6 hidden md:block overflow-hidden rounded-3xl border border-zinc-800 bg-black/50">
+        <div className="grid grid-cols-1 md:grid-cols-5">
+          <div className="p-6 md:col-span-3 md:p-8">
+            <motion.div
+              key={active.title}
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.25 }}
+              className="flex items-start gap-4"
+            >
+              <div className="relative">
+                <div className="pointer-events-none absolute -inset-2 rounded-2xl bg-[radial-gradient(closest-side,rgba(255,255,255,0.18),transparent_70%)] blur-md" />
+                <div className="relative flex h-12 w-12 items-center justify-center rounded-2xl border border-zinc-800 bg-black/60">
+                  <ActivePanelIcon className="h-6 w-6 text-zinc-100" />
+                </div>
+              </div>
+
+              <div className="flex-1">
+                <p className="text-xs uppercase tracking-[0.22em] text-zinc-500">{(active as any).kicker}</p>
+                <h3 className="mt-1 text-2xl font-semibold">{active.title}</h3>
+                <p className="mt-2 text-zinc-300">{(active as any).desc}</p>
+
+                {!!(active as any).highlights?.length && (
+                  <div className="mt-4 flex flex-wrap gap-2">
+                    {(active as any).highlights.map((h: string) => (
+                      <span
+                        key={h}
+                        className="rounded-full border border-zinc-800 bg-black/40 px-3 py-1 text-xs text-zinc-300"
+                      >
+                        {h}
+                      </span>
+                    ))}
+                  </div>
+                )}
+
+                {!!(active as any).bullets?.length && (
+                  <ul className="mt-5 grid grid-cols-1 gap-2 text-sm text-zinc-300 md:grid-cols-2">
+                    {(active as any).bullets.map((b: string) => (
+                      <li key={b} className="flex items-center gap-2">
+                        <span className="inline-block h-1.5 w-1.5 rounded-full bg-white/70" />
+                        {b}
+                      </li>
+                    ))}
+                  </ul>
+                )}
+
+                <div className="mt-6 flex flex-wrap items-center gap-3">
+                  <WhatsAppButton
+                    size="lg"
+                    message={`Hola, me interesa ${active.title}. ¿Podemos coordinar una cotización?`}
+                  >
+                    Coordinar por WhatsApp
+                  </WhatsAppButton>
+                </div>
+              </div>
+            </motion.div>
           </div>
 
-          {/* Visual (✅ oculto en móvil para no duplicar) */}
-          <div className="relative hidden md:block md:col-span-2">
+          <div className="relative md:col-span-2">
             <div className="absolute inset-0">
               <img src={(active as any).visual?.img} alt={active.title} className="h-full w-full object-cover" />
               <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/40 to-black/20" />
@@ -564,6 +730,11 @@ function ServicesTabs() {
     </div>
   );
 }
+
+
+
+
+  
 
 // ---------------- Wizard (Opción 2) ----------------
 type ServiceType = "Traslado (A → B)" | "Renta por día (Disposición)" | "Renta + Custodia";
@@ -1405,7 +1576,7 @@ export default function LuxuryTransportHome() {
             <ul className="space-y-2 text-sm text-zinc-400">
               <li>Unidades Blindadas</li>
               <li>Unidades Ejecutivas</li>
-              <li>Custodia Ejecutiva</li>
+              <li>Protección Ejecutiva</li>
               <li>Sprinter & Vans</li>
               <li>Alojamientos de Alto Nivel</li>
             </ul>
