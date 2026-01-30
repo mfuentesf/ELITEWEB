@@ -385,12 +385,15 @@ function ServicesTabs() {
           onClick={() => scrollTabs("left")}
           disabled={!canLeft}
           className={[
-            "md:hidden absolute left-0 top-1/2 -translate-y-1/2 z-10",
-            "h-10 w-10 rounded-full border border-white/10 bg-black/60 backdrop-blur",
-            "grid place-items-center shadow-lg shadow-black/40",
-            "transition active:scale-95",
-            canLeft ? "opacity-100" : "opacity-0 pointer-events-none",
-          ].join(" ")}
+  "md:hidden absolute left-0 top-1/2 -translate-y-1/2 z-10",
+  "h-10 w-10 rounded-full border border-white/10 bg-black/40 backdrop-blur",
+  "grid place-items-center shadow-lg shadow-black/30",
+  "transition duration-200",
+  "opacity-30 hover:opacity-85 active:opacity-90",
+  "hover:bg-black/55 active:bg-black/60",
+  canLeft ? "pointer-events-auto" : "opacity-0 pointer-events-none",
+].join(" ")}
+
           aria-label="Ver servicios anteriores"
         >
           <ChevronLeft className="h-5 w-5 text-zinc-200" />
@@ -402,12 +405,15 @@ function ServicesTabs() {
           onClick={() => scrollTabs("right")}
           disabled={!canRight}
           className={[
-            "md:hidden absolute right-0 top-1/2 -translate-y-1/2 z-10",
-            "h-10 w-10 rounded-full border border-white/10 bg-black/60 backdrop-blur",
-            "grid place-items-center shadow-lg shadow-black/40",
-            "transition active:scale-95",
-            canRight ? "opacity-100" : "opacity-0 pointer-events-none",
-          ].join(" ")}
+  "md:hidden absolute right-0 top-1/2 -translate-y-1/2 z-10",
+  "h-10 w-10 rounded-full border border-white/10 bg-black/40 backdrop-blur",
+  "grid place-items-center shadow-lg shadow-black/30",
+  "transition duration-200",
+  "opacity-30 hover:opacity-85 active:opacity-90",
+  "hover:bg-black/55 active:bg-black/60",
+  canRight ? "pointer-events-auto" : "opacity-0 pointer-events-none",
+].join(" ")}
+
           aria-label="Ver más servicios"
         >
           <ChevronRight className="h-5 w-5 text-zinc-200" />
