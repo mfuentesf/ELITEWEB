@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import {
   Shield,
@@ -12,6 +12,7 @@ import {
   Clock,
   Calendar,
   ChevronRight,
+  ChevronLeft,
   Star,
   CheckCircle2,
 } from "lucide-react";
@@ -64,13 +65,9 @@ const FloatingWhatsAppButton: React.FC<{
       <Button
         type="button"
         className={[
-          // ✅ mismos colores que tu WhatsAppButton original
           "bg-[#25D366] text-[#0a0d14] hover:brightness-110",
-          // ✅ circular + compacto
           "h-14 w-14 rounded-full p-0",
-          // ✅ sombra premium (sin destello verde abajo)
           "shadow-xl shadow-black/40",
-          // ✅ feedback táctil
           "active:scale-95 transition",
           className,
         ].join(" ")}
@@ -311,8 +308,56 @@ function ServicesTabs() {
   const active = services.find((s) => s.title === current)!;
   const ActivePanelIcon = active.icon as React.ElementType;
 
+  // ✅ Carrusel + flechas (móvil)
+  const tabsRef = useRef<HTMLDivElement | null>(null);
+  const [canLeft, setCanLeft] = useState(false);
+  const [canRight, setCanRight] = useState(true);
+
+  const updateArrows = () => {
+    const el = tabsRef.current;
+    if (!el) return;
+    const maxScroll = el.scrollWidth - el.clientWidth;
+    setCanLeft(el.scrollLeft > 8);
+    setCanRight(el.scrollLeft < maxScroll - 8);
+  };
+
+  useEffect(() => {
+    updateArrows();
+    const el = tabsRef.current;
+    if (!el) return;
+
+    const onScroll = () => updateArrows();
+    el.addEventListener("scroll", onScroll, { passive: true });
+
+    const onResize = () => updateArrows();
+    window.addEventListener("resize", onResize);
+
+    return () => {
+      el.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onResize);
+    };
+  }, []);
+
+  const scrollTabs = (dir: "left" | "right") => {
+    const el = tabsRef.current;
+    if (!el) return;
+    const amount = Math.round(el.clientWidth * 0.82);
+    el.scrollBy({ left: dir === "left" ? -amount : amount, behavior: "smooth" });
+  };
+
   return (
     <div className="mx-auto max-w-7xl">
+      {/* ✅ ocultar scrollbar del carrusel (solo para esta sección) */}
+      <style jsx global>{`
+        .elite-scroll::-webkit-scrollbar {
+          display: none;
+        }
+        .elite-scroll {
+          scrollbar-width: none;
+          -ms-overflow-style: none;
+        }
+      `}</style>
+
       {/* Header de sección */}
       <div className="mb-8 flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
         <div>
@@ -323,131 +368,173 @@ function ServicesTabs() {
               con estándares de seguridad
             </span>
           </h2>
-          <p className="mt-2 max-w-2xl text-zinc-400">
-            Selecciona un servicio para ver el alcance exacto. Te guiamos según tu agenda.
-          </p>
+          <p className="mt-2 max-w-2xl text-zinc-400">Selecciona un servicio para ver el alcance exacto. Te guiamos según tu agenda.</p>
         </div>
 
         <div className="flex items-center gap-2">
-          <span className="rounded-full border border-zinc-800 bg-black/50 px-3 py-1 text-xs text-zinc-300">
-            Cobertura nacional
-          </span>
-          <span className="rounded-full border border-zinc-800 bg-black/50 px-3 py-1 text-xs text-zinc-300">
-            Coordinación 24/7
-          </span>
+          <span className="rounded-full border border-zinc-800 bg-black/50 px-3 py-1 text-xs text-zinc-300">Cobertura nacional</span>
+          <span className="rounded-full border border-zinc-800 bg-black/50 px-3 py-1 text-xs text-zinc-300">Coordinación 24/7</span>
         </div>
       </div>
 
-      {/* Tabs (✅ móvil carrusel + desktop wrap) */}
-      <div
-        className={[
-          "flex gap-2 overflow-x-auto pb-2 -mx-4 px-4",
-          "snap-x snap-mandatory",
-          "md:mx-0 md:px-0 md:flex-wrap md:overflow-visible md:pb-0",
-        ].join(" ")}
-      >
-        {services.map((s) => {
-          const TabIcon = s.icon as React.ElementType;
-          const isActive = s.title === current;
+      {/* Tabs (✅ móvil carrusel + flechas; desktop wrap) */}
+      <div className="relative">
+        {/* Flecha izquierda */}
+        <button
+          type="button"
+          onClick={() => scrollTabs("left")}
+          disabled={!canLeft}
+          className={[
+            "md:hidden absolute left-0 top-1/2 -translate-y-1/2 z-10",
+            "h-10 w-10 rounded-full border border-white/10 bg-black/60 backdrop-blur",
+            "grid place-items-center shadow-lg shadow-black/40",
+            "transition active:scale-95",
+            canLeft ? "opacity-100" : "opacity-0 pointer-events-none",
+          ].join(" ")}
+          aria-label="Ver servicios anteriores"
+        >
+          <ChevronLeft className="h-5 w-5 text-zinc-200" />
+        </button>
 
-          return (
-            <button
-              key={s.title}
-              onClick={() => setCurrent(s.title)}
-              className={[
-                // ✅ carrusel: cada tab se “snapea” y no se encoge
-                "snap-start shrink-0 md:shrink",
-                "min-w-[260px] sm:min-w-[300px] md:min-w-0",
-                "group relative flex items-center gap-2 rounded-2xl border px-4 py-3 text-sm transition",
-                isActive
-                  ? "border-[#e6e6e6]/60 bg-white/10 text-white"
-                  : "border-zinc-800 bg-black/40 text-zinc-300 hover:border-zinc-700",
-              ].join(" ")}
-              aria-pressed={isActive}
-            >
-              <span className="flex h-9 w-9 items-center justify-center rounded-xl border border-zinc-800 bg-black/50">
-                <TabIcon className="h-4 w-4 text-zinc-200" />
-              </span>
-              <span className="text-left leading-tight">
-                <span className="block text-[13px] font-medium">{s.title}</span>
-                <span className="block text-[11px] text-zinc-500">{(s as any).kicker}</span>
-              </span>
+        {/* Flecha derecha */}
+        <button
+          type="button"
+          onClick={() => scrollTabs("right")}
+          disabled={!canRight}
+          className={[
+            "md:hidden absolute right-0 top-1/2 -translate-y-1/2 z-10",
+            "h-10 w-10 rounded-full border border-white/10 bg-black/60 backdrop-blur",
+            "grid place-items-center shadow-lg shadow-black/40",
+            "transition active:scale-95",
+            canRight ? "opacity-100" : "opacity-0 pointer-events-none",
+          ].join(" ")}
+          aria-label="Ver más servicios"
+        >
+          <ChevronRight className="h-5 w-5 text-zinc-200" />
+        </button>
 
-              {/* glow cuando está activo */}
-              {isActive && (
-                <span className="pointer-events-none absolute inset-0 rounded-2xl bg-[radial-gradient(closest-side,rgba(255,255,255,0.16),transparent_70%)]" />
-              )}
-            </button>
-          );
-        })}
+        <div
+          ref={tabsRef}
+          className={[
+            "elite-scroll flex gap-2 overflow-x-auto -mx-4 px-4",
+            "snap-x snap-mandatory",
+            "py-1",
+            "md:mx-0 md:px-0 md:flex-wrap md:overflow-visible md:py-0",
+          ].join(" ")}
+        >
+          {services.map((s) => {
+            const TabIcon = s.icon as React.ElementType;
+            const isActive = s.title === current;
+
+            return (
+              <button
+                key={s.title}
+                onClick={() => setCurrent(s.title)}
+                className={[
+                  // ✅ carrusel: cada tab se “snapea” y no se encoge
+                  "snap-start shrink-0 md:shrink",
+                  // ✅ más compacto en móvil
+                  "min-w-[210px] sm:min-w-[240px] md:min-w-0",
+                  "group relative flex items-center gap-2 rounded-2xl border px-3 py-2 text-sm transition md:px-4 md:py-3",
+                  isActive
+                    ? "border-[#e6e6e6]/60 bg-white/10 text-white"
+                    : "border-zinc-800 bg-black/40 text-zinc-300 hover:border-zinc-700",
+                ].join(" ")}
+                aria-pressed={isActive}
+              >
+                <span className="flex h-8 w-8 md:h-9 md:w-9 items-center justify-center rounded-xl border border-zinc-800 bg-black/50">
+                  <TabIcon className="h-4 w-4 text-zinc-200" />
+                </span>
+                <span className="text-left leading-tight">
+                  <span className="block text-[12px] md:text-[13px] font-medium">{s.title}</span>
+                  <span className="block text-[10px] md:text-[11px] text-zinc-500">{(s as any).kicker}</span>
+                </span>
+
+                {/* glow cuando está activo */}
+                {isActive && (
+                  <span className="pointer-events-none absolute inset-0 rounded-2xl bg-[radial-gradient(closest-side,rgba(255,255,255,0.16),transparent_70%)]" />
+                )}
+              </button>
+            );
+          })}
+        </div>
       </div>
 
-      {/* Panel (2 columnas + visual) */}
-      <div className="mt-6 overflow-hidden rounded-3xl border border-zinc-800 bg-black/50">
-        <div className="grid grid-cols-1 md:grid-cols-5">
+      {/* Panel (✅ móvil: imagen de fondo + card con fade; desktop igual) */}
+      <div className="mt-6 relative overflow-hidden rounded-3xl border border-zinc-800 bg-black/40 md:bg-black/50">
+        {/* ✅ Fondo de imagen solo en móvil */}
+        <div className="absolute inset-0 md:hidden">
+          <img src={(active as any).visual?.img} alt={active.title} className="h-full w-full object-cover opacity-55" />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/35 to-black/25" />
+        </div>
+
+        <div className="relative z-10 grid grid-cols-1 md:grid-cols-5">
           {/* Content */}
           <div className="p-6 md:col-span-3 md:p-8">
-            <motion.div
-              key={active.title}
-              initial={{ opacity: 0, y: 8 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.25 }}
-              className="flex items-start gap-4"
-            >
-              {/* Icon badge grande */}
-              <div className="relative">
-                <div className="pointer-events-none absolute -inset-2 rounded-2xl bg-[radial-gradient(closest-side,rgba(255,255,255,0.18),transparent_70%)] blur-md" />
-                <div className="relative flex h-12 w-12 items-center justify-center rounded-2xl border border-zinc-800 bg-black/60">
-                  <ActivePanelIcon className="h-6 w-6 text-zinc-100" />
-                </div>
-              </div>
-
-              <div className="flex-1">
-                <p className="text-xs uppercase tracking-[0.22em] text-zinc-500">{(active as any).kicker}</p>
-                <h3 className="mt-1 text-2xl font-semibold">{active.title}</h3>
-                <p className="mt-2 text-zinc-300">{(active as any).desc}</p>
-
-                {/* highlights */}
-                {!!(active as any).highlights?.length && (
-                  <div className="mt-4 flex flex-wrap gap-2">
-                    {(active as any).highlights.map((h: string) => (
-                      <span
-                        key={h}
-                        className="rounded-full border border-zinc-800 bg-black/40 px-3 py-1 text-xs text-zinc-300"
-                      >
-                        {h}
-                      </span>
-                    ))}
+            {/* ✅ wrapper que en móvil hace fade y deja ver la imagen abajo */}
+            <div className="rounded-3xl -m-6 p-6 md:m-0 md:p-0 md:rounded-none md:bg-transparent bg-[linear-gradient(to_bottom,rgba(0,0,0,0.74),rgba(0,0,0,0.42),rgba(0,0,0,0))] backdrop-blur-sm md:backdrop-blur-0">
+              <motion.div
+                key={active.title}
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.25 }}
+                className="flex items-start gap-4"
+              >
+                {/* Icon badge grande */}
+                <div className="relative">
+                  <div className="pointer-events-none absolute -inset-2 rounded-2xl bg-[radial-gradient(closest-side,rgba(255,255,255,0.18),transparent_70%)] blur-md" />
+                  <div className="relative flex h-12 w-12 items-center justify-center rounded-2xl border border-zinc-800 bg-black/60">
+                    <ActivePanelIcon className="h-6 w-6 text-zinc-100" />
                   </div>
-                )}
-
-                {/* bullets */}
-                {!!(active as any).bullets?.length && (
-                  <ul className="mt-5 grid grid-cols-1 gap-2 text-sm text-zinc-300 md:grid-cols-2">
-                    {(active as any).bullets.map((b: string) => (
-                      <li key={b} className="flex items-center gap-2">
-                        <span className="inline-block h-1.5 w-1.5 rounded-full bg-white/70" />
-                        {b}
-                      </li>
-                    ))}
-                  </ul>
-                )}
-
-                {/* CTA (✅ solo WhatsApp; se quitó "Cotizar ahora") */}
-                <div className="mt-6 flex flex-wrap items-center gap-3">
-                  <WhatsAppButton
-                    size="lg"
-                    message={`Hola, me interesa ${active.title}. ¿Podemos coordinar una cotización?`}
-                  >
-                    Coordinar por WhatsApp
-                  </WhatsAppButton>
                 </div>
-              </div>
-            </motion.div>
+
+                <div className="flex-1">
+                  <p className="text-xs uppercase tracking-[0.22em] text-zinc-500">{(active as any).kicker}</p>
+                  <h3 className="mt-1 text-2xl font-semibold">{active.title}</h3>
+                  <p className="mt-2 text-zinc-200 md:text-zinc-300">{(active as any).desc}</p>
+
+                  {/* highlights */}
+                  {!!(active as any).highlights?.length && (
+                    <div className="mt-4 flex flex-wrap gap-2">
+                      {(active as any).highlights.map((h: string) => (
+                        <span
+                          key={h}
+                          className="rounded-full border border-zinc-800 bg-black/40 px-3 py-1 text-xs text-zinc-200 md:text-zinc-300"
+                        >
+                          {h}
+                        </span>
+                      ))}
+                    </div>
+                  )}
+
+                  {/* bullets */}
+                  {!!(active as any).bullets?.length && (
+                    <ul className="mt-5 grid grid-cols-1 gap-2 text-sm text-zinc-200 md:text-zinc-300 md:grid-cols-2">
+                      {(active as any).bullets.map((b: string) => (
+                        <li key={b} className="flex items-center gap-2">
+                          <span className="inline-block h-1.5 w-1.5 rounded-full bg-white/70" />
+                          {b}
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+
+                  {/* CTA (✅ solo WhatsApp) */}
+                  <div className="mt-6 flex flex-wrap items-center gap-3">
+                    <WhatsAppButton
+                      size="lg"
+                      message={`Hola, me interesa ${active.title}. ¿Podemos coordinar una cotización?`}
+                    >
+                      Coordinar por WhatsApp
+                    </WhatsAppButton>
+                  </div>
+                </div>
+              </motion.div>
+            </div>
           </div>
 
-          {/* Visual */}
-          <div className="relative md:col-span-2">
+          {/* Visual (✅ oculto en móvil para no duplicar) */}
+          <div className="relative hidden md:block md:col-span-2">
             <div className="absolute inset-0">
               <img src={(active as any).visual?.img} alt={active.title} className="h-full w-full object-cover" />
               <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/40 to-black/20" />
@@ -483,34 +570,10 @@ const UNIT_CARDS: Array<{
   icon: React.ElementType;
   hint: string;
 }> = [
-  {
-    key: "Ejecutiva",
-    title: "Ejecutiva",
-    desc: "Agenda diaria y movilidad sin fricción.",
-    icon: Car,
-    hint: "Ideal para traslados y disposición.",
-  },
-  {
-    key: "Blindada",
-    title: "Blindada",
-    desc: "Protección reforzada para agendas sensibles.",
-    icon: Shield,
-    hint: "Selecciona nivel según contexto.",
-  },
-  {
-    key: "Sprinter/Vans",
-    title: "Sprinter/Vans",
-    desc: "Comitivas, equipaje y logística coordinada.",
-    icon: Crown,
-    hint: "Recomendado 8+ pasajeros.",
-  },
-  {
-    key: "Lujo",
-    title: "Lujo",
-    desc: "VIP, máximo confort.",
-    icon: Crown,
-    hint: "Servicio flagship.",
-  },
+  { key: "Ejecutiva", title: "Ejecutiva", desc: "Agenda diaria y movilidad sin fricción.", icon: Car, hint: "Ideal para traslados y disposición." },
+  { key: "Blindada", title: "Blindada", desc: "Protección reforzada para agendas sensibles.", icon: Shield, hint: "Selecciona nivel según contexto." },
+  { key: "Sprinter/Vans", title: "Sprinter/Vans", desc: "Comitivas, equipaje y logística coordinada.", icon: Crown, hint: "Recomendado 8+ pasajeros." },
+  { key: "Lujo", title: "Lujo", desc: "VIP, máximo confort.", icon: Crown, hint: "Servicio flagship." },
 ];
 
 function StepPill({ index, current, label }: { index: number; current: number; label: string }) {
@@ -551,7 +614,6 @@ export default function LuxuryTransportHome() {
   const [pax, setPax] = useState<string>("1–4");
 
   // Paso 3: datos mínimos
-  // Traslado
   const [origin, setOrigin] = useState("");
   const [destination, setDestination] = useState("");
   const [date, setDate] = useState("");
@@ -561,8 +623,8 @@ export default function LuxuryTransportHome() {
   const [city, setCity] = useState("CDMX");
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
-  const [schedule, setSchedule] = useState(""); // opcional
-  const [zones, setZones] = useState(""); // opcional
+  const [schedule, setSchedule] = useState("");
+  const [zones, setZones] = useState("");
 
   // Custodia
   const [custodians, setCustodians] = useState<string>("1");
@@ -707,11 +769,7 @@ export default function LuxuryTransportHome() {
       {/* Hero */}
       <div className="relative min-h-[80vh] md:min-h-[85vh]">
         <div className="absolute inset-0">
-          <img
-            src={BRAND.heroImageUrl}
-            alt="Unidad ejecutiva blindada"
-            className="h-full w-full object-cover object-center"
-          />
+          <img src={BRAND.heroImageUrl} alt="Unidad ejecutiva blindada" className="h-full w-full object-cover object-center" />
           <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/40 to-black/80" />
         </div>
 
@@ -1126,7 +1184,6 @@ export default function LuxuryTransportHome() {
                     )}
                   </div>
 
-                  {/* Tiny reassurance */}
                   <p className="text-[11px] text-zinc-500">
                     Tip: si no estás seguro del nivel, elige “Blindada” + “IV” y nosotros ajustamos con base en tu agenda.
                   </p>
@@ -1232,15 +1289,9 @@ export default function LuxuryTransportHome() {
               </ul>
 
               <div className="mt-6 flex flex-wrap gap-2">
-                <span className="rounded-full border border-zinc-700 px-3 py-1 text-xs text-zinc-300">
-                  Niveles: III · IV · V · V+
-                </span>
-                <span className="rounded-full border border-zinc-700 px-3 py-1 text-xs text-zinc-300">
-                  Planeación operativa
-                </span>
-                <span className="rounded-full border border-zinc-700 px-3 py-1 text-xs text-zinc-300">
-                  Coordinación nacional
-                </span>
+                <span className="rounded-full border border-zinc-700 px-3 py-1 text-xs text-zinc-300">Niveles: III · IV · V · V+</span>
+                <span className="rounded-full border border-zinc-700 px-3 py-1 text-xs text-zinc-300">Planeación operativa</span>
+                <span className="rounded-full border border-zinc-700 px-3 py-1 text-xs text-zinc-300">Coordinación nacional</span>
               </div>
             </div>
 
