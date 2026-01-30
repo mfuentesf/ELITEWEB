@@ -13,6 +13,7 @@ import {
   Calendar,
   ChevronRight,
   Star,
+  CheckCircle2,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -37,21 +38,12 @@ const WhatsAppButton: React.FC<
     className?: string;
     children?: React.ReactNode;
   } & Partial<ShadcnButtonProps>
-> = ({
-  number = WHATSAPP_NUMBER,
-  message = DEFAULT_WA_MESSAGE,
-  className = "",
-  children,
-  ...btnProps
-}) => {
+> = ({ number = WHATSAPP_NUMBER, message = DEFAULT_WA_MESSAGE, className = "", children, ...btnProps }) => {
   const digits = number.replace(/\D/g, "");
   const href = `https://wa.me/${digits}?text=${encodeURIComponent(message)}`;
   return (
     <a href={href} target="_blank" rel="noopener noreferrer" aria-label="Contactar por WhatsApp">
-      <Button
-        {...btnProps}
-        className={`rounded-2xl bg-[#25D366] text-[#0a0d14] hover:brightness-110 ${className}`}
-      >
+      <Button {...btnProps} className={`rounded-2xl bg-[#25D366] text-[#0a0d14] hover:brightness-110 ${className}`}>
         <WhatsAppIcon className="mr-2 h-4 w-4" />
         {children ?? "WhatsApp"}
       </Button>
@@ -167,8 +159,7 @@ const testimonials = [
     role: "Directora de Operaciones, Grupo Minero",
   },
   {
-    quote:
-      "La logística de aeropuerto a hotel y reuniones salió milimétrica. Operación muy profesional.",
+    quote: "La logística de aeropuerto a hotel y reuniones salió milimétrica. Operación muy profesional.",
     author: "Luis A.",
     role: "Coordinador de Eventos, Agencia BTL",
   },
@@ -197,8 +188,7 @@ function FleetGrid({ category, seats, level }: FleetGridProps) {
     return fleetData.filter((item) => {
       if (item.category !== category) return false;
       if (seats !== "all" && item.seats < Number(seats)) return false;
-      if (category === "blindada" && level !== "all" && item.level !== (level as ArmorLevel))
-        return false;
+      if (category === "blindada" && level !== "all" && item.level !== (level as ArmorLevel)) return false;
       return true;
     });
   }, [category, seats, level]);
@@ -245,7 +235,7 @@ function FleetGrid({ category, seats, level }: FleetGridProps) {
             </div>
             <div className="mt-4 flex items-center justify-between">
               <p className="text-sm text-zinc-400">Disponible hoy</p>
-              <WhatsAppButton size="sm" message={`Hola, me interesa ${f.name}. ¿Podemos cotizar?`}>
+              <WhatsAppButton size="sm" message={`Hola, me interesa ${f.name}. ¿Podemos coordinar una cotización?`}>
                 Cotizar
               </WhatsAppButton>
             </div>
@@ -273,11 +263,7 @@ function ServicesTabs() {
                 key={s.title}
                 onClick={() => setCurrent(s.title)}
                 className={`flex items-center gap-2 rounded-xl border px-3 py-2 text-sm transition
-                  ${
-                    isActive
-                      ? "border-[#e6e6e6] bg-white/10 text-white"
-                      : "border-zinc-700 bg-black/40 text-zinc-300 hover:border-zinc-600"
-                  }`}
+                  ${isActive ? "border-[#e6e6e6] bg-white/10 text-white" : "border-zinc-700 bg-black/40 text-zinc-300 hover:border-zinc-600"}`}
                 aria-pressed={isActive}
               >
                 <TabIcon className="h-4 w-4" />
@@ -307,10 +293,7 @@ function ServicesTabs() {
               )}
             </div>
             <div className="shrink-0">
-              <WhatsAppButton
-                size="lg"
-                message={`Hola, me interesa ${active.title}. ¿Podemos coordinar una cotización?`}
-              >
+              <WhatsAppButton size="lg" message={`Hola, me interesa ${active.title}. ¿Podemos coordinar una cotización?`}>
                 Coordinar por WhatsApp
               </WhatsAppButton>
             </div>
@@ -326,10 +309,7 @@ function ServicesTabs() {
               </div>
               <p className="mt-2 line-clamp-3 text-sm text-zinc-400">{s.desc}</p>
               <div className="mt-3">
-                <WhatsAppButton
-                  size="sm"
-                  message={`Hola, me interesa ${s.title}. ¿Podemos coordinar una cotización?`}
-                >
+                <WhatsAppButton size="sm" message={`Hola, me interesa ${s.title}. ¿Podemos coordinar una cotización?`}>
                   Coordinar
                 </WhatsAppButton>
               </div>
@@ -341,21 +321,79 @@ function ServicesTabs() {
   );
 }
 
-type ServiceType = "Traslado" | "Renta de unidad" | "Renta de unidad + custodio";
-type UnitType = "Blindada" | "Ejecutiva" | "Sprinter/Vans" | "Lujo";
+// ---------------- Wizard (Opción 2) ----------------
+type ServiceType = "Traslado (A → B)" | "Renta por día (Disposición)" | "Renta + Custodia";
+type UnitType = "Ejecutiva" | "Blindada" | "Sprinter/Vans" | "Lujo";
+
+const UNIT_CARDS: Array<{
+  key: UnitType;
+  title: string;
+  desc: string;
+  icon: React.ElementType;
+  hint: string;
+}> = [
+  {
+    key: "Ejecutiva",
+    title: "Ejecutiva",
+    desc: "Agenda diaria, reuniones, discreción.",
+    icon: Car,
+    hint: "Ideal para traslados y disposición.",
+  },
+  {
+    key: "Blindada",
+    title: "Blindada",
+    desc: "Traslados sensibles o alto perfil.",
+    icon: Shield,
+    hint: "Selecciona nivel según contexto.",
+  },
+  {
+    key: "Sprinter/Vans",
+    title: "Sprinter/Vans",
+    desc: "Comitivas, equipaje, eventos.",
+    icon: Crown,
+    hint: "Recomendado 8+ pasajeros.",
+  },
+  {
+    key: "Lujo",
+    title: "Lujo",
+    desc: "VIP, máximo confort.",
+    icon: Crown,
+    hint: "Servicio flagship.",
+  },
+];
+
+function StepPill({ index, current, label }: { index: number; current: number; label: string }) {
+  const done = current > index;
+  const active = current === index;
+
+  return (
+    <div className="flex items-center gap-2">
+      <div
+        className={`flex h-7 w-7 items-center justify-center rounded-full border text-xs
+          ${done ? "border-[#e6e6e6]/60 bg-white/10 text-white" : active ? "border-[#e6e6e6] bg-white/10 text-white" : "border-zinc-700 text-zinc-400"}`}
+        aria-hidden="true"
+      >
+        {done ? <CheckCircle2 className="h-4 w-4" /> : index}
+      </div>
+      <p className={`${active ? "text-zinc-200" : "text-zinc-500"} text-xs`}>{label}</p>
+    </div>
+  );
+}
 
 export default function LuxuryTransportHome() {
-  // Flota (sección de catálogo)
+  // Flota
   const [category, setCategory] = useState<FleetCategory>("blindada");
   const [seats, setSeats] = useState<string>("all");
   const [level, setLevel] = useState<string>("all"); // III | IV | V | V+ | all
 
-  // Cotización (form del hero)
-  const [serviceType, setServiceType] = useState<ServiceType>("Traslado");
-  const [unitType, setUnitType] = useState<UnitType>("Blindada");
-  const [armorLevel, setArmorLevel] = useState<ArmorLevel>("III");
+  // Wizard (Hero)
+  const [step, setStep] = useState<1 | 2 | 3>(1);
+  const [serviceType, setServiceType] = useState<ServiceType>("Traslado (A → B)");
+  const [unitType, setUnitType] = useState<UnitType>("Ejecutiva");
+  const [armorLevel, setArmorLevel] = useState<ArmorLevel>("IV"); // default ejecutivo
   const [pax, setPax] = useState<string>("1–4");
 
+  // Paso 3: datos mínimos
   // Traslado
   const [origin, setOrigin] = useState("");
   const [destination, setDestination] = useState("");
@@ -366,58 +404,79 @@ export default function LuxuryTransportHome() {
   const [city, setCity] = useState("CDMX");
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
-  const [schedule, setSchedule] = useState(""); // "10:00–20:00" (opcional)
-  const [zones, setZones] = useState(""); // "Polanco / Reforma" (opcional)
+  const [schedule, setSchedule] = useState(""); // opcional
+  const [zones, setZones] = useState(""); // opcional
 
   // Custodia
   const [custodians, setCustodians] = useState<string>("1");
   const [custodyProfile, setCustodyProfile] = useState<string>("Discreto");
 
-  const showTransfer = serviceType === "Traslado";
-  const showRent = serviceType !== "Traslado";
-  const showCustody = serviceType === "Renta de unidad + custodio";
-  const showArmorLevel = unitType === "Blindada";
+  const isTransfer = serviceType === "Traslado (A → B)";
+  const isRent = serviceType !== "Traslado (A → B)";
+  const isCustody = serviceType === "Renta + Custodia";
+  const isArmored = unitType === "Blindada";
+
+  // Defaults inteligentes
+  useEffect(() => {
+    if (serviceType === "Renta + Custodia") {
+      // Forzamos una experiencia lógica, sin bloquear al usuario
+      setUnitType((prev) => (prev === "Blindada" ? prev : "Blindada"));
+      setArmorLevel((prev) => (prev ? prev : "IV"));
+    }
+  }, [serviceType]);
+
+  useEffect(() => {
+    if (unitType === "Sprinter/Vans") {
+      setPax((prev) => (prev === "1–4" || prev === "5–7" ? "8–10" : prev));
+    }
+  }, [unitType]);
+
+  const step1Help = "Elige lo más cercano: traslado A→B o unidad por día (disposición).";
+  const step2Help = "No necesitas saber modelos: selecciona el tipo de unidad y te guiamos.";
+  const step3Help = isTransfer
+    ? "Completa los datos mínimos para cotizar el traslado."
+    : "Completa fechas y ciudad base para cotizar la disposición.";
 
   const reservationMessage = useMemo(() => {
     const lines: Array<string | null> = [
       "Hola, me interesa una cotización:",
       `• Tipo de servicio: ${serviceType}`,
-      `• Unidad: ${unitType}${showArmorLevel ? ` (Nivel ${armorLevel})` : ""}`,
+      `• Tipo de unidad: ${unitType}${isArmored ? ` (Nivel ${armorLevel})` : ""}`,
       `• Pasajeros: ${pax}`,
 
-      showTransfer ? `• Origen: ${origin || "—"}` : null,
-      showTransfer ? `• Destino: ${destination || "—"}` : null,
-      showTransfer && date ? `• Fecha: ${new Date(date).toLocaleDateString()}` : null,
-      showTransfer && time ? `• Hora: ${time}` : null,
+      isTransfer ? `• Origen: ${origin || "—"}` : null,
+      isTransfer ? `• Destino: ${destination || "—"}` : null,
+      isTransfer && date ? `• Fecha: ${new Date(date).toLocaleDateString()}` : null,
+      isTransfer && time ? `• Hora: ${time}` : null,
 
-      showRent ? `• Ciudad base: ${city || "—"}` : null,
-      showRent && startDate ? `• Inicio: ${new Date(startDate).toLocaleDateString()}` : null,
-      showRent && endDate ? `• Fin: ${new Date(endDate).toLocaleDateString()}` : null,
-      showRent && schedule ? `• Horario estimado: ${schedule}` : null,
-      showRent && zones ? `• Zonas/agenda: ${zones}` : null,
+      isRent ? `• Ciudad base: ${city || "—"}` : null,
+      isRent && startDate ? `• Inicio: ${new Date(startDate).toLocaleDateString()}` : null,
+      isRent && endDate ? `• Fin: ${new Date(endDate).toLocaleDateString()}` : null,
+      isRent && schedule ? `• Horario estimado: ${schedule}` : null,
+      isRent && zones ? `• Zonas/agenda: ${zones}` : null,
 
-      showCustody ? `• Custodia: ${custodians} (${custodyProfile})` : null,
+      isCustody ? `• Custodia: ${custodians} (${custodyProfile})` : null,
     ];
 
     return lines.filter(Boolean).join("\n");
   }, [
     serviceType,
     unitType,
-    showArmorLevel,
+    isArmored,
     armorLevel,
     pax,
-    showTransfer,
+    isTransfer,
     origin,
     destination,
     date,
     time,
-    showRent,
+    isRent,
     city,
     startDate,
     endDate,
     schedule,
     zones,
-    showCustody,
+    isCustody,
     custodians,
     custodyProfile,
   ]);
@@ -427,6 +486,21 @@ export default function LuxuryTransportHome() {
     return `https://wa.me/${digits}?text=${encodeURIComponent(reservationMessage)}`;
   }, [reservationMessage]);
 
+  // Validación ligera por step (no bloquea por completo; solo evita avanzar sin lo esencial)
+  const canNext = useMemo(() => {
+    if (step === 1) return !!serviceType;
+    if (step === 2) return !!unitType;
+    if (step === 3) return true;
+    return true;
+  }, [step, serviceType, unitType]);
+
+  const scrollToQuote = () => {
+    const el = document.getElementById("cotizar");
+    if (!el) return;
+    el.scrollIntoView({ behavior: "smooth", block: "start" });
+  };
+
+  // Glow decorativo responsivo
   useEffect(() => {
     const setVh = () => {
       document.documentElement.style.setProperty("--vh", `${window.innerHeight * 0.01}px`);
@@ -438,6 +512,7 @@ export default function LuxuryTransportHome() {
 
   return (
     <div className="min-h-screen bg-[#05060A] text-zinc-100 antialiased">
+      {/* Glow decorativo */}
       <div className="pointer-events-none fixed inset-0 -z-10">
         <div className="absolute -top-24 left-1/2 h-72 w-72 -translate-x-1/2 rounded-full bg-[#e6e6e6]/10 blur-3xl" />
         <div className="absolute bottom-0 right-0 h-64 w-64 rounded-full bg-[#ffffff]/10 blur-3xl" />
@@ -449,11 +524,7 @@ export default function LuxuryTransportHome() {
           <div className="flex items-center gap-0">
             {BRAND.logoUrl ? (
               <div className="flex-none h-10 w-[120px] md:h-11 md:w-[135px]">
-                <img
-                  src={BRAND.logoUrl}
-                  alt="Logo ELITE"
-                  className="h-full w-full object-contain object-left"
-                />
+                <img src={BRAND.logoUrl} alt="Logo ELITE" className="h-full w-full object-contain object-left" />
               </div>
             ) : (
               <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-gradient-to-br from-[#e6e6e6] to-[#ffffff] text-[#0a0d14] font-black">
@@ -487,15 +558,12 @@ export default function LuxuryTransportHome() {
       {/* Hero */}
       <div className="relative min-h-[80vh] md:min-h-[85vh]">
         <div className="absolute inset-0">
-          <img
-            src={BRAND.heroImageUrl}
-            alt="Unidad ejecutiva blindada"
-            className="h-full w-full object-cover object-center"
-          />
+          <img src={BRAND.heroImageUrl} alt="Unidad ejecutiva blindada" className="h-full w-full object-cover object-center" />
           <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/40 to-black/80" />
         </div>
 
         <div className="relative z-10 mx-auto grid max-w-7xl grid-cols-1 items-start gap-8 px-4 pt-16 pb-12 md:grid-cols-2 md:pt-24">
+          {/* Copy */}
           <div className="flex-1 md:col-start-1 md:row-start-1">
             <motion.h1
               initial={{ opacity: 0, y: 20 }}
@@ -510,8 +578,7 @@ export default function LuxuryTransportHome() {
             </motion.h1>
 
             <p className="mt-4 max-w-2xl text-lg text-zinc-300 md:text-xl">
-              Traslados ejecutivos, custodia certificada y hospedaje de alto nivel. Un solo equipo
-              para coordinar tu itinerario.
+              Traslados ejecutivos, custodia certificada y hospedaje de alto nivel. Un solo equipo para coordinar tu itinerario.
             </p>
 
             <div className="mt-6 flex flex-wrap items-center gap-3">
@@ -521,14 +588,14 @@ export default function LuxuryTransportHome() {
             </div>
 
             <div className="mt-8 flex flex-wrap gap-3">
-              <a href="#cotizar" className="inline-block">
-                <Button
-                  size="lg"
-                  className="rounded-2xl bg-gradient-to-r from-[#e6e6e6] to-[#ffffff] text-[#0a0d14]"
-                >
-                  Coordinar servicio <ChevronRight className="ml-2 h-4 w-4" />
-                </Button>
-              </a>
+              <Button
+                onClick={scrollToQuote}
+                size="lg"
+                className="rounded-2xl bg-gradient-to-r from-[#e6e6e6] to-[#ffffff] text-[#0a0d14]"
+              >
+                Coordinar servicio <ChevronRight className="ml-2 h-4 w-4" />
+              </Button>
+
               <a href="#flota" className="inline-block">
                 <Button
                   size="lg"
@@ -541,218 +608,341 @@ export default function LuxuryTransportHome() {
             </div>
           </div>
 
-          {/* Card Cotización */}
+          {/* Wizard Card */}
           <div className="relative flex-1 w-full md:col-start-2 md:row-start-1 self-start">
             <div className="pointer-events-none absolute -inset-6 md:-inset-8 rounded-[32px] bg-[radial-gradient(closest-side,rgba(255,255,255,0.18),transparent_70%)] blur-xl" />
 
-            <Card
-              id="cotizar"
-              className="mt-6 md:mt-0 w-full rounded-2xl border-white/10 bg-black/50 backdrop-blur-md shadow-xl"
-            >
+            <Card id="cotizar" className="mt-6 md:mt-0 w-full rounded-2xl border-white/10 bg-black/50 backdrop-blur-md shadow-xl">
               <CardContent className="p-6">
-                <p className="mb-4 text-sm font-medium text-zinc-300">Cotización rápida</p>
-
-                <div className="grid grid-cols-1 gap-4">
-                  {/* Tipo de servicio */}
-                  <div className="flex items-center gap-2 rounded-xl border border-zinc-700/60 bg-black/50 px-3 py-2">
-                    <Shield className="h-4 w-4 text-zinc-400" />
-                    <select
-                      className="w-full bg-transparent text-sm outline-none"
-                      value={serviceType}
-                      onChange={(e) => setServiceType(e.target.value as ServiceType)}
-                    >
-                      <option className="bg-black/50">Traslado</option>
-                      <option className="bg-black/50">Renta de unidad</option>
-                      <option className="bg-black/50">Renta de unidad + custodio</option>
-                    </select>
+                <div className="flex items-start justify-between gap-4">
+                  <div>
+                    <p className="text-sm font-medium text-zinc-200">Coordina tu servicio</p>
+                    <p className="mt-1 text-xs text-zinc-400">Responde 3 preguntas y te cotizamos por WhatsApp.</p>
                   </div>
+                  <span className="rounded-full border border-zinc-700 bg-black/40 px-2 py-1 text-[11px] text-zinc-300">
+                    {step}/3
+                  </span>
+                </div>
 
-                  {/* Tipo de unidad */}
-                  <div className="flex items-center gap-2 rounded-xl border border-zinc-700/60 bg-black/50 px-3 py-2">
-                    <Car className="h-4 w-4 text-zinc-400" />
-                    <select
-                      className="w-full bg-transparent text-sm outline-none"
-                      value={unitType}
-                      onChange={(e) => setUnitType(e.target.value as UnitType)}
-                    >
-                      <option className="bg-black/50">Blindada</option>
-                      <option className="bg-black/50">Ejecutiva</option>
-                      <option className="bg-black/50">Sprinter/Vans</option>
-                      <option className="bg-black/50">Lujo</option>
-                    </select>
-                  </div>
+                {/* Stepper */}
+                <div className="mt-4 flex items-center justify-between gap-2">
+                  <StepPill index={1} current={step} label="Servicio" />
+                  <div className="h-px flex-1 bg-zinc-800" />
+                  <StepPill index={2} current={step} label="Unidad" />
+                  <div className="h-px flex-1 bg-zinc-800" />
+                  <StepPill index={3} current={step} label="Detalles" />
+                </div>
 
-                  {/* Nivel (solo blindadas) */}
-                  {showArmorLevel && (
-                    <div className="flex items-center gap-2 rounded-xl border border-zinc-700/60 bg-black/50 px-3 py-2">
-                      <Shield className="h-4 w-4 text-zinc-400" />
-                      <select
-                        className="w-full bg-transparent text-sm outline-none"
-                        value={armorLevel}
-                        onChange={(e) => setArmorLevel(e.target.value as ArmorLevel)}
-                      >
-                        <option className="bg-black/50">III</option>
-                        <option className="bg-black/50">IV</option>
-                        <option className="bg-black/50">V</option>
-                        <option className="bg-black/50">V+</option>
-                      </select>
-                    </div>
-                  )}
+                {/* Content */}
+                <div className="mt-5 space-y-3">
+                  {step === 1 && (
+                    <div className="rounded-2xl border border-zinc-800 bg-black/40 p-4">
+                      <div className="flex items-center gap-2">
+                        <Shield className="h-4 w-4 text-zinc-300" />
+                        <p className="text-sm font-medium text-zinc-200">¿Qué necesitas hoy?</p>
+                      </div>
+                      <p className="mt-1 text-xs text-zinc-400">{step1Help}</p>
 
-                  {/* Pasajeros */}
-                  <div className="flex items-center gap-2 rounded-xl border border-zinc-700/60 bg-black/50 px-3 py-2">
-                    <MapPin className="h-4 w-4 text-zinc-400" />
-                    <select
-                      className="w-full bg-transparent text-sm outline-none"
-                      value={pax}
-                      onChange={(e) => setPax(e.target.value)}
-                    >
-                      <option className="bg-black/50">1–4</option>
-                      <option className="bg-black/50">5–7</option>
-                      <option className="bg-black/50">8–10</option>
-                      <option className="bg-black/50">10+</option>
-                    </select>
-                  </div>
-
-                  {/* Traslado: origen/destino/fecha/hora */}
-                  {showTransfer && (
-                    <>
-                      <div className="flex items-center gap-2 rounded-xl border border-zinc-700/60 bg-black/50 px-3 py-2">
-                        <MapPin className="h-4 w-4 text-zinc-400" />
-                        <input
-                          className="w-full bg-transparent text-sm outline-none placeholder:text-zinc-500"
-                          placeholder="Origen (aeropuerto, hotel, ciudad)"
-                          value={origin}
-                          onChange={(e) => setOrigin(e.target.value)}
-                        />
-                      </div>
-                      <div className="flex items-center gap-2 rounded-xl border border-zinc-700/60 bg-black/50 px-3 py-2">
-                        <MapPin className="h-4 w-4 text-zinc-400" />
-                        <input
-                          className="w-full bg-transparent text-sm outline-none placeholder:text-zinc-500"
-                          placeholder="Destino"
-                          value={destination}
-                          onChange={(e) => setDestination(e.target.value)}
-                        />
-                      </div>
-                      <div className="flex items-center gap-2 rounded-xl border border-zinc-700/60 bg-black/50 px-3 py-2">
-                        <Calendar className="h-4 w-4 text-zinc-400" />
-                        <input
-                          type="date"
-                          className="w-full bg-transparent text-sm outline-none"
-                          value={date}
-                          onChange={(e) => setDate(e.target.value)}
-                        />
-                      </div>
-                      <div className="flex items-center gap-2 rounded-xl border border-zinc-700/60 bg-black/50 px-3 py-2">
-                        <Clock className="h-4 w-4 text-zinc-400" />
-                        <input
-                          type="time"
-                          className="w-full bg-transparent text-sm outline-none"
-                          value={time}
-                          onChange={(e) => setTime(e.target.value)}
-                        />
-                      </div>
-                    </>
-                  )}
-
-                  {/* Renta: ciudad/fechas/horario/zonas */}
-                  {showRent && (
-                    <>
-                      <div className="flex items-center gap-2 rounded-xl border border-zinc-700/60 bg-black/50 px-3 py-2">
-                        <MapPin className="h-4 w-4 text-zinc-400" />
-                        <select
-                          className="w-full bg-transparent text-sm outline-none"
-                          value={city}
-                          onChange={(e) => setCity(e.target.value)}
-                        >
-                          <option className="bg-black/50">CDMX</option>
-                          <option className="bg-black/50">Monterrey</option>
-                          <option className="bg-black/50">Guadalajara</option>
-                          <option className="bg-black/50">Otra</option>
-                        </select>
-                      </div>
-
-                      <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-                        <div className="flex items-center gap-2 rounded-xl border border-zinc-700/60 bg-black/50 px-3 py-2">
-                          <Calendar className="h-4 w-4 text-zinc-400" />
-                          <input
-                            type="date"
-                            className="w-full bg-transparent text-sm outline-none"
-                            value={startDate}
-                            onChange={(e) => setStartDate(e.target.value)}
-                          />
-                        </div>
-                        <div className="flex items-center gap-2 rounded-xl border border-zinc-700/60 bg-black/50 px-3 py-2">
-                          <Calendar className="h-4 w-4 text-zinc-400" />
-                          <input
-                            type="date"
-                            className="w-full bg-transparent text-sm outline-none"
-                            value={endDate}
-                            onChange={(e) => setEndDate(e.target.value)}
-                          />
-                        </div>
-                      </div>
-
-                      <div className="flex items-center gap-2 rounded-xl border border-zinc-700/60 bg-black/50 px-3 py-2">
-                        <Clock className="h-4 w-4 text-zinc-400" />
-                        <input
-                          className="w-full bg-transparent text-sm outline-none placeholder:text-zinc-500"
-                          placeholder="Horario estimado (opcional) ej. 10:00–20:00"
-                          value={schedule}
-                          onChange={(e) => setSchedule(e.target.value)}
-                        />
-                      </div>
-
-                      <div className="flex items-center gap-2 rounded-xl border border-zinc-700/60 bg-black/50 px-3 py-2">
-                        <MapPin className="h-4 w-4 text-zinc-400" />
-                        <input
-                          className="w-full bg-transparent text-sm outline-none placeholder:text-zinc-500"
-                          placeholder="Zonas / agenda (opcional) ej. Polanco, Reforma, Santa Fe"
-                          value={zones}
-                          onChange={(e) => setZones(e.target.value)}
-                        />
-                      </div>
-                    </>
-                  )}
-
-                  {/* Custodia (solo renta + custodio) */}
-                  {showCustody && (
-                    <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-                      <div className="flex items-center gap-2 rounded-xl border border-zinc-700/60 bg-black/50 px-3 py-2">
-                        <UserCheck className="h-4 w-4 text-zinc-400" />
-                        <select
-                          className="w-full bg-transparent text-sm outline-none"
-                          value={custodians}
-                          onChange={(e) => setCustodians(e.target.value)}
-                        >
-                          <option className="bg-black/50">1</option>
-                          <option className="bg-black/50">2</option>
-                          <option className="bg-black/50">3+</option>
-                        </select>
-                      </div>
-                      <div className="flex items-center gap-2 rounded-xl border border-zinc-700/60 bg-black/50 px-3 py-2">
-                        <UserCheck className="h-4 w-4 text-zinc-400" />
-                        <select
-                          className="w-full bg-transparent text-sm outline-none"
-                          value={custodyProfile}
-                          onChange={(e) => setCustodyProfile(e.target.value)}
-                        >
-                          <option className="bg-black/50">Discreto</option>
-                          <option className="bg-black/50">Ejecutivo</option>
-                          <option className="bg-black/50">Alto impacto</option>
-                        </select>
+                      <div className="mt-4 grid grid-cols-1 gap-2">
+                        {(
+                          [
+                            "Traslado (A → B)",
+                            "Renta por día (Disposición)",
+                            "Renta + Custodia",
+                          ] as ServiceType[]
+                        ).map((s) => {
+                          const active = serviceType === s;
+                          return (
+                            <button
+                              key={s}
+                              onClick={() => setServiceType(s)}
+                              className={`rounded-2xl border px-4 py-3 text-left transition
+                                ${active ? "border-[#e6e6e6]/70 bg-white/10" : "border-zinc-700 bg-black/40 hover:border-zinc-600"}`}
+                              aria-pressed={active}
+                            >
+                              <p className={`text-sm ${active ? "text-white" : "text-zinc-200"}`}>{s}</p>
+                              <p className="mt-1 text-xs text-zinc-400">
+                                {s === "Traslado (A → B)"
+                                  ? "Punto a punto: aeropuerto, hotel, reuniones."
+                                  : s === "Renta por día (Disposición)"
+                                  ? "Unidad a tu disposición por horas o días."
+                                  : "Disposición con custodia ejecutiva incluida."}
+                              </p>
+                            </button>
+                          );
+                        })}
                       </div>
                     </div>
                   )}
 
-                  <a href={reservationHref} target="_blank" rel="noopener noreferrer">
-                    <Button className="w-full rounded-2xl bg-[#25D366] text-[#0a0d14] hover:brightness-110">
-                      <WhatsAppIcon className="mr-2 h-4 w-4" /> Solicitar cotización
+                  {step === 2 && (
+                    <div className="rounded-2xl border border-zinc-800 bg-black/40 p-4">
+                      <div className="flex items-center gap-2">
+                        <Car className="h-4 w-4 text-zinc-300" />
+                        <p className="text-sm font-medium text-zinc-200">¿Qué tipo de unidad?</p>
+                      </div>
+                      <p className="mt-1 text-xs text-zinc-400">{step2Help}</p>
+
+                      <div className="mt-4 grid grid-cols-1 gap-2">
+                        {UNIT_CARDS.map((c) => {
+                          const Icon = c.icon;
+                          const active = unitType === c.key;
+                          return (
+                            <button
+                              key={c.key}
+                              onClick={() => setUnitType(c.key)}
+                              className={`rounded-2xl border px-4 py-3 text-left transition
+                                ${active ? "border-[#e6e6e6]/70 bg-white/10" : "border-zinc-700 bg-black/40 hover:border-zinc-600"}`}
+                              aria-pressed={active}
+                            >
+                              <div className="flex items-start justify-between gap-3">
+                                <div className="flex items-start gap-3">
+                                  <div className="mt-0.5 rounded-xl border border-zinc-700 bg-black/50 p-2">
+                                    <Icon className="h-4 w-4 text-zinc-200" />
+                                  </div>
+                                  <div>
+                                    <p className="text-sm text-zinc-100">{c.title}</p>
+                                    <p className="mt-1 text-xs text-zinc-400">{c.desc}</p>
+                                    <p className="mt-1 text-[11px] text-zinc-500">{c.hint}</p>
+                                  </div>
+                                </div>
+                                {active && <CheckCircle2 className="h-5 w-5 text-[#e6e6e6]" />}
+                              </div>
+                            </button>
+                          );
+                        })}
+                      </div>
+
+                      {isArmored && (
+                        <div className="mt-4 rounded-2xl border border-zinc-800 bg-black/50 p-4">
+                          <div className="flex items-center gap-2">
+                            <Shield className="h-4 w-4 text-zinc-300" />
+                            <p className="text-sm font-medium text-zinc-200">Nivel de blindaje</p>
+                          </div>
+                          <p className="mt-1 text-xs text-zinc-400">
+                            A mayor nivel, mayor protección. Si no estás seguro, IV suele funcionar bien para agenda ejecutiva.
+                          </p>
+
+                          <div className="mt-3 flex items-center gap-2 rounded-xl border border-zinc-700/60 bg-black/50 px-3 py-2">
+                            <Shield className="h-4 w-4 text-zinc-400" />
+                            <select
+                              className="w-full bg-transparent text-sm outline-none"
+                              value={armorLevel}
+                              onChange={(e) => setArmorLevel(e.target.value as ArmorLevel)}
+                            >
+                              <option className="bg-black/50">III</option>
+                              <option className="bg-black/50">IV</option>
+                              <option className="bg-black/50">V</option>
+                              <option className="bg-black/50">V+</option>
+                            </select>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  )}
+
+                  {step === 3 && (
+                    <div className="rounded-2xl border border-zinc-800 bg-black/40 p-4">
+                      <div className="flex items-center gap-2">
+                        <Calendar className="h-4 w-4 text-zinc-300" />
+                        <p className="text-sm font-medium text-zinc-200">Detalles mínimos</p>
+                      </div>
+                      <p className="mt-1 text-xs text-zinc-400">{step3Help}</p>
+
+                      {/* Pasajeros */}
+                      <div className="mt-4 flex items-center gap-2 rounded-xl border border-zinc-700/60 bg-black/50 px-3 py-2">
+                        <MapPin className="h-4 w-4 text-zinc-400" />
+                        <select
+                          className="w-full bg-transparent text-sm outline-none"
+                          value={pax}
+                          onChange={(e) => setPax(e.target.value)}
+                        >
+                          <option className="bg-black/50">1–4</option>
+                          <option className="bg-black/50">5–7</option>
+                          <option className="bg-black/50">8–10</option>
+                          <option className="bg-black/50">10+</option>
+                        </select>
+                      </div>
+
+                      {/* Traslado */}
+                      {isTransfer && (
+                        <>
+                          <div className="mt-3 flex items-center gap-2 rounded-xl border border-zinc-700/60 bg-black/50 px-3 py-2">
+                            <MapPin className="h-4 w-4 text-zinc-400" />
+                            <input
+                              className="w-full bg-transparent text-sm outline-none placeholder:text-zinc-500"
+                              placeholder="Origen (aeropuerto, hotel, ciudad)"
+                              value={origin}
+                              onChange={(e) => setOrigin(e.target.value)}
+                            />
+                          </div>
+                          <div className="mt-3 flex items-center gap-2 rounded-xl border border-zinc-700/60 bg-black/50 px-3 py-2">
+                            <MapPin className="h-4 w-4 text-zinc-400" />
+                            <input
+                              className="w-full bg-transparent text-sm outline-none placeholder:text-zinc-500"
+                              placeholder="Destino"
+                              value={destination}
+                              onChange={(e) => setDestination(e.target.value)}
+                            />
+                          </div>
+                          <div className="mt-3 grid grid-cols-1 gap-3 md:grid-cols-2">
+                            <div className="flex items-center gap-2 rounded-xl border border-zinc-700/60 bg-black/50 px-3 py-2">
+                              <Calendar className="h-4 w-4 text-zinc-400" />
+                              <input
+                                type="date"
+                                className="w-full bg-transparent text-sm outline-none"
+                                value={date}
+                                onChange={(e) => setDate(e.target.value)}
+                              />
+                            </div>
+                            <div className="flex items-center gap-2 rounded-xl border border-zinc-700/60 bg-black/50 px-3 py-2">
+                              <Clock className="h-4 w-4 text-zinc-400" />
+                              <input
+                                type="time"
+                                className="w-full bg-transparent text-sm outline-none"
+                                value={time}
+                                onChange={(e) => setTime(e.target.value)}
+                              />
+                            </div>
+                          </div>
+                        </>
+                      )}
+
+                      {/* Renta */}
+                      {isRent && (
+                        <>
+                          <div className="mt-3 flex items-center gap-2 rounded-xl border border-zinc-700/60 bg-black/50 px-3 py-2">
+                            <MapPin className="h-4 w-4 text-zinc-400" />
+                            <select
+                              className="w-full bg-transparent text-sm outline-none"
+                              value={city}
+                              onChange={(e) => setCity(e.target.value)}
+                            >
+                              <option className="bg-black/50">CDMX</option>
+                              <option className="bg-black/50">Monterrey</option>
+                              <option className="bg-black/50">Guadalajara</option>
+                              <option className="bg-black/50">Otra</option>
+                            </select>
+                          </div>
+
+                          <div className="mt-3 grid grid-cols-1 gap-3 md:grid-cols-2">
+                            <div className="flex items-center gap-2 rounded-xl border border-zinc-700/60 bg-black/50 px-3 py-2">
+                              <Calendar className="h-4 w-4 text-zinc-400" />
+                              <input
+                                type="date"
+                                className="w-full bg-transparent text-sm outline-none"
+                                value={startDate}
+                                onChange={(e) => setStartDate(e.target.value)}
+                              />
+                            </div>
+                            <div className="flex items-center gap-2 rounded-xl border border-zinc-700/60 bg-black/50 px-3 py-2">
+                              <Calendar className="h-4 w-4 text-zinc-400" />
+                              <input
+                                type="date"
+                                className="w-full bg-transparent text-sm outline-none"
+                                value={endDate}
+                                onChange={(e) => setEndDate(e.target.value)}
+                              />
+                            </div>
+                          </div>
+
+                          <div className="mt-3 flex items-center gap-2 rounded-xl border border-zinc-700/60 bg-black/50 px-3 py-2">
+                            <Clock className="h-4 w-4 text-zinc-400" />
+                            <input
+                              className="w-full bg-transparent text-sm outline-none placeholder:text-zinc-500"
+                              placeholder="Horario estimado (opcional) ej. 10:00–20:00"
+                              value={schedule}
+                              onChange={(e) => setSchedule(e.target.value)}
+                            />
+                          </div>
+
+                          <div className="mt-3 flex items-center gap-2 rounded-xl border border-zinc-700/60 bg-black/50 px-3 py-2">
+                            <MapPin className="h-4 w-4 text-zinc-400" />
+                            <input
+                              className="w-full bg-transparent text-sm outline-none placeholder:text-zinc-500"
+                              placeholder="Zonas/agenda (opcional) ej. Polanco, Reforma, Santa Fe"
+                              value={zones}
+                              onChange={(e) => setZones(e.target.value)}
+                            />
+                          </div>
+                        </>
+                      )}
+
+                      {/* Custodia */}
+                      {isCustody && (
+                        <div className="mt-3 grid grid-cols-1 gap-3 md:grid-cols-2">
+                          <div className="flex items-center gap-2 rounded-xl border border-zinc-700/60 bg-black/50 px-3 py-2">
+                            <UserCheck className="h-4 w-4 text-zinc-400" />
+                            <select
+                              className="w-full bg-transparent text-sm outline-none"
+                              value={custodians}
+                              onChange={(e) => setCustodians(e.target.value)}
+                            >
+                              <option className="bg-black/50">1</option>
+                              <option className="bg-black/50">2</option>
+                              <option className="bg-black/50">3+</option>
+                            </select>
+                          </div>
+                          <div className="flex items-center gap-2 rounded-xl border border-zinc-700/60 bg-black/50 px-3 py-2">
+                            <UserCheck className="h-4 w-4 text-zinc-400" />
+                            <select
+                              className="w-full bg-transparent text-sm outline-none"
+                              value={custodyProfile}
+                              onChange={(e) => setCustodyProfile(e.target.value)}
+                            >
+                              <option className="bg-black/50">Discreto</option>
+                              <option className="bg-black/50">Ejecutivo</option>
+                              <option className="bg-black/50">Alto impacto</option>
+                            </select>
+                          </div>
+                        </div>
+                      )}
+
+                      <div className="mt-4">
+                        <a href={reservationHref} target="_blank" rel="noopener noreferrer">
+                          <Button className="w-full rounded-2xl bg-[#25D366] text-[#0a0d14] hover:brightness-110">
+                            <WhatsAppIcon className="mr-2 h-4 w-4" /> Enviar por WhatsApp
+                          </Button>
+                        </a>
+                        <p className="mt-2 text-center text-xs text-zinc-400">Respuesta promedio &lt; 10 min.</p>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Nav buttons */}
+                  <div className="flex items-center justify-between pt-2">
+                    <Button
+                      variant="outline"
+                      className="rounded-2xl border-zinc-700 bg-transparent text-zinc-200 hover:border-[#e6e6e6] hover:text-[#e6e6e6]"
+                      onClick={() => setStep((s) => (s === 1 ? 1 : ((s - 1) as 1 | 2 | 3)))}
+                      disabled={step === 1}
+                    >
+                      Atrás
                     </Button>
-                  </a>
 
-                  <p className="-mt-1 text-center text-xs text-zinc-400">Respuesta promedio &lt; 10 min.</p>
+                    {step < 3 ? (
+                      <Button
+                        className="rounded-2xl bg-gradient-to-r from-[#e6e6e6] to-[#ffffff] text-[#0a0d14]"
+                        onClick={() => setStep((s) => (s === 3 ? 3 : ((s + 1) as 1 | 2 | 3)))}
+                        disabled={!canNext}
+                      >
+                        Continuar <ChevronRight className="ml-2 h-4 w-4" />
+                      </Button>
+                    ) : (
+                      <Button
+                        variant="outline"
+                        className="rounded-2xl border-zinc-700 bg-transparent text-zinc-200 hover:border-[#e6e6e6] hover:text-[#e6e6e6]"
+                        onClick={() => setStep(1)}
+                      >
+                        Reiniciar
+                      </Button>
+                    )}
+                  </div>
+
+                  {/* Tiny reassurance */}
+                  <p className="text-[11px] text-zinc-500">
+                    Tip: si no estás seguro del nivel, elige “Blindada” + “IV” y nosotros ajustamos con base en tu ruta/agenda.
+                  </p>
                 </div>
               </CardContent>
             </Card>
@@ -774,53 +964,31 @@ export default function LuxuryTransportHome() {
             <div>
               <h2 className="text-2xl font-semibold md:text-3xl">Flota</h2>
               <div className="mt-2 h-0.5 w-12 rounded-full bg-gradient-to-r from-[#e6e6e6] to-transparent" />
-              <p className="mt-2 max-w-2xl text-zinc-400">
-                Selecciona categoría y ajusta filtros para ver unidades disponibles.
-              </p>
+              <p className="mt-2 max-w-2xl text-zinc-400">Selecciona categoría y ajusta filtros para ver unidades disponibles.</p>
             </div>
 
             <div className="rounded-2xl border border-zinc-800 bg-black/50 p-3">
               <div className="flex flex-wrap items-center gap-2">
-                <button
-                  onClick={() => setCategory("blindada")}
-                  className={`rounded-xl px-3 py-1 text-sm ${
-                    category === "blindada"
-                      ? "bg-gradient-to-r from-[#e6e6e6] to-[#ffffff] text-[#0a0d14]"
-                      : "border border-zinc-700 text-zinc-300 hover:border-zinc-600"
-                  }`}
-                >
-                  Blindadas
-                </button>
-                <button
-                  onClick={() => setCategory("blanda")}
-                  className={`rounded-xl px-3 py-1 text-sm ${
-                    category === "blanda"
-                      ? "bg-gradient-to-r from-[#e6e6e6] to-[#ffffff] text-[#0a0d14]"
-                      : "border border-zinc-700 text-zinc-300 hover:border-zinc-600"
-                  }`}
-                >
-                  Ejecutivas
-                </button>
-                <button
-                  onClick={() => setCategory("van")}
-                  className={`rounded-xl px-3 py-1 text-sm ${
-                    category === "van"
-                      ? "bg-gradient-to-r from-[#e6e6e6] to-[#ffffff] text-[#0a0d14]"
-                      : "border border-zinc-700 text-zinc-300 hover:border-zinc-600"
-                  }`}
-                >
-                  Sprinter/Vans
-                </button>
-                <button
-                  onClick={() => setCategory("lujo")}
-                  className={`rounded-xl px-3 py-1 text-sm ${
-                    category === "lujo"
-                      ? "bg-gradient-to-r from-[#e6e6e6] to-[#ffffff] text-[#0a0d14]"
-                      : "border border-zinc-700 text-zinc-300 hover:border-zinc-600"
-                  }`}
-                >
-                  Lujo
-                </button>
+                {(
+                  [
+                    ["blindada", "Blindadas"],
+                    ["blanda", "Ejecutivas"],
+                    ["van", "Sprinter/Vans"],
+                    ["lujo", "Lujo"],
+                  ] as Array<[FleetCategory, string]>
+                ).map(([k, label]) => (
+                  <button
+                    key={k}
+                    onClick={() => setCategory(k)}
+                    className={`rounded-xl px-3 py-1 text-sm ${
+                      category === k
+                        ? "bg-gradient-to-r from-[#e6e6e6] to-[#ffffff] text-[#0a0d14]"
+                        : "border border-zinc-700 text-zinc-300 hover:border-zinc-600"
+                    }`}
+                  >
+                    {label}
+                  </button>
+                ))}
 
                 <div className="mx-3 h-5 w-px bg-zinc-800" />
 
@@ -866,29 +1034,20 @@ export default function LuxuryTransportHome() {
               <div className="mt-2 h-0.5 w-12 rounded-full bg-gradient-to-r from-[#e6e6e6] to-transparent" />
               <ul className="mt-6 space-y-4 text-zinc-300">
                 <li className="flex gap-3">
-                  <Shield className="mt-0.5 h-5 w-5 text-[#e6e6e6]" /> Blindaje y protocolos operativos
-                  según el contexto de ruta.
+                  <Shield className="mt-0.5 h-5 w-5 text-[#e6e6e6]" /> Blindaje y protocolos operativos según el contexto de ruta.
                 </li>
                 <li className="flex gap-3">
-                  <UserCheck className="mt-0.5 h-5 w-5 text-[#e6e6e6]" /> Personal operativo y custodia
-                  con procesos de verificación.
+                  <UserCheck className="mt-0.5 h-5 w-5 text-[#e6e6e6]" /> Personal operativo y custodia con procesos de verificación.
                 </li>
                 <li className="flex gap-3">
-                  <Clock className="mt-0.5 h-5 w-5 text-[#e6e6e6]" /> Coordinación 24/7 y puntualidad
-                  orientada a agenda ejecutiva.
+                  <Clock className="mt-0.5 h-5 w-5 text-[#e6e6e6]" /> Coordinación 24/7 y puntualidad orientada a agenda ejecutiva.
                 </li>
               </ul>
 
               <div className="mt-6 flex flex-wrap gap-2">
-                <span className="rounded-full border border-zinc-700 px-3 py-1 text-xs text-zinc-300">
-                  Niveles: III · IV · V · V+
-                </span>
-                <span className="rounded-full border border-zinc-700 px-3 py-1 text-xs text-zinc-300">
-                  Operación discreta
-                </span>
-                <span className="rounded-full border border-zinc-700 px-3 py-1 text-xs text-zinc-300">
-                  Coordinación nacional
-                </span>
+                <span className="rounded-full border border-zinc-700 px-3 py-1 text-xs text-zinc-300">Niveles: III · IV · V · V+</span>
+                <span className="rounded-full border border-zinc-700 px-3 py-1 text-xs text-zinc-300">Operación discreta</span>
+                <span className="rounded-full border border-zinc-700 px-3 py-1 text-xs text-zinc-300">Coordinación nacional</span>
               </div>
             </div>
 
@@ -947,8 +1106,7 @@ export default function LuxuryTransportHome() {
               <div>
                 <h3 className="text-2xl font-semibold md:text-3xl">Listos para tu próximo itinerario</h3>
                 <p className="mt-3 max-w-xl text-zinc-300">
-                  Coordinamos aeropuerto, agenda ejecutiva, custodia y hospedaje de alto nivel con un
-                  solo punto de contacto.
+                  Coordinamos aeropuerto, agenda ejecutiva, custodia y hospedaje de alto nivel con un solo punto de contacto.
                 </p>
                 <div className="mt-6 flex flex-wrap gap-3">
                   <WhatsAppButton size="lg">Hablar con un asesor</WhatsAppButton>
@@ -987,10 +1145,8 @@ export default function LuxuryTransportHome() {
                 EL
               </div>
             )}
-
             <p className="text-sm text-zinc-400">
-              Operador de transporte blindado y servicios ejecutivos. Cobertura nacional y coordinación
-              internacional.
+              Operador de transporte blindado y servicios ejecutivos. Cobertura nacional y coordinación internacional.
             </p>
           </div>
 
