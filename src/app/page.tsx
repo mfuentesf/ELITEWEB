@@ -57,7 +57,7 @@ const WhatsAppButton: React.FC<
 const BRAND = {
   logoUrl: "/Elitelogo.png", // public/Elitelogo.png
   heroImageUrl:
-    "https://images.unsplash.com/photo-1511919884226-fd3cad34687c?q=80&w=1920&auto=format&fit=crop",
+    "/SUVHERO.png",
 };
 
 // --- Datos configurables ---
