@@ -69,7 +69,7 @@ const FloatingWhatsAppButton: React.FC<{
           // ✅ ahora circular + compacto
           "h-14 w-14 rounded-full p-0",
           // ✅ sombra como el que traías
-          "shadow-xl shadow-[#25D366]/30",
+          "shadow-xl shadow-black/40",
           // ✅ por si lo picas en móvil
           "active:scale-95 transition",
           className,
