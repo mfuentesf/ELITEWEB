@@ -51,6 +51,30 @@ const WhatsAppButton: React.FC<
   );
 };
 
+const FloatingWhatsAppButton: React.FC<{
+  number?: string;
+  message?: string;
+  className?: string;
+}> = ({ number = WHATSAPP_NUMBER, message = DEFAULT_WA_MESSAGE, className = "" }) => {
+  const digits = number.replace(/\D/g, "");
+  const href = `https://wa.me/${digits}?text=${encodeURIComponent(message)}`;
+
+  return (
+    <a
+      href={href}
+      target="_blank"
+      rel="noopener noreferrer"
+      aria-label="Contactar por WhatsApp"
+      className={`group inline-flex h-14 w-14 items-center justify-center rounded-full
+        bg-[#25D366] text-[#0a0d14] shadow-xl shadow-[#25D366]/25
+        transition hover:brightness-110 active:scale-95 ${className}`}
+    >
+      <WhatsAppIcon className="h-6 w-6" />
+    </a>
+  );
+};
+
+
 // --- Branding dinámico (logo + imagen de hero) ---
 const BRAND = {
   logoUrl: "/Elitelogo.png",
@@ -1235,9 +1259,9 @@ export default function LuxuryTransportHome() {
       </footer>
 
       {/* Botón flotante */}
-      <div className="fixed bottom-5 right-5">
-        <WhatsAppButton className="shadow-xl shadow-[#25D366]/30">WhatsApp</WhatsAppButton>
-      </div>
+<div className="fixed bottom-5 right-5 z-50">
+  <FloatingWhatsAppButton />
+</div>
     </div>
   );
 }
