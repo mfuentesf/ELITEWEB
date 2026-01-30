@@ -60,20 +60,26 @@ const FloatingWhatsAppButton: React.FC<{
   const href = `https://wa.me/${digits}?text=${encodeURIComponent(message)}`;
 
   return (
-    <a
-      href={href}
-      target="_blank"
-      rel="noopener noreferrer"
-      aria-label="Contactar por WhatsApp"
-      className={`group inline-flex h-14 w-14 items-center justify-center rounded-full
-        bg-[#25D366] text-[#0a0d14] shadow-xl shadow-[#25D366]/25
-        transition hover:brightness-110 active:scale-95 ${className}`}
-    >
-      <WhatsAppIcon className="h-6 w-6" />
+    <a href={href} target="_blank" rel="noopener noreferrer" aria-label="Contactar por WhatsApp">
+      <Button
+        type="button"
+        className={[
+          // ✅ mismos colores que tu WhatsAppButton original
+          "bg-[#25D366] text-[#0a0d14] hover:brightness-110",
+          // ✅ ahora circular + compacto
+          "h-14 w-14 rounded-full p-0",
+          // ✅ sombra como el que traías
+          "shadow-xl shadow-[#25D366]/30",
+          // ✅ por si lo picas en móvil
+          "active:scale-95 transition",
+          className,
+        ].join(" ")}
+      >
+        <WhatsAppIcon className="h-6 w-6" />
+      </Button>
     </a>
   );
 };
-
 
 // --- Branding dinámico (logo + imagen de hero) ---
 const BRAND = {
