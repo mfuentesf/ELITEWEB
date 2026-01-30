@@ -338,8 +338,14 @@ function ServicesTabs() {
         </div>
       </div>
 
-      {/* Tabs */}
-      <div className="flex flex-wrap gap-2">
+      {/* Tabs (✅ móvil carrusel + desktop wrap) */}
+      <div
+        className={[
+          "flex gap-2 overflow-x-auto pb-2 -mx-4 px-4",
+          "snap-x snap-mandatory",
+          "md:mx-0 md:px-0 md:flex-wrap md:overflow-visible md:pb-0",
+        ].join(" ")}
+      >
         {services.map((s) => {
           const TabIcon = s.icon as React.ElementType;
           const isActive = s.title === current;
@@ -349,6 +355,9 @@ function ServicesTabs() {
               key={s.title}
               onClick={() => setCurrent(s.title)}
               className={[
+                // ✅ carrusel: cada tab se “snapea” y no se encoge
+                "snap-start shrink-0 md:shrink",
+                "min-w-[260px] sm:min-w-[300px] md:min-w-0",
                 "group relative flex items-center gap-2 rounded-2xl border px-4 py-3 text-sm transition",
                 isActive
                   ? "border-[#e6e6e6]/60 bg-white/10 text-white"
@@ -424,7 +433,7 @@ function ServicesTabs() {
                   </ul>
                 )}
 
-                {/* CTA */}
+                {/* CTA (✅ solo WhatsApp; se quitó "Cotizar ahora") */}
                 <div className="mt-6 flex flex-wrap items-center gap-3">
                   <WhatsAppButton
                     size="lg"
@@ -432,15 +441,6 @@ function ServicesTabs() {
                   >
                     Coordinar por WhatsApp
                   </WhatsAppButton>
-                  <Button
-                    variant="outline"
-                    className="rounded-2xl border-zinc-700 bg-transparent text-zinc-200 hover:border-[#e6e6e6] hover:text-[#e6e6e6]"
-                    onClick={() =>
-                      document.getElementById("cotizar")?.scrollIntoView({ behavior: "smooth", block: "start" })
-                    }
-                  >
-                    Cotizar ahora
-                  </Button>
                 </div>
               </div>
             </motion.div>
@@ -449,11 +449,7 @@ function ServicesTabs() {
           {/* Visual */}
           <div className="relative md:col-span-2">
             <div className="absolute inset-0">
-              <img
-                src={(active as any).visual?.img}
-                alt={active.title}
-                className="h-full w-full object-cover"
-              />
+              <img src={(active as any).visual?.img} alt={active.title} className="h-full w-full object-cover" />
               <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/40 to-black/20" />
             </div>
 
@@ -711,7 +707,11 @@ export default function LuxuryTransportHome() {
       {/* Hero */}
       <div className="relative min-h-[80vh] md:min-h-[85vh]">
         <div className="absolute inset-0">
-          <img src={BRAND.heroImageUrl} alt="Unidad ejecutiva blindada" className="h-full w-full object-cover object-center" />
+          <img
+            src={BRAND.heroImageUrl}
+            alt="Unidad ejecutiva blindada"
+            className="h-full w-full object-cover object-center"
+          />
           <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/40 to-black/80" />
         </div>
 
@@ -777,33 +777,31 @@ export default function LuxuryTransportHome() {
                       <p className="mt-1 text-xs text-zinc-400">{step1Help}</p>
 
                       <div className="mt-4 grid grid-cols-1 gap-2">
-                        {(["Traslado (A → B)", "Renta por día (Disposición)", "Renta + Custodia"] as ServiceType[]).map(
-                          (s) => {
-                            const activeSel = serviceType === s;
-                            return (
-                              <button
-                                key={s}
-                                onClick={() => setServiceType(s)}
-                                className={`rounded-2xl border px-4 py-3 text-left transition
+                        {(["Traslado (A → B)", "Renta por día (Disposición)", "Renta + Custodia"] as ServiceType[]).map((s) => {
+                          const activeSel = serviceType === s;
+                          return (
+                            <button
+                              key={s}
+                              onClick={() => setServiceType(s)}
+                              className={`rounded-2xl border px-4 py-3 text-left transition
                                 ${
                                   activeSel
                                     ? "border-[#e6e6e6]/70 bg-white/10"
                                     : "border-zinc-700 bg-black/40 hover:border-zinc-600"
                                 }`}
-                                aria-pressed={activeSel}
-                              >
-                                <p className={`text-sm ${activeSel ? "text-white" : "text-zinc-200"}`}>{s}</p>
-                                <p className="mt-1 text-xs text-zinc-400">
-                                  {s === "Traslado (A → B)"
-                                    ? "Traslado ejecutivo coordinado."
-                                    : s === "Renta por día (Disposición)"
-                                    ? "Unidad por horas o por día."
-                                    : "Disposición con custodia incluida."}
-                                </p>
-                              </button>
-                            );
-                          }
-                        )}
+                              aria-pressed={activeSel}
+                            >
+                              <p className={`text-sm ${activeSel ? "text-white" : "text-zinc-200"}`}>{s}</p>
+                              <p className="mt-1 text-xs text-zinc-400">
+                                {s === "Traslado (A → B)"
+                                  ? "Traslado ejecutivo coordinado."
+                                  : s === "Renta por día (Disposición)"
+                                  ? "Unidad por horas o por día."
+                                  : "Disposición con custodia incluida."}
+                              </p>
+                            </button>
+                          );
+                        })}
                       </div>
                     </div>
                   )}
@@ -857,8 +855,7 @@ export default function LuxuryTransportHome() {
                             <p className="text-sm font-medium text-zinc-200">Nivel de blindaje</p>
                           </div>
                           <p className="mt-1 text-xs text-zinc-400">
-                            A mayor nivel, mayor protección. Si no estás seguro, IV suele funcionar bien para agenda
-                            ejecutiva.
+                            A mayor nivel, mayor protección. Si no estás seguro, IV suele funcionar bien para agenda ejecutiva.
                           </p>
 
                           <div className="mt-3 flex items-center gap-2 rounded-xl border border-zinc-700/60 bg-black/50 px-3 py-2">
@@ -1131,8 +1128,7 @@ export default function LuxuryTransportHome() {
 
                   {/* Tiny reassurance */}
                   <p className="text-[11px] text-zinc-500">
-                    Tip: si no estás seguro del nivel, elige “Blindada” + “IV” y nosotros ajustamos con base en tu
-                    agenda.
+                    Tip: si no estás seguro del nivel, elige “Blindada” + “IV” y nosotros ajustamos con base en tu agenda.
                   </p>
                 </div>
               </CardContent>
@@ -1155,9 +1151,7 @@ export default function LuxuryTransportHome() {
             <div>
               <h2 className="text-2xl font-semibold md:text-3xl">Flota</h2>
               <div className="mt-2 h-0.5 w-12 rounded-full bg-gradient-to-r from-[#e6e6e6] to-transparent" />
-              <p className="mt-2 max-w-2xl text-zinc-400">
-                Selecciona categoría y ajusta filtros para ver unidades disponibles.
-              </p>
+              <p className="mt-2 max-w-2xl text-zinc-400">Selecciona categoría y ajusta filtros para ver unidades disponibles.</p>
             </div>
 
             <div className="rounded-2xl border border-zinc-800 bg-black/50 p-3">
