@@ -47,7 +47,12 @@ const WhatsAppButton: React.FC<
   const digits = number.replace(/\D/g, "");
   const href = `https://wa.me/${digits}?text=${encodeURIComponent(message)}`;
   return (
-    <a href={href} target="_blank" rel="noopener noreferrer" aria-label="Contactar por WhatsApp">
+    <a
+      href={href}
+      target="_blank"
+      rel="noopener noreferrer"
+      aria-label="Contactar por WhatsApp"
+    >
       <Button
         {...btnProps}
         className={`rounded-2xl bg-[#25D366] text-[#0a0d14] hover:brightness-110 ${className}`}
@@ -123,48 +128,18 @@ const DICT = {
       transferHelp: "Completa los datos mínimos para cotizar el traslado.",
       rentHelp: "Completa fechas y ciudad base para cotizar la disposición.",
       serviceTypes: [
-        {
-          key: "Traslado (A → B)",
-          desc: "Traslado ejecutivo coordinado.",
-        },
-        {
-          key: "Renta por día (Disposición)",
-          desc: "Unidad por horas o por día.",
-        },
-        {
-          key: "Renta + Custodia",
-          desc: "Disposición con custodia incluida.",
-        },
+        { key: "Traslado (A → B)", desc: "Traslado ejecutivo coordinado." },
+        { key: "Renta por día (Disposición)", desc: "Unidad por horas o por día." },
+        { key: "Renta + Custodia", desc: "Disposición con custodia incluida." },
       ],
       unitCards: [
-        {
-          key: "Ejecutiva",
-          title: "Ejecutiva",
-          desc: "Agenda diaria y movilidad sin fricción.",
-          hint: "Ideal para traslados y disposición.",
-        },
-        {
-          key: "Blindada",
-          title: "Blindada",
-          desc: "Protección reforzada para agendas sensibles.",
-          hint: "Selecciona nivel según contexto.",
-        },
-        {
-          key: "Sprinter/Vans",
-          title: "Sprinter/Vans",
-          desc: "Comitivas, equipaje y logística coordinada.",
-          hint: "Recomendado 8+ pasajeros.",
-        },
-        {
-          key: "Lujo",
-          title: "Lujo",
-          desc: "VIP, máximo confort.",
-          hint: "Servicio flagship.",
-        },
+        { key: "Ejecutiva", title: "Ejecutiva", desc: "Agenda diaria y movilidad sin fricción.", hint: "Ideal para traslados y disposición." },
+        { key: "Blindada", title: "Blindada", desc: "Protección reforzada para agendas sensibles.", hint: "Selecciona nivel según contexto." },
+        { key: "Sprinter/Vans", title: "Sprinter/Vans", desc: "Comitivas, equipaje y logística coordinada.", hint: "Recomendado 8+ pasajeros." },
+        { key: "Lujo", title: "Lujo", desc: "VIP, máximo confort.", hint: "Servicio flagship." },
       ],
       armorTitle: "Nivel de blindaje",
-      armorHelp:
-        "A mayor nivel, mayor protección. Si no estás seguro, IV suele funcionar bien para agenda ejecutiva.",
+      armorHelp: "A mayor nivel, mayor protección. Si no estás seguro, IV suele funcionar bien para agenda ejecutiva.",
       paxLabel: "Pasajeros",
       origin: "Origen",
       destination: "Destino",
@@ -216,8 +191,7 @@ const DICT = {
       sub: "Selecciona un servicio para ver el alcance exacto. Te guiamos según tu agenda.",
       chips: ["Cobertura nacional", "Coordinación 24/7"],
       waCTA: "Coordinar por WhatsApp",
-      recommend:
-        "Recomendación: si no estás seguro, elegimos el nivel y configuración según tu agenda.",
+      recommend: "Recomendación: si no estás seguro, elegimos el nivel y configuración según tu agenda.",
       items: [
         {
           title: "Unidades Blindadas",
@@ -299,45 +273,20 @@ const DICT = {
       quote: "Cotizar",
       waTemplate: (name: string) => `Hola, me interesa ${name}. ¿Podemos coordinar una cotización?`,
       items: [
-        {
-          name: "Chevrolet Suburban Blindada",
-          tags: ["Nivel III", "Hasta 7 pax", "Interior ejecutivo"],
-        },
-        {
-          name: "SUV Blindada Nivel IV",
-          tags: ["Nivel IV", "Perfil ejecutivo", "Clima trizona"],
-        },
-        {
-          name: "Mercedes-Benz Sprinter Ejecutiva",
-          tags: ["Asientos capitán", "Tomacorrientes", "Luces ambiente"],
-        },
-        {
-          name: "Toyota Hiace Ejecutiva",
-          tags: ["Comitiva", "Espacio para equipaje", "Logística coordinada"],
-        },
-        {
-          name: "Chevrolet Suburban Ejecutiva",
-          tags: ["Hasta 7 pax", "Interior premium", "Conectividad"],
-        },
-        {
-          name: "Escalade V (Flagship)",
-          tags: ["Flagship", "Máximo confort", "VIP"],
-        },
+        { name: "Chevrolet Suburban Blindada", tags: ["Nivel III", "Hasta 7 pax", "Interior ejecutivo"] },
+        { name: "SUV Blindada Nivel IV", tags: ["Nivel IV", "Perfil ejecutivo", "Clima trizona"] },
+        { name: "Mercedes-Benz Sprinter Ejecutiva", tags: ["Asientos capitán", "Tomacorrientes", "Luces ambiente"] },
+        { name: "Toyota Hiace Ejecutiva", tags: ["Comitiva", "Espacio para equipaje", "Logística coordinada"] },
+        { name: "Chevrolet Suburban Ejecutiva", tags: ["Hasta 7 pax", "Interior premium", "Conectividad"] },
+        { name: "Escalade V (Flagship)", tags: ["Flagship", "Máximo confort", "VIP"] },
       ],
     },
     footer: {
-      about:
-        "Operador de transporte blindado y servicios ejecutivos. Cobertura nacional y coordinación internacional.",
+      about: "Operador de transporte blindado y servicios ejecutivos. Cobertura nacional y coordinación internacional.",
       colServices: "Servicios",
       colContact: "Contacto",
       colLegal: "Legal",
-      servicesList: [
-        "Unidades Blindadas",
-        "Unidades Ejecutivas",
-        "Protección Ejecutiva",
-        "Sprinter & Vans",
-        "Alojamientos de Alto Nivel",
-      ],
+      servicesList: ["Unidades Blindadas", "Unidades Ejecutivas", "Protección Ejecutiva", "Sprinter & Vans", "Alojamientos de Alto Nivel"],
       contactList: ["CDMX · Monterrey · Guadalajara", "+52 (55) 0000 0000", "contacto@luxshield.mx"],
       legalList: ["Privacidad", "Términos", "Aviso de cookies"],
       rights: "Todos los derechos reservados",
@@ -388,8 +337,7 @@ const DICT = {
         { key: "Lujo", title: "Luxury", desc: "Flagship VIP comfort.", hint: "Top-tier experience." },
       ],
       armorTitle: "Armor level",
-      armorHelp:
-        "Higher level means higher protection. If unsure, Level IV is a strong default for executive itineraries.",
+      armorHelp: "Higher level means higher protection. If unsure, Level IV is a strong default for executive itineraries.",
       paxLabel: "Passengers",
       origin: "From",
       destination: "To",
@@ -523,35 +471,16 @@ const DICT = {
       quote: "Quote",
       waTemplate: (name: string) => `Hello, I’m interested in ${name}. Can we arrange a quote?`,
       items: [
-        {
-          name: "Armored Chevrolet Suburban",
-          tags: ["Level III", "Up to 7 pax", "Executive interior"],
-        },
-        {
-          name: "Armored SUV (Level IV)",
-          tags: ["Level IV", "Executive profile", "Tri-zone climate"],
-        },
-        {
-          name: "Mercedes-Benz Executive Sprinter",
-          tags: ["Captain seats", "Power outlets", "Ambient lighting"],
-        },
-        {
-          name: "Toyota Hiace Executive",
-          tags: ["Team transport", "Luggage space", "Coordinated logistics"],
-        },
-        {
-          name: "Executive Chevrolet Suburban",
-          tags: ["Up to 7 pax", "Premium interior", "Connectivity"],
-        },
-        {
-          name: "Escalade V (Flagship)",
-          tags: ["Flagship", "Maximum comfort", "VIP"],
-        },
+        { name: "Armored Chevrolet Suburban", tags: ["Level III", "Up to 7 pax", "Executive interior"] },
+        { name: "Armored SUV (Level IV)", tags: ["Level IV", "Executive profile", "Tri-zone climate"] },
+        { name: "Mercedes-Benz Executive Sprinter", tags: ["Captain seats", "Power outlets", "Ambient lighting"] },
+        { name: "Toyota Hiace Executive", tags: ["Team transport", "Luggage space", "Coordinated logistics"] },
+        { name: "Executive Chevrolet Suburban", tags: ["Up to 7 pax", "Premium interior", "Connectivity"] },
+        { name: "Escalade V (Flagship)", tags: ["Flagship", "Maximum comfort", "VIP"] },
       ],
     },
     footer: {
-      about:
-        "Armored transportation operator and executive services. Nationwide coverage with international coordination.",
+      about: "Armored transportation operator and executive services. Nationwide coverage with international coordination.",
       colServices: "Services",
       colContact: "Contact",
       colLegal: "Legal",
@@ -715,7 +644,6 @@ interface FleetGridProps {
 }
 
 function FleetGrid({ category, seats, level, tFleet }: FleetGridProps) {
-  // compone data traducida
   const fleetData = useMemo(() => {
     return fleetDataBase.map((b, idx) => ({
       ...b,
@@ -798,14 +726,12 @@ function ServicesTabs({
   const active = services[currentIndex];
   const ActivePanelIcon = active.icon as React.ElementType;
 
-  // Tabs row
   const tabsRef = useRef<HTMLDivElement | null>(null);
-
-  // Cards carousel (móvil)
   const cardsRef = useRef<HTMLDivElement | null>(null);
   const cardRefs = useRef<Array<HTMLDivElement | null>>([]);
 
-  const isMobile = () => typeof window !== "undefined" && window.matchMedia("(max-width: 767px)").matches;
+  const isMobile = () =>
+    typeof window !== "undefined" && window.matchMedia("(max-width: 767px)").matches;
 
   const scrollToCard = (index: number) => {
     const card = cardRefs.current[index];
@@ -853,6 +779,7 @@ function ServicesTabs({
 
     cardRefs.current.forEach((node) => node && observer.observe(node));
     return () => observer.disconnect();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
@@ -892,7 +819,7 @@ function ServicesTabs({
         </div>
       </div>
 
-      {/* Pills: sin flechas en móvil (ya se entiende por peek + fade) */}
+      {/* Pills (CORREGIDO: más pequeñas en móvil) */}
       <div className="relative">
         <div
           ref={tabsRef}
@@ -914,8 +841,9 @@ function ServicesTabs({
                 onClick={() => selectService(idx)}
                 className={[
                   "snap-start shrink-0 md:shrink",
-                  "min-w-[210px] sm:min-w-[240px] md:min-w-0",
-                  "group relative flex items-center gap-2 rounded-2xl border px-3 py-2 text-sm transition md:px-4 md:py-3",
+                  // ↓↓↓ más compactas en móvil
+                  "min-w-[175px] sm:min-w-[205px] md:min-w-0",
+                  "group relative flex items-center gap-2 rounded-2xl border px-2.5 py-2 text-sm transition md:px-4 md:py-3",
                   isActive
                     ? "border-[#e6e6e6]/60 bg-white/10 text-white"
                     : "border-zinc-800 bg-black/40 text-zinc-300 hover:border-zinc-700",
@@ -926,7 +854,7 @@ function ServicesTabs({
                   <TabIcon className="h-4 w-4 text-zinc-200" />
                 </span>
                 <span className="text-left leading-tight">
-                  <span className="block text-[12px] md:text-[13px] font-medium">{s.title}</span>
+                  <span className="block text-[11.5px] md:text-[13px] font-medium">{s.title}</span>
                   <span className="block text-[10px] md:text-[11px] text-zinc-500">{s.kicker}</span>
                 </span>
 
@@ -958,17 +886,22 @@ function ServicesTabs({
                 className="snap-start shrink-0 w-[88%] sm:w-[78%]"
               >
                 <div className="relative overflow-hidden rounded-3xl border border-zinc-800 bg-black/40">
-                  {/* bg image */}
+                  {/* bg image (CORREGIDO: más visible) */}
                   <div className="absolute inset-0">
-                    <img src={s.visual.img} alt={s.title} className="h-full w-full object-cover opacity-55" />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/35 to-black/25" />
+                    <img
+                      src={s.visual.img}
+                      alt={s.title}
+                      className="h-full w-full object-cover opacity-70"
+                    />
+                    {/* menos “tapa negra”, sobre todo abajo */}
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/65 via-black/25 to-black/20" />
                   </div>
 
                   <div className="relative z-10 p-6">
                     <div className="flex items-start gap-4">
                       <div className="relative">
                         <div className="pointer-events-none absolute -inset-2 rounded-2xl bg-[radial-gradient(closest-side,rgba(255,255,255,0.18),transparent_70%)] blur-md" />
-                        <div className="relative flex h-12 w-12 items-center justify-center rounded-2xl border border-zinc-800 bg-black/60">
+                        <div className="relative flex h-12 w-12 items-center justify-center rounded-2xl border border-zinc-800 bg-black/50">
                           <Icon className="h-6 w-6 text-zinc-100" />
                         </div>
                       </div>
@@ -983,7 +916,7 @@ function ServicesTabs({
                             {s.highlights.map((h) => (
                               <span
                                 key={h}
-                                className="rounded-full border border-zinc-800 bg-black/40 px-3 py-1 text-xs text-zinc-200"
+                                className="rounded-full border border-zinc-800 bg-black/35 px-3 py-1 text-xs text-zinc-200 backdrop-blur"
                               >
                                 {h}
                               </span>
@@ -1032,8 +965,8 @@ function ServicesTabs({
                       </div>
                     </div>
 
-                    {/* fade abajo */}
-                    <div className="pointer-events-none absolute inset-x-0 bottom-0 h-16 bg-[linear-gradient(to_top,rgba(0,0,0,0.55),transparent)]" />
+                    {/* fade abajo (más ligero) */}
+                    <div className="pointer-events-none absolute inset-x-0 bottom-0 h-14 bg-[linear-gradient(to_top,rgba(0,0,0,0.35),transparent)]" />
                   </div>
                 </div>
               </div>
@@ -1186,7 +1119,9 @@ export default function LuxuryTransportHome() {
 
   // Custodia
   const [custodians, setCustodians] = useState<string>("1");
-  const [custodyProfile, setCustodyProfile] = useState<string>(lang === "en" ? "Executive" : "Ejecutivo");
+  const [custodyProfile, setCustodyProfile] = useState<string>(
+    lang === "en" ? "Executive" : "Ejecutivo"
+  );
 
   const isTransfer = serviceType === "Traslado (A → B)";
   const isRent = serviceType !== "Traslado (A → B)";
@@ -1235,9 +1170,11 @@ export default function LuxuryTransportHome() {
     const lines: Array<string | null> = [
       t.wizard.waLinesIntro,
       `${w.serviceType} ${serviceType}`,
-      `${w.unitType} ${lang === "en" ? DICT.en.wizard.unitCards.find((u) => u.key === unitType)?.title ?? unitType : unitType}${
-        isArmored ? ` (${w.armoredLevel} ${armorLevel})` : ""
-      }`,
+      `${w.unitType} ${
+        lang === "en"
+          ? DICT.en.wizard.unitCards.find((u) => u.key === unitType)?.title ?? unitType
+          : unitType
+      }${isArmored ? ` (${w.armoredLevel} ${armorLevel})` : ""}`,
       `${w.passengers} ${pax}`,
 
       isTransfer ? `${w.from} ${origin || "—"}` : null,
@@ -1335,7 +1272,11 @@ export default function LuxuryTransportHome() {
           <div className="flex items-center gap-0">
             {BRAND.logoUrl ? (
               <div className="flex-none h-10 w-[120px] md:h-11 md:w-[135px]">
-                <img src={BRAND.logoUrl} alt="Logo ELITE" className="h-full w-full object-contain object-left" />
+                <img
+                  src={BRAND.logoUrl}
+                  alt="Logo ELITE"
+                  className="h-full w-full object-contain object-left"
+                />
               </div>
             ) : (
               <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-gradient-to-br from-[#e6e6e6] to-[#ffffff] text-[#0a0d14] font-black">
@@ -1368,7 +1309,11 @@ export default function LuxuryTransportHome() {
       {/* Hero */}
       <div className="relative min-h-[80vh] md:min-h-[85vh]">
         <div className="absolute inset-0">
-          <img src={BRAND.heroImageUrl} alt="Unidad ejecutiva blindada" className="h-full w-full object-cover object-center" />
+          <img
+            src={BRAND.heroImageUrl}
+            alt="Unidad ejecutiva blindada"
+            className="h-full w-full object-cover object-center"
+          />
           <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/40 to-black/80" />
         </div>
 
@@ -1400,7 +1345,10 @@ export default function LuxuryTransportHome() {
           <div className="relative flex-1 w-full md:col-start-2 md:row-start-1 self-start">
             <div className="pointer-events-none absolute -inset-6 md:-inset-8 rounded-[32px] bg-[radial-gradient(closest-side,rgba(255,255,255,0.18),transparent_70%)] blur-xl" />
 
-            <Card id="cotizar" className="mt-6 md:mt-0 w-full rounded-2xl border-white/10 bg-black/50 backdrop-blur-md shadow-xl">
+            <Card
+              id="cotizar"
+              className="mt-6 md:mt-0 w-full rounded-2xl border-white/10 bg-black/50 backdrop-blur-md shadow-xl"
+            >
               <CardContent className="p-6">
                 <div className="flex items-start justify-between gap-4">
                   <div>
