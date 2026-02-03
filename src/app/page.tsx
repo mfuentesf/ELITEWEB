@@ -12,8 +12,6 @@ import {
   Clock,
   Calendar,
   ChevronRight,
-  ChevronLeft,
-  Star,
   CheckCircle2,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -209,19 +207,6 @@ const fleetData: Array<{
   },
 ];
 
-const testimonials = [
-  {
-    quote: "Servicio impecable y seguridad total. La unidad blindada fue perfecta para nuestro equipo.",
-    author: "Cynthia R.",
-    role: "Directora de Operaciones, Grupo Minero",
-  },
-  {
-    quote: "La logística de aeropuerto a hotel y reuniones salió milimétrica. Operación muy profesional.",
-    author: "Luis A.",
-    role: "Coordinador de Eventos, Agencia BTL",
-  },
-];
-
 // --- Componentes auxiliares tipados ---
 interface SectionProps {
   id?: string;
@@ -308,11 +293,6 @@ function ServicesTabs() {
   const active = services[currentIndex];
   const ActivePanelIcon = active.icon as React.ElementType;
 
-  // --- Tabs row (móvil) ---
-  const tabsRef = useRef<HTMLDivElement | null>(null);
-  const [canLeft, setCanLeft] = useState(false);
-  const [canRight, setCanRight] = useState(true);
-
   // --- Cards carousel (móvil) ---
   const cardsRef = useRef<HTMLDivElement | null>(null);
   const cardRefs = useRef<Array<HTMLDivElement | null>>([]);
@@ -320,60 +300,15 @@ function ServicesTabs() {
   const isMobile = () =>
     typeof window !== "undefined" && window.matchMedia("(max-width: 767px)").matches;
 
-  const updateTabArrows = () => {
-    const el = tabsRef.current;
-    if (!el) return;
-    const maxScroll = el.scrollWidth - el.clientWidth;
-    setCanLeft(el.scrollLeft > 8);
-    setCanRight(el.scrollLeft < maxScroll - 8);
-  };
-
-  const scrollTabs = (dir: "left" | "right") => {
-    const el = tabsRef.current;
-    if (!el) return;
-    const amount = Math.round(el.clientWidth * 0.82);
-    el.scrollBy({ left: dir === "left" ? -amount : amount, behavior: "smooth" });
-  };
-
   const scrollToCard = (index: number) => {
     const card = cardRefs.current[index];
     if (!card) return;
     card.scrollIntoView({ behavior: "smooth", inline: "start", block: "nearest" });
   };
 
-  const scrollToTab = (index: number) => {
-    // hace que la pill activa quede visible en el carrusel
-    const el = tabsRef.current;
-    if (!el) return;
-    const tab = el.querySelector<HTMLButtonElement>(`button[data-tab-index="${index}"]`);
-    tab?.scrollIntoView({ behavior: "smooth", inline: "center", block: "nearest" });
-  };
-
-  const selectService = (index: number) => {
+  const selectServiceDesktop = (index: number) => {
     setCurrentIndex(index);
-    if (isMobile()) {
-      scrollToCard(index);
-      scrollToTab(index);
-    }
   };
-
-  // Mantener arrows de tabs actualizados
-  useEffect(() => {
-    updateTabArrows();
-    const el = tabsRef.current;
-    if (!el) return;
-
-    const onScroll = () => updateTabArrows();
-    el.addEventListener("scroll", onScroll, { passive: true });
-
-    const onResize = () => updateTabArrows();
-    window.addEventListener("resize", onResize);
-
-    return () => {
-      el.removeEventListener("scroll", onScroll);
-      window.removeEventListener("resize", onResize);
-    };
-  }, []);
 
   // ✅ Detectar card activa cuando el usuario hace swipe (móvil)
   useEffect(() => {
@@ -384,7 +319,6 @@ function ServicesTabs() {
 
     const observer = new IntersectionObserver(
       (entries) => {
-        // elige la más visible
         const best = entries
           .filter((e) => e.isIntersecting)
           .sort((a, b) => (b.intersectionRatio ?? 0) - (a.intersectionRatio ?? 0))[0];
@@ -392,11 +326,7 @@ function ServicesTabs() {
         if (!best) return;
 
         const idx = Number((best.target as HTMLElement).dataset.cardIndex);
-        if (!Number.isNaN(idx)) {
-          setCurrentIndex(idx);
-          // sincroniza las pills
-          scrollToTab(idx);
-        }
+        if (!Number.isNaN(idx)) setCurrentIndex(idx);
       },
       {
         root,
@@ -408,9 +338,6 @@ function ServicesTabs() {
     return () => observer.disconnect();
   }, []);
 
-  // ✅ ocultar scrollbar del carrusel (tabs y cards)
-  // (solo para esta sección)
-  // Nota: lo dejo aquí para que no toques globals.css
   return (
     <div className="mx-auto max-w-7xl">
       <style jsx global>{`
@@ -448,55 +375,9 @@ function ServicesTabs() {
         </div>
       </div>
 
-      {/* Pills (móvil carrusel + flechas; desktop wrap) */}
-      <div className="relative">
-        {/* Flecha izquierda */}
-        <button
-          type="button"
-          onClick={() => scrollTabs("left")}
-          disabled={!canLeft}
-          className={[
-            "md:hidden absolute left-0 top-1/2 -translate-y-1/2 z-10",
-            "h-10 w-10 rounded-full border border-white/10 bg-black/40 backdrop-blur",
-            "grid place-items-center shadow-lg shadow-black/30",
-            "transition duration-200",
-            "opacity-45 hover:opacity-85 active:opacity-90",
-            "hover:bg-black/55 active:bg-black/60",
-            canLeft ? "pointer-events-auto" : "opacity-0 pointer-events-none",
-          ].join(" ")}
-          aria-label="Ver servicios anteriores"
-        >
-          <ChevronLeft className="h-5 w-5 text-zinc-200" />
-        </button>
-
-        {/* Flecha derecha */}
-        <button
-          type="button"
-          onClick={() => scrollTabs("right")}
-          disabled={!canRight}
-          className={[
-            "md:hidden absolute right-0 top-1/2 -translate-y-1/2 z-10",
-            "h-10 w-10 rounded-full border border-white/10 bg-black/40 backdrop-blur",
-            "grid place-items-center shadow-lg shadow-black/30",
-            "transition duration-200",
-            "opacity-45 hover:opacity-85 active:opacity-90",
-            "hover:bg-black/55 active:bg-black/60",
-            canRight ? "pointer-events-auto" : "opacity-0 pointer-events-none",
-          ].join(" ")}
-          aria-label="Ver más servicios"
-        >
-          <ChevronRight className="h-5 w-5 text-zinc-200" />
-        </button>
-
-        <div
-          ref={tabsRef}
-          className={[
-            "elite-scroll flex gap-2 overflow-x-auto -mx-4 px-4",
-            "snap-x snap-mandatory",
-            "py-1",
-            "md:mx-0 md:px-0 md:flex-wrap md:overflow-visible md:py-0",
-          ].join(" ")}
-        >
+      {/* ✅ DESKTOP: Tabs (pills) visibles solo en md+ */}
+      <div className="hidden md:block">
+        <div className="flex flex-wrap gap-2">
           {services.map((s, idx) => {
             const TabIcon = s.icon as React.ElementType;
             const isActive = idx === currentIndex;
@@ -504,24 +385,21 @@ function ServicesTabs() {
             return (
               <button
                 key={s.title}
-                data-tab-index={idx}
-                onClick={() => selectService(idx)}
+                onClick={() => selectServiceDesktop(idx)}
                 className={[
-                  "snap-start shrink-0 md:shrink",
-                  "min-w-[210px] sm:min-w-[240px] md:min-w-0",
-                  "group relative flex items-center gap-2 rounded-2xl border px-3 py-2 text-sm transition md:px-4 md:py-3",
+                  "group relative flex items-center gap-2 rounded-2xl border px-4 py-3 text-sm transition",
                   isActive
                     ? "border-[#e6e6e6]/60 bg-white/10 text-white"
                     : "border-zinc-800 bg-black/40 text-zinc-300 hover:border-zinc-700",
                 ].join(" ")}
                 aria-pressed={isActive}
               >
-                <span className="flex h-8 w-8 md:h-9 md:w-9 items-center justify-center rounded-xl border border-zinc-800 bg-black/50">
+                <span className="flex h-9 w-9 items-center justify-center rounded-xl border border-zinc-800 bg-black/50">
                   <TabIcon className="h-4 w-4 text-zinc-200" />
                 </span>
                 <span className="text-left leading-tight">
-                  <span className="block text-[12px] md:text-[13px] font-medium">{s.title}</span>
-                  <span className="block text-[10px] md:text-[11px] text-zinc-500">{(s as any).kicker}</span>
+                  <span className="block text-[13px] font-medium">{s.title}</span>
+                  <span className="block text-[11px] text-zinc-500">{(s as any).kicker}</span>
                 </span>
 
                 {isActive && (
@@ -533,19 +411,14 @@ function ServicesTabs() {
         </div>
       </div>
 
-      {/* ✅ MOBILE: carrusel de cards (swipe) + sincronizado */}
+      {/* ✅ MOBILE: SOLO carrusel de cards (swipe). Tabs ocultos */}
       <div className="mt-6 md:hidden">
         <div
           ref={cardsRef}
-          className={[
-            "elite-scroll -mx-4 px-4",
-            "flex gap-4 overflow-x-auto",
-            "snap-x snap-mandatory",
-          ].join(" ")}
+          className={["elite-scroll -mx-4 px-4", "flex gap-4 overflow-x-auto", "snap-x snap-mandatory"].join(" ")}
         >
           {services.map((s, idx) => {
             const Icon = s.icon as React.ElementType;
-            const isActive = idx === currentIndex;
 
             return (
               <div
@@ -624,20 +497,10 @@ function ServicesTabs() {
                             />
                           ))}
                         </div>
-
-                        {/* si quieres que al tocar una card también la seleccione (extra) */}
-                        {isActive ? null : (
-                          <button
-                            type="button"
-                            className="sr-only"
-                            onClick={() => selectService(idx)}
-                            aria-label={`Seleccionar ${s.title}`}
-                          />
-                        )}
                       </div>
                     </div>
 
-                    {/* ✅ fade abajo para ver imagen */}
+                    {/* fade abajo para ver imagen */}
                     <div className="pointer-events-none absolute inset-x-0 bottom-0 h-16 bg-[linear-gradient(to_top,rgba(0,0,0,0.55),transparent)]" />
                   </div>
                 </div>
@@ -647,7 +510,7 @@ function ServicesTabs() {
         </div>
       </div>
 
-      {/* ✅ DESKTOP: panel clásico (como ya lo tenías) */}
+      {/* ✅ DESKTOP: panel clásico */}
       <div className="mt-6 hidden md:block overflow-hidden rounded-3xl border border-zinc-800 bg-black/50">
         <div className="grid grid-cols-1 md:grid-cols-5">
           <div className="p-6 md:col-span-3 md:p-8">
@@ -695,10 +558,7 @@ function ServicesTabs() {
                 )}
 
                 <div className="mt-6 flex flex-wrap items-center gap-3">
-                  <WhatsAppButton
-                    size="lg"
-                    message={`Hola, me interesa ${active.title}. ¿Podemos coordinar una cotización?`}
-                  >
+                  <WhatsAppButton size="lg" message={`Hola, me interesa ${active.title}. ¿Podemos coordinar una cotización?`}>
                     Coordinar por WhatsApp
                   </WhatsAppButton>
                 </div>
@@ -730,11 +590,6 @@ function ServicesTabs() {
     </div>
   );
 }
-
-
-
-
-  
 
 // ---------------- Wizard (Opción 2) ----------------
 type ServiceType = "Traslado (A → B)" | "Renta por día (Disposición)" | "Renta + Custodia";
@@ -932,12 +787,6 @@ export default function LuxuryTransportHome() {
             </a>
             <a href="#flota" className="text-sm text-zinc-300 hover:text-[#e6e6e6]">
               Flota
-            </a>
-            <a href="#seguridad" className="text-sm text-zinc-300 hover:text-[#e6e6e6]">
-              Seguridad
-            </a>
-            <a href="#testimonios" className="text-sm text-zinc-300 hover:text-[#e6e6e6]">
-              Clientes
             </a>
           </nav>
         </div>
@@ -1443,115 +1292,6 @@ export default function LuxuryTransportHome() {
           </div>
 
           <FleetGrid category={category} seats={seats} level={level} />
-        </div>
-      </Section>
-
-      {/* Seguridad / Diferenciales */}
-      <Section id="seguridad" className="bg-transparent">
-        <div className="mx-auto max-w-7xl px-4">
-          <div className="grid grid-cols-1 gap-10 md:grid-cols-2 md:gap-16">
-            <div>
-              <h2 className="text-2xl font-semibold md:text-3xl">Operación con estándares de seguridad</h2>
-              <div className="mt-2 h-0.5 w-12 rounded-full bg-gradient-to-r from-[#e6e6e6] to-transparent" />
-              <ul className="mt-6 space-y-4 text-zinc-300">
-                <li className="flex gap-3">
-                  <Shield className="mt-0.5 h-5 w-5 text-[#e6e6e6]" /> Blindaje y protocolos operativos según el contexto.
-                </li>
-                <li className="flex gap-3">
-                  <UserCheck className="mt-0.5 h-5 w-5 text-[#e6e6e6]" /> Personal operativo con procesos de verificación.
-                </li>
-                <li className="flex gap-3">
-                  <Clock className="mt-0.5 h-5 w-5 text-[#e6e6e6]" /> Coordinación 24/7 y puntualidad orientada a agenda ejecutiva.
-                </li>
-              </ul>
-
-              <div className="mt-6 flex flex-wrap gap-2">
-                <span className="rounded-full border border-zinc-700 px-3 py-1 text-xs text-zinc-300">Niveles: III · IV · V · V+</span>
-                <span className="rounded-full border border-zinc-700 px-3 py-1 text-xs text-zinc-300">Planeación operativa</span>
-                <span className="rounded-full border border-zinc-700 px-3 py-1 text-xs text-zinc-300">Coordinación nacional</span>
-              </div>
-            </div>
-
-            <div className="relative overflow-hidden rounded-2xl border border-zinc-800">
-              <img
-                src="https://images.unsplash.com/photo-1465447142348-e9952c393450?q=80&w=1600&auto=format&fit=crop"
-                alt="Interior ejecutivo"
-                className="h-full w-full object-cover"
-              />
-              <div className="absolute bottom-4 left-4 rounded-xl bg-black/50 px-3 py-2 text-xs backdrop-blur">
-                Interior ejecutivo con privacidad y conectividad
-              </div>
-            </div>
-          </div>
-        </div>
-      </Section>
-
-      {/* Testimonios */}
-      <Section id="testimonios" className="bg-transparent">
-        <div className="mx-auto max-w-7xl px-4">
-          <div className="mb-8 flex items-center justify-between">
-            <h2 className="text-2xl font-semibold md:text-3xl">La experiencia de nuestros clientes</h2>
-            <div className="mt-2 h-0.5 w-12 rounded-full bg-gradient-to-r from-[#e6e6e6] to-transparent" />
-            <div className="hidden items-center gap-1 md:flex">
-              {Array.from({ length: 5 }).map((_, i) => (
-                <Star key={i} className="h-5 w-5 fill-[#e6e6e6] text-[#e6e6e6]" />
-              ))}
-            </div>
-          </div>
-
-          <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-            {testimonials.map((t, i) => (
-              <motion.div
-                key={t.author}
-                initial={{ opacity: 0, y: 12 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.4, delay: i * 0.05 }}
-                viewport={{ once: true }}
-                className="rounded-2xl border border-zinc-800 bg-black/50 p-6"
-              >
-                <p className="text-zinc-200">“{t.quote}”</p>
-                <p className="mt-4 text-sm text-zinc-400">
-                  {t.author} · {t.role}
-                </p>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </Section>
-
-      {/* CTA Final */}
-      <Section className="bg-transparent">
-        <div className="mx-auto max-w-7xl px-4">
-          <div className="overflow-hidden rounded-3xl border border-[#e6e6e6]/20 bg-gradient-to-br from-[#12182a] to-[#0b1120] p-8 md:p-12">
-            <div className="grid grid-cols-1 items-center gap-8 md:grid-cols-2">
-              <div>
-                <h3 className="text-2xl font-semibold md:text-3xl">Listos para tu próximo itinerario</h3>
-                <p className="mt-3 max-w-xl text-zinc-300">
-                  Coordinamos aeropuerto, agenda ejecutiva, custodia y alojamiento de alto nivel con un solo punto de contacto.
-                </p>
-                <div className="mt-6 flex flex-wrap gap-3">
-                  <WhatsAppButton size="lg">Hablar con un asesor</WhatsAppButton>
-                  <Button
-                    size="lg"
-                    variant="outline"
-                    className="rounded-2xl border-zinc-700 text-zinc-200 hover:border-[#e6e6e6] hover:text-[#e6e6e6]"
-                  >
-                    Descargar brochure
-                  </Button>
-                </div>
-              </div>
-              <div className="relative">
-                <img
-                  src="https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?q=80&w=1600&auto=format&fit=crop"
-                  alt="Convoy ejecutivo"
-                  className="h-64 w-full rounded-2xl object-cover md:h-72"
-                />
-                <div className="absolute inset-x-0 -bottom-6 mx-auto w-[90%] rounded-2xl border border-[#e6e6e6]/20 bg-black/70 p-4 text-xs text-zinc-300 backdrop-blur">
-                  Agenda tentativa: AICM → Hotel → Reunión → Cena → Hotel
-                </div>
-              </div>
-            </div>
-          </div>
         </div>
       </Section>
 
