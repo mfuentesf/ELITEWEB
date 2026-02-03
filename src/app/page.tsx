@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useMemo, useRef, useState } from "react";
-import { motion } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import {
   Shield,
   Car,
@@ -82,7 +82,7 @@ const BRAND = {
   heroImageUrl: "/SUVHERO.png",
 };
 
-// --- Datos configurables (SERVICIOS con más diseño) ---
+// --- Datos configurables (SERVICIOS) ---
 const services = [
   {
     title: "Unidades Blindadas",
@@ -207,7 +207,7 @@ const fleetData: Array<{
   },
 ];
 
-// --- Componentes auxiliares tipados ---
+// --- Layout helpers ---
 interface SectionProps {
   id?: string;
   children: React.ReactNode;
@@ -219,12 +219,12 @@ const Section: React.FC<SectionProps> = ({ id, children, className = "" }) => (
   </section>
 );
 
+// ---------- Fleet ----------
 interface FleetGridProps {
   category: FleetCategory;
   seats: string;
   level: string; // "all" | ArmorLevel
 }
-
 function FleetGrid({ category, seats, level }: FleetGridProps) {
   const filtered = useMemo(() => {
     return fleetData.filter((item) => {
@@ -248,10 +248,9 @@ function FleetGrid({ category, seats, level }: FleetGridProps) {
       {filtered.map((f) => (
         <motion.div
           key={f.name}
-          initial={{ opacity: 0, y: 12 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.4 }}
-          viewport={{ once: true }}
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.25 }}
           className="overflow-hidden rounded-2xl border border-zinc-800 bg-black/50"
         >
           <div className="relative">
@@ -263,10 +262,12 @@ function FleetGrid({ category, seats, level }: FleetGridProps) {
               </span>
             )}
           </div>
+
           <div className="p-5">
             <h3 className="text-lg font-medium bg-[linear-gradient(110deg,_#f7f7f7,_#cfcfcf_38%,_#9a9a9a_55%,_#ffffff_72%)] bg-clip-text text-transparent">
               {f.name}
             </h3>
+
             <div className="mt-3 flex flex-wrap items-center gap-2 text-xs text-zinc-300">
               <span className="rounded-full border border-zinc-700 px-2 py-1">{f.seats} pax</span>
               {f.tags?.map((t) => (
@@ -275,6 +276,7 @@ function FleetGrid({ category, seats, level }: FleetGridProps) {
                 </span>
               ))}
             </div>
+
             <div className="mt-4 flex items-center justify-between">
               <p className="text-sm text-zinc-400">Disponible hoy</p>
               <WhatsAppButton size="sm" message={`Hola, me interesa ${f.name}. ¿Podemos coordinar una cotización?`}>
@@ -288,8 +290,11 @@ function FleetGrid({ category, seats, level }: FleetGridProps) {
   );
 }
 
+// ---------- Services ----------
 function ServicesTabs() {
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [direction, setDirection] = useState<1 | -1>(1);
+
   const active = services[currentIndex];
   const ActivePanelIcon = active.icon as React.ElementType;
 
@@ -297,23 +302,11 @@ function ServicesTabs() {
   const cardsRef = useRef<HTMLDivElement | null>(null);
   const cardRefs = useRef<Array<HTMLDivElement | null>>([]);
 
-  const isMobile = () =>
-    typeof window !== "undefined" && window.matchMedia("(max-width: 767px)").matches;
-
-  const scrollToCard = (index: number) => {
-    const card = cardRefs.current[index];
-    if (!card) return;
-    card.scrollIntoView({ behavior: "smooth", inline: "start", block: "nearest" });
-  };
-
-  const selectServiceDesktop = (index: number) => {
-    setCurrentIndex(index);
-  };
+  const isMobile = () => typeof window !== "undefined" && window.matchMedia("(max-width: 767px)").matches;
 
   // ✅ Detectar card activa cuando el usuario hace swipe (móvil)
   useEffect(() => {
     if (!isMobile()) return;
-
     const root = cardsRef.current;
     if (!root) return;
 
@@ -324,22 +317,35 @@ function ServicesTabs() {
           .sort((a, b) => (b.intersectionRatio ?? 0) - (a.intersectionRatio ?? 0))[0];
 
         if (!best) return;
-
         const idx = Number((best.target as HTMLElement).dataset.cardIndex);
-        if (!Number.isNaN(idx)) setCurrentIndex(idx);
+
+        if (!Number.isNaN(idx)) {
+          setDirection(idx > currentIndex ? 1 : -1);
+          setCurrentIndex(idx);
+        }
       },
-      {
-        root,
-        threshold: [0.55, 0.65, 0.75],
-      }
+      { root, threshold: [0.55, 0.65, 0.75] }
     );
 
     cardRefs.current.forEach((node) => node && observer.observe(node));
     return () => observer.disconnect();
-  }, []);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentIndex]);
+
+  const selectServiceDesktop = (index: number) => {
+    setDirection(index > currentIndex ? 1 : -1);
+    setCurrentIndex(index);
+  };
+
+  const panelVariants = {
+    enter: (dir: 1 | -1) => ({ opacity: 0, x: dir * 22, y: 0 }),
+    center: { opacity: 1, x: 0, y: 0 },
+    exit: (dir: 1 | -1) => ({ opacity: 0, x: dir * -18, y: 0 }),
+  };
 
   return (
     <div className="mx-auto max-w-7xl">
+      {/* esconder scrollbars solo dentro de esta sección */}
       <style jsx global>{`
         .elite-scroll::-webkit-scrollbar {
           display: none;
@@ -375,7 +381,7 @@ function ServicesTabs() {
         </div>
       </div>
 
-      {/* ✅ DESKTOP: Tabs (pills) visibles solo en md+ */}
+      {/* ✅ DESKTOP: Tabs visibles solo md+ */}
       <div className="hidden md:block">
         <div className="flex flex-wrap gap-2">
           {services.map((s, idx) => {
@@ -430,7 +436,6 @@ function ServicesTabs() {
                 className="snap-start shrink-0 w-[88%] sm:w-[78%]"
               >
                 <div className="relative overflow-hidden rounded-3xl border border-zinc-800 bg-black/40">
-                  {/* bg image */}
                   <div className="absolute inset-0">
                     <img src={(s as any).visual?.img} alt={s.title} className="h-full w-full object-cover opacity-55" />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/35 to-black/25" />
@@ -484,7 +489,6 @@ function ServicesTabs() {
                           </WhatsAppButton>
                         </div>
 
-                        {/* indicador sutil */}
                         <div className="mt-4 flex justify-center gap-1.5">
                           {services.map((_, dot) => (
                             <span
@@ -500,7 +504,6 @@ function ServicesTabs() {
                       </div>
                     </div>
 
-                    {/* fade abajo para ver imagen */}
                     <div className="pointer-events-none absolute inset-x-0 bottom-0 h-16 bg-[linear-gradient(to_top,rgba(0,0,0,0.55),transparent)]" />
                   </div>
                 </div>
@@ -510,60 +513,68 @@ function ServicesTabs() {
         </div>
       </div>
 
-      {/* ✅ DESKTOP: panel clásico */}
+      {/* ✅ DESKTOP: Panel con slide premium */}
       <div className="mt-6 hidden md:block overflow-hidden rounded-3xl border border-zinc-800 bg-black/50">
         <div className="grid grid-cols-1 md:grid-cols-5">
           <div className="p-6 md:col-span-3 md:p-8">
-            <motion.div
-              key={active.title}
-              initial={{ opacity: 0, y: 8 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.25 }}
-              className="flex items-start gap-4"
-            >
-              <div className="relative">
-                <div className="pointer-events-none absolute -inset-2 rounded-2xl bg-[radial-gradient(closest-side,rgba(255,255,255,0.18),transparent_70%)] blur-md" />
-                <div className="relative flex h-12 w-12 items-center justify-center rounded-2xl border border-zinc-800 bg-black/60">
-                  <ActivePanelIcon className="h-6 w-6 text-zinc-100" />
-                </div>
-              </div>
-
-              <div className="flex-1">
-                <p className="text-xs uppercase tracking-[0.22em] text-zinc-500">{(active as any).kicker}</p>
-                <h3 className="mt-1 text-2xl font-semibold">{active.title}</h3>
-                <p className="mt-2 text-zinc-300">{(active as any).desc}</p>
-
-                {!!(active as any).highlights?.length && (
-                  <div className="mt-4 flex flex-wrap gap-2">
-                    {(active as any).highlights.map((h: string) => (
-                      <span
-                        key={h}
-                        className="rounded-full border border-zinc-800 bg-black/40 px-3 py-1 text-xs text-zinc-300"
-                      >
-                        {h}
-                      </span>
-                    ))}
+            <AnimatePresence mode="wait" custom={direction}>
+              <motion.div
+                key={active.title}
+                custom={direction}
+                variants={panelVariants}
+                initial="enter"
+                animate="center"
+                exit="exit"
+                transition={{ duration: 0.28, ease: "easeOut" }}
+                className="flex items-start gap-4"
+              >
+                <div className="relative">
+                  <div className="pointer-events-none absolute -inset-2 rounded-2xl bg-[radial-gradient(closest-side,rgba(255,255,255,0.18),transparent_70%)] blur-md" />
+                  <div className="relative flex h-12 w-12 items-center justify-center rounded-2xl border border-zinc-800 bg-black/60">
+                    <ActivePanelIcon className="h-6 w-6 text-zinc-100" />
                   </div>
-                )}
-
-                {!!(active as any).bullets?.length && (
-                  <ul className="mt-5 grid grid-cols-1 gap-2 text-sm text-zinc-300 md:grid-cols-2">
-                    {(active as any).bullets.map((b: string) => (
-                      <li key={b} className="flex items-center gap-2">
-                        <span className="inline-block h-1.5 w-1.5 rounded-full bg-white/70" />
-                        {b}
-                      </li>
-                    ))}
-                  </ul>
-                )}
-
-                <div className="mt-6 flex flex-wrap items-center gap-3">
-                  <WhatsAppButton size="lg" message={`Hola, me interesa ${active.title}. ¿Podemos coordinar una cotización?`}>
-                    Coordinar por WhatsApp
-                  </WhatsAppButton>
                 </div>
-              </div>
-            </motion.div>
+
+                <div className="flex-1">
+                  <p className="text-xs uppercase tracking-[0.22em] text-zinc-500">{(active as any).kicker}</p>
+                  <h3 className="mt-1 text-2xl font-semibold">{active.title}</h3>
+                  <p className="mt-2 text-zinc-300">{(active as any).desc}</p>
+
+                  {!!(active as any).highlights?.length && (
+                    <div className="mt-4 flex flex-wrap gap-2">
+                      {(active as any).highlights.map((h: string) => (
+                        <span
+                          key={h}
+                          className="rounded-full border border-zinc-800 bg-black/40 px-3 py-1 text-xs text-zinc-300"
+                        >
+                          {h}
+                        </span>
+                      ))}
+                    </div>
+                  )}
+
+                  {!!(active as any).bullets?.length && (
+                    <ul className="mt-5 grid grid-cols-1 gap-2 text-sm text-zinc-300 md:grid-cols-2">
+                      {(active as any).bullets.map((b: string) => (
+                        <li key={b} className="flex items-center gap-2">
+                          <span className="inline-block h-1.5 w-1.5 rounded-full bg-white/70" />
+                          {b}
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+
+                  <div className="mt-6 flex flex-wrap items-center gap-3">
+                    <WhatsAppButton
+                      size="lg"
+                      message={`Hola, me interesa ${active.title}. ¿Podemos coordinar una cotización?`}
+                    >
+                      Coordinar por WhatsApp
+                    </WhatsAppButton>
+                  </div>
+                </div>
+              </motion.div>
+            </AnimatePresence>
           </div>
 
           <div className="relative md:col-span-2">
@@ -636,7 +647,7 @@ export default function LuxuryTransportHome() {
   // Flota
   const [category, setCategory] = useState<FleetCategory>("blindada");
   const [seats, setSeats] = useState<string>("all");
-  const [level, setLevel] = useState<string>("all"); // III | IV | V | V+ | all
+  const [level, setLevel] = useState<string>("all");
 
   // Wizard (Hero)
   const [step, setStep] = useState<1 | 2 | 3>(1);
@@ -752,6 +763,15 @@ export default function LuxuryTransportHome() {
     window.addEventListener("resize", setVh);
     return () => window.removeEventListener("resize", setVh);
   }, []);
+
+  // ✅ Ajuste UX Flota:
+  // si el usuario cambia de categoría y deja un nivel, reseteamos nivel si ya no aplica
+  useEffect(() => {
+    if (category !== "blindada") setLevel("all");
+  }, [category]);
+
+  // helper para mobile scroll categories
+  const catRef = useRef<HTMLDivElement | null>(null);
 
   return (
     <div className="min-h-screen bg-[#05060A] text-zinc-100 antialiased">
@@ -1227,7 +1247,7 @@ export default function LuxuryTransportHome() {
         </div>
       </Section>
 
-      {/* Flota */}
+      {/* Flota (AJUSTADA) */}
       <Section id="flota" className="bg-transparent">
         <div className="mx-auto max-w-7xl px-4">
           <div className="mb-6 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
@@ -1237,8 +1257,16 @@ export default function LuxuryTransportHome() {
               <p className="mt-2 max-w-2xl text-zinc-400">Selecciona categoría y ajusta filtros para ver unidades disponibles.</p>
             </div>
 
+            {/* ✅ Barra de filtros: compacta móvil, limpia desktop */}
             <div className="rounded-2xl border border-zinc-800 bg-black/50 p-3">
-              <div className="flex flex-wrap items-center gap-2">
+              {/* categorias: carrusel en móvil, wrap en desktop */}
+              <div
+                ref={catRef}
+                className={[
+                  "elite-scroll -mx-2 px-2",
+                  "flex gap-2 overflow-x-auto md:overflow-visible md:flex-wrap md:mx-0 md:px-0",
+                ].join(" ")}
+              >
                 {(
                   [
                     ["blindada", "Blindadas"],
@@ -1250,22 +1278,24 @@ export default function LuxuryTransportHome() {
                   <button
                     key={k}
                     onClick={() => setCategory(k)}
-                    className={`rounded-xl px-3 py-1 text-sm ${
+                    className={[
+                      "shrink-0 rounded-xl px-3 py-1 text-sm transition",
                       category === k
                         ? "bg-gradient-to-r from-[#e6e6e6] to-[#ffffff] text-[#0a0d14]"
-                        : "border border-zinc-700 text-zinc-300 hover:border-zinc-600"
-                    }`}
+                        : "border border-zinc-700 text-zinc-300 hover:border-zinc-600",
+                    ].join(" ")}
                   >
                     {label}
                   </button>
                 ))}
+              </div>
 
-                <div className="mx-3 h-5 w-px bg-zinc-800" />
-
+              {/* selects: 2 columnas en móvil, inline en desktop */}
+              <div className="mt-3 grid grid-cols-2 gap-2 md:mt-2 md:flex md:items-center md:gap-2">
                 <select
                   value={String(seats)}
                   onChange={(e) => setSeats(e.target.value)}
-                  className="rounded-xl border border-zinc-700 bg-black/60 px-2 py-1 text-sm"
+                  className="w-full rounded-xl border border-zinc-700 bg-black/60 px-2 py-2 text-sm md:w-auto md:py-1"
                 >
                   <option value="all">Pasajeros</option>
                   <option value="5">≥ 5</option>
@@ -1274,24 +1304,39 @@ export default function LuxuryTransportHome() {
                   <option value="12">≥ 12</option>
                 </select>
 
-                {category === "blindada" && (
-                  <select
-                    value={level}
-                    onChange={(e) => setLevel(e.target.value)}
-                    className="rounded-xl border border-zinc-700 bg-black/60 px-2 py-1 text-sm"
-                  >
-                    <option value="all">Nivel</option>
-                    <option value="III">III</option>
-                    <option value="IV">IV</option>
-                    <option value="V">V</option>
-                    <option value="V+">V+</option>
-                  </select>
-                )}
+                <select
+                  value={level}
+                  onChange={(e) => setLevel(e.target.value)}
+                  disabled={category !== "blindada"}
+                  className={[
+                    "w-full rounded-xl border px-2 py-2 text-sm md:w-auto md:py-1",
+                    category === "blindada"
+                      ? "border-zinc-700 bg-black/60"
+                      : "border-zinc-800 bg-black/40 text-zinc-500 cursor-not-allowed",
+                  ].join(" ")}
+                >
+                  <option value="all">Nivel</option>
+                  <option value="III">III</option>
+                  <option value="IV">IV</option>
+                  <option value="V">V</option>
+                  <option value="V+">V+</option>
+                </select>
               </div>
             </div>
           </div>
 
-          <FleetGrid category={category} seats={seats} level={level} />
+          {/* ✅ animación sutil al cambiar filtros */}
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={`${category}-${seats}-${level}`}
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -6 }}
+              transition={{ duration: 0.22 }}
+            >
+              <FleetGrid category={category} seats={seats} level={level} />
+            </motion.div>
+          </AnimatePresence>
         </div>
       </Section>
 
