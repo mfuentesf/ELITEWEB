@@ -649,52 +649,53 @@ function ServicesTabs({ tServices, lang }: { tServices: TServices; lang: Lang })
         </div>
       </div>
 
-      {/* Pills */}
-      <div className="relative">
-        <div
-          ref={tabsRef}
+{/* Pills (ocultas en móvil) */}
+<div className="relative hidden md:block">
+  <div
+    ref={tabsRef}
+    className={[
+      "elite-scroll flex gap-2 overflow-x-auto -mx-4 px-4",
+      "snap-x snap-mandatory",
+      "py-1",
+      "md:mx-0 md:px-0 md:flex-wrap md:overflow-visible md:py-0",
+    ].join(" ")}
+  >
+    {services.map((s, idx) => {
+      const TabIcon = s.icon as React.ElementType;
+      const isActive = idx === currentIndex;
+
+      return (
+        <button
+          key={s.title}
+          data-tab-index={idx}
+          onClick={() => selectService(idx)}
           className={[
-            "elite-scroll flex gap-2 overflow-x-auto -mx-4 px-4",
-            "snap-x snap-mandatory",
-            "py-1",
-            "md:mx-0 md:px-0 md:flex-wrap md:overflow-visible md:py-0",
+            "snap-start shrink-0 md:shrink",
+            "min-w-[175px] sm:min-w-[205px] md:min-w-0",
+            "group relative flex items-center gap-2 rounded-2xl border px-2.5 py-2 text-sm transition md:px-4 md:py-3",
+            isActive
+              ? "border-[#e6e6e6]/60 bg-white/10 text-white"
+              : "border-zinc-800 bg-black/40 text-zinc-300 hover:border-zinc-700",
           ].join(" ")}
+          aria-pressed={isActive}
         >
-          {services.map((s, idx) => {
-            const TabIcon = s.icon as React.ElementType;
-            const isActive = idx === currentIndex;
+          <span className="flex h-8 w-8 md:h-9 md:w-9 items-center justify-center rounded-xl border border-zinc-800 bg-black/50">
+            <TabIcon className="h-4 w-4 text-zinc-200" />
+          </span>
+          <span className="text-left leading-tight">
+            <span className="block text-[11.5px] md:text-[13px] font-medium">{s.title}</span>
+            <span className="block text-[10px] md:text-[11px] text-zinc-500">{s.kicker}</span>
+          </span>
 
-            return (
-              <button
-                key={s.title}
-                data-tab-index={idx}
-                onClick={() => selectService(idx)}
-                className={[
-                  "snap-start shrink-0 md:shrink",
-                  "min-w-[175px] sm:min-w-[205px] md:min-w-0",
-                  "group relative flex items-center gap-2 rounded-2xl border px-2.5 py-2 text-sm transition md:px-4 md:py-3",
-                  isActive
-                    ? "border-[#e6e6e6]/60 bg-white/10 text-white"
-                    : "border-zinc-800 bg-black/40 text-zinc-300 hover:border-zinc-700",
-                ].join(" ")}
-                aria-pressed={isActive}
-              >
-                <span className="flex h-8 w-8 md:h-9 md:w-9 items-center justify-center rounded-xl border border-zinc-800 bg-black/50">
-                  <TabIcon className="h-4 w-4 text-zinc-200" />
-                </span>
-                <span className="text-left leading-tight">
-                  <span className="block text-[11.5px] md:text-[13px] font-medium">{s.title}</span>
-                  <span className="block text-[10px] md:text-[11px] text-zinc-500">{s.kicker}</span>
-                </span>
+          {isActive && (
+            <span className="pointer-events-none absolute inset-0 rounded-2xl bg-[radial-gradient(closest-side,rgba(255,255,255,0.16),transparent_70%)]" />
+          )}
+        </button>
+      );
+    })}
+  </div>
+</div>
 
-                {isActive && (
-                  <span className="pointer-events-none absolute inset-0 rounded-2xl bg-[radial-gradient(closest-side,rgba(255,255,255,0.16),transparent_70%)]" />
-                )}
-              </button>
-            );
-          })}
-        </div>
-      </div>
 
       {/* MOBILE: carrusel */}
       <div className="mt-6 md:hidden">
