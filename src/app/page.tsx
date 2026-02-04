@@ -133,13 +133,29 @@ const DICT = {
         { key: "Renta + Custodia", desc: "Disposición con custodia incluida." },
       ],
       unitCards: [
-        { key: "Ejecutiva", title: "Ejecutiva", desc: "Agenda diaria y movilidad sin fricción.", hint: "Ideal para traslados y disposición." },
-        { key: "Blindada", title: "Blindada", desc: "Protección reforzada para agendas sensibles.", hint: "Selecciona nivel según contexto." },
-        { key: "Sprinter/Vans", title: "Sprinter/Vans", desc: "Comitivas, equipaje y logística coordinada.", hint: "Recomendado 8+ pasajeros." },
+        {
+          key: "Ejecutiva",
+          title: "Ejecutiva",
+          desc: "Agenda diaria y movilidad sin fricción.",
+          hint: "Ideal para traslados y disposición.",
+        },
+        {
+          key: "Blindada",
+          title: "Blindada",
+          desc: "Protección reforzada para agendas sensibles.",
+          hint: "Selecciona nivel según contexto.",
+        },
+        {
+          key: "Sprinter/Vans",
+          title: "Sprinter/Vans",
+          desc: "Comitivas, equipaje y logística coordinada.",
+          hint: "Recomendado 8+ pasajeros.",
+        },
         { key: "Lujo", title: "Lujo", desc: "VIP, máximo confort.", hint: "Servicio flagship." },
       ],
       armorTitle: "Nivel de blindaje",
-      armorHelp: "A mayor nivel, mayor protección. Si no estás seguro, IV suele funcionar bien para agenda ejecutiva.",
+      armorHelp:
+        "A mayor nivel, mayor protección. Si no estás seguro, IV suele funcionar bien para agenda ejecutiva.",
       paxLabel: "Pasajeros",
       origin: "Origen",
       destination: "Destino",
@@ -197,7 +213,11 @@ const DICT = {
           title: "Unidades Blindadas",
           kicker: "Protección + confort premium",
           desc: "Blindaje de alto nivel con confort premium y ejecución impecable para agendas sensibles y traslados ejecutivos.",
-          bullets: ["Niveles III / IV / V / V+ según contexto", "Planeación operativa", "Privacidad y confort premium a bordo"],
+          bullets: [
+            "Niveles III / IV / V / V+ según contexto",
+            "Planeación operativa",
+            "Privacidad y confort premium a bordo",
+          ],
           highlights: ["Confidencialidad", "Coordinación 24/7", "Cobertura nacional"],
           visual: {
             img: "https://images.unsplash.com/photo-1525609004556-c46c7d6cf023?q=80&w=1600&auto=format&fit=crop",
@@ -209,7 +229,11 @@ const DICT = {
           title: "Unidades Ejecutivas",
           kicker: "Movilidad ejecutiva sin fricción",
           desc: "SUVs premium para agenda ejecutiva: puntualidad, confort y una experiencia fluida en cada traslado.",
-          bullets: ["Interiores ejecutivos y máximo confort", "Planeación operativa", "Conectividad a bordo (carga y uso de dispositivos)"],
+          bullets: [
+            "Interiores ejecutivos y máximo confort",
+            "Planeación operativa",
+            "Conectividad a bordo (carga y uso de dispositivos)",
+          ],
           highlights: ["Puntualidad", "Confort premium", "Atención VIP"],
           visual: {
             img: "https://images.unsplash.com/photo-1511919884226-fd3cad34687c?q=80&w=1600&auto=format&fit=crop",
@@ -221,7 +245,12 @@ const DICT = {
           title: "Custodia Ejecutiva",
           kicker: "Acompañamiento profesional",
           desc: "Acompañamiento profesional con planeación previa y ejecución sobria, adaptada al nivel de exposición del evento.",
-          bullets: ["Perfil ejecutivo o de alto impacto", "Planeación operativa", "Coordinación con agenda", "Elementos verificados y comunicación operativa"],
+          bullets: [
+            "Perfil ejecutivo o de alto impacto",
+            "Planeación operativa",
+            "Coordinación con agenda",
+            "Elementos verificados y comunicación operativa",
+          ],
           highlights: ["Perfiles por contexto", "Procesos de verificación", "Operación sobria"],
           visual: {
             img: "https://images.unsplash.com/photo-1550355291-bbee04a92027?q=80&w=1600&auto=format&fit=crop",
@@ -233,7 +262,12 @@ const DICT = {
           title: "Sprinter & Vans",
           kicker: "Comitivas y logística",
           desc: "Movilidad para comitivas y eventos: espacio, confort y logística coordinada para que tu grupo llegue junto y a tiempo.",
-          bullets: ["Configuración para 8–15 pasajeros", "Espacio para equipaje y comodidad", "Aeropuerto / eventos / roadshows", "Coordinación de pickups y horarios"],
+          bullets: [
+            "Configuración para 8–15 pasajeros",
+            "Espacio para equipaje y comodidad",
+            "Aeropuerto / eventos / roadshows",
+            "Coordinación de pickups y horarios",
+          ],
           highlights: ["8–15 pasajeros", "Equipaje", "Pickups coordinados"],
           visual: {
             img: "https://images.unsplash.com/photo-1465447142348-e9952c393450?q=80&w=1600&auto=format&fit=crop",
@@ -245,7 +279,12 @@ const DICT = {
           title: "Alojamientos de Alto Nivel",
           kicker: "Privacidad + ubicación + servicio",
           desc: "Alojamientos para itinerarios exigentes: villas privadas y hotelería 5★ seleccionada por privacidad, ubicación y servicio.",
-          bullets: ["Villas privadas u hotelería 5★", "Selección según ubicación y necesidades", "Privacidad y coordinación de accesos", "Coordinación de reservación y logística"],
+          bullets: [
+            "Villas privadas u hotelería 5★",
+            "Selección según ubicación y necesidades",
+            "Privacidad y coordinación de accesos",
+            "Coordinación de reservación y logística",
+          ],
           highlights: ["Selección a medida", "Privacidad", "Accesos coordinados"],
           visual: {
             img: "https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?q=80&w=1600&auto=format&fit=crop",
@@ -497,6 +536,10 @@ const DICT = {
   },
 } as const;
 
+// ✅ Tipos “union” para evitar el error ES vs EN
+type TServices = typeof DICT["es"]["services"] | typeof DICT["en"]["services"];
+type TFleet = typeof DICT["es"]["fleet"] | typeof DICT["en"]["fleet"];
+
 function detectBrowserLang(): Lang {
   if (typeof window === "undefined") return "es";
   const nav = (navigator.language || "es").toLowerCase();
@@ -640,7 +683,8 @@ interface FleetGridProps {
   category: FleetCategory;
   seats: string;
   level: string; // "all" | ArmorLevel
-  tFleet: (typeof DICT)["es"]["fleet"];
+  // ✅ antes era DICT["es"]["fleet"] y tronaba con EN
+  tFleet: TFleet;
 }
 
 function FleetGrid({ category, seats, level, tFleet }: FleetGridProps) {
@@ -718,7 +762,8 @@ function ServicesTabs({
   tServices,
   lang,
 }: {
-  tServices: (typeof DICT)["es"]["services"];
+  // ✅ antes era DICT["es"]["services"] y tronaba con EN
+  tServices: TServices;
   lang: Lang;
 }) {
   const services = tServices.items;
@@ -754,7 +799,6 @@ function ServicesTabs({
     }
   };
 
-  // Detectar card activa cuando el usuario hace swipe (móvil)
   useEffect(() => {
     if (!isMobile()) return;
 
@@ -819,7 +863,7 @@ function ServicesTabs({
         </div>
       </div>
 
-      {/* Pills (CORREGIDO: más pequeñas en móvil) */}
+      {/* Pills */}
       <div className="relative">
         <div
           ref={tabsRef}
@@ -841,7 +885,6 @@ function ServicesTabs({
                 onClick={() => selectService(idx)}
                 className={[
                   "snap-start shrink-0 md:shrink",
-                  // ↓↓↓ más compactas en móvil
                   "min-w-[175px] sm:min-w-[205px] md:min-w-0",
                   "group relative flex items-center gap-2 rounded-2xl border px-2.5 py-2 text-sm transition md:px-4 md:py-3",
                   isActive
@@ -867,7 +910,7 @@ function ServicesTabs({
         </div>
       </div>
 
-      {/* MOBILE: carrusel de cards (swipe) */}
+      {/* MOBILE: carrusel */}
       <div className="mt-6 md:hidden">
         <div
           ref={cardsRef}
@@ -886,14 +929,8 @@ function ServicesTabs({
                 className="snap-start shrink-0 w-[88%] sm:w-[78%]"
               >
                 <div className="relative overflow-hidden rounded-3xl border border-zinc-800 bg-black/40">
-                  {/* bg image (CORREGIDO: más visible) */}
                   <div className="absolute inset-0">
-                    <img
-                      src={s.visual.img}
-                      alt={s.title}
-                      className="h-full w-full object-cover opacity-70"
-                    />
-                    {/* menos “tapa negra”, sobre todo abajo */}
+                    <img src={s.visual.img} alt={s.title} className="h-full w-full object-cover opacity-70" />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/65 via-black/25 to-black/20" />
                   </div>
 
@@ -949,7 +986,6 @@ function ServicesTabs({
                           </WhatsAppButton>
                         </div>
 
-                        {/* indicador sutil */}
                         <div className="mt-4 flex justify-center gap-1.5">
                           {services.map((_, dot) => (
                             <span
@@ -965,7 +1001,6 @@ function ServicesTabs({
                       </div>
                     </div>
 
-                    {/* fade abajo (más ligero) */}
                     <div className="pointer-events-none absolute inset-x-0 bottom-0 h-14 bg-[linear-gradient(to_top,rgba(0,0,0,0.35),transparent)]" />
                   </div>
                 </div>
@@ -975,7 +1010,7 @@ function ServicesTabs({
         </div>
       </div>
 
-      {/* DESKTOP: panel clásico */}
+      {/* DESKTOP */}
       <div className="mt-6 hidden md:block overflow-hidden rounded-3xl border border-zinc-800 bg-black/50">
         <div className="grid grid-cols-1 md:grid-cols-5">
           <div className="p-6 md:col-span-3 md:p-8">
@@ -1142,7 +1177,7 @@ export default function LuxuryTransportHome() {
     }
   }, [unitType]);
 
-  // Ajuste de city/profile cuando cambias de idioma (para no quedarse mezclado)
+  // Ajuste de city/profile cuando cambias de idioma
   useEffect(() => {
     setCity((prev) => {
       if (lang === "en") {
@@ -1380,7 +1415,6 @@ export default function LuxuryTransportHome() {
                       <p className="mt-1 text-xs text-zinc-400">{t.wizard.step1Help}</p>
 
                       <div className="mt-4 grid grid-cols-1 gap-2">
-                        {/* ✅ FIX: usar ReadonlyArray para que no choque con "readonly" por el "as const" */}
                         {(t.wizard.serviceTypes as ReadonlyArray<{ key: ServiceType; desc: string }>).map((s) => {
                           const activeSel = serviceType === s.key;
                           return (
