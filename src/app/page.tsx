@@ -1380,7 +1380,8 @@ export default function LuxuryTransportHome() {
                       <p className="mt-1 text-xs text-zinc-400">{t.wizard.step1Help}</p>
 
                       <div className="mt-4 grid grid-cols-1 gap-2">
-                        {(t.wizard.serviceTypes as Array<{ key: ServiceType; desc: string }>).map((s) => {
+                        {/* ✅ FIX: usar ReadonlyArray para que no choque con "readonly" por el "as const" */}
+                        {(t.wizard.serviceTypes as ReadonlyArray<{ key: ServiceType; desc: string }>).map((s) => {
                           const activeSel = serviceType === s.key;
                           return (
                             <button
