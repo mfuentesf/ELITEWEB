@@ -1372,9 +1372,328 @@ export default function LuxuryTransportHome() {
                 </div>
 
                 {/* Content */}
-                <div className="mt-5 space-y-3">
-                  {/* ... el resto del wizard se mantiene igual que tu código (no lo toqué) ... */}
+                {/* Content */}
+<div className="mt-5 space-y-3">
+  {step === 1 && (
+    <div className="rounded-2xl border border-zinc-800 bg-black/40 p-4">
+      <div className="flex items-center gap-2">
+        <Shield className="h-4 w-4 text-zinc-300" />
+        <p className="text-sm font-medium text-zinc-200">{t.wizard.step1Title}</p>
+      </div>
+      <p className="mt-1 text-xs text-zinc-400">{t.wizard.step1Help}</p>
+
+      <div className="mt-4 grid grid-cols-1 gap-2">
+        {(t.wizard.serviceTypes as ReadonlyArray<{ key: ServiceType; desc: string }>).map((s) => {
+          const activeSel = serviceType === s.key;
+          return (
+            <button
+              key={s.key}
+              onClick={() => setServiceType(s.key)}
+              className={`rounded-2xl border px-4 py-3 text-left transition
+                ${
+                  activeSel
+                    ? "border-[#e6e6e6]/70 bg-white/10"
+                    : "border-zinc-700 bg-black/40 hover:border-zinc-600"
+                }`}
+              aria-pressed={activeSel}
+            >
+              <p className={`text-sm ${activeSel ? "text-white" : "text-zinc-200"}`}>{s.key}</p>
+              <p className="mt-1 text-xs text-zinc-400">{s.desc}</p>
+            </button>
+          );
+        })}
+      </div>
+    </div>
+  )}
+
+  {step === 2 && (
+    <div className="rounded-2xl border border-zinc-800 bg-black/40 p-4">
+      <div className="flex items-center gap-2">
+        <Car className="h-4 w-4 text-zinc-300" />
+        <p className="text-sm font-medium text-zinc-200">{t.wizard.step2Title}</p>
+      </div>
+      <p className="mt-1 text-xs text-zinc-400">{t.wizard.step2Help}</p>
+
+      <div className="mt-4 grid grid-cols-1 gap-2">
+        {UNIT_CARDS.map((c) => {
+          const Icon = c.icon;
+          const activeSel = unitType === c.key;
+          return (
+            <button
+              key={c.key}
+              onClick={() => setUnitType(c.key)}
+              className={`rounded-2xl border px-4 py-3 text-left transition
+                ${
+                  activeSel
+                    ? "border-[#e6e6e6]/70 bg-white/10"
+                    : "border-zinc-700 bg-black/40 hover:border-zinc-600"
+                }`}
+              aria-pressed={activeSel}
+            >
+              <div className="flex items-start justify-between gap-3">
+                <div className="flex items-start gap-3">
+                  <div className="mt-0.5 rounded-xl border border-zinc-700 bg-black/50 p-2">
+                    <Icon className="h-4 w-4 text-zinc-200" />
+                  </div>
+                  <div>
+                    <p className="text-sm text-zinc-100">{c.title}</p>
+                    <p className="mt-1 text-xs text-zinc-400">{c.desc}</p>
+                    <p className="mt-1 text-[11px] text-zinc-500">{c.hint}</p>
+                  </div>
                 </div>
+                {activeSel && <CheckCircle2 className="h-5 w-5 text-[#e6e6e6]" />}
+              </div>
+            </button>
+          );
+        })}
+      </div>
+
+      {isArmored && (
+        <div className="mt-4 rounded-2xl border border-zinc-800 bg-black/50 p-4">
+          <div className="flex items-center gap-2">
+            <Shield className="h-4 w-4 text-zinc-300" />
+            <p className="text-sm font-medium text-zinc-200">{t.wizard.armorTitle}</p>
+          </div>
+          <p className="mt-1 text-xs text-zinc-400">{t.wizard.armorHelp}</p>
+
+          <div className="mt-3 flex items-center gap-2 rounded-xl border border-zinc-700/60 bg-black/50 px-3 py-2">
+            <Shield className="h-4 w-4 text-zinc-400" />
+            <select
+              className="w-full bg-transparent text-sm outline-none"
+              value={armorLevel}
+              onChange={(e) => setArmorLevel(e.target.value as ArmorLevel)}
+            >
+              <option className="bg-black/50">III</option>
+              <option className="bg-black/50">IV</option>
+              <option className="bg-black/50">V</option>
+              <option className="bg-black/50">V+</option>
+            </select>
+          </div>
+        </div>
+      )}
+    </div>
+  )}
+
+  {step === 3 && (
+    <div className="rounded-2xl border border-zinc-800 bg-black/40 p-4">
+      <div className="flex items-center gap-2">
+        <Calendar className="h-4 w-4 text-zinc-300" />
+        <p className="text-sm font-medium text-zinc-200">{t.wizard.step3Title}</p>
+      </div>
+      <p className="mt-1 text-xs text-zinc-400">{step3Help}</p>
+
+      <div className="mt-4">
+        <label className="mb-1 block text-xs font-medium text-zinc-200">{t.wizard.paxLabel}</label>
+        <div className="flex items-center gap-2 rounded-xl border border-zinc-700/60 bg-black/50 px-3 py-2">
+          <MapPin className="h-4 w-4 text-zinc-400" />
+          <select
+            className="w-full bg-transparent text-sm outline-none"
+            value={pax}
+            onChange={(e) => setPax(e.target.value)}
+            aria-label="Cantidad de pasajeros"
+          >
+            {t.wizard.paxOptions.map((p) => (
+              <option key={p} className="bg-black/50">
+                {p}
+              </option>
+            ))}
+          </select>
+        </div>
+      </div>
+
+      {isTransfer && (
+        <>
+          <div className="mt-3">
+            <label className="mb-1 block text-xs font-medium text-zinc-200">{t.wizard.origin}</label>
+            <div className="flex items-center gap-2 rounded-xl border border-zinc-700/60 bg-black/50 px-3 py-2">
+              <MapPin className="h-4 w-4 text-zinc-400" />
+              <input
+                className="w-full bg-transparent text-sm outline-none placeholder:text-zinc-500"
+                placeholder={t.wizard.placeholders.origin}
+                value={origin}
+                onChange={(e) => setOrigin(e.target.value)}
+              />
+            </div>
+          </div>
+
+          <div className="mt-3">
+            <label className="mb-1 block text-xs font-medium text-zinc-200">{t.wizard.destination}</label>
+            <div className="flex items-center gap-2 rounded-xl border border-zinc-700/60 bg-black/50 px-3 py-2">
+              <MapPin className="h-4 w-4 text-zinc-400" />
+              <input
+                className="w-full bg-transparent text-sm outline-none placeholder:text-zinc-500"
+                placeholder={t.wizard.placeholders.destination}
+                value={destination}
+                onChange={(e) => setDestination(e.target.value)}
+              />
+            </div>
+          </div>
+
+          <div className="mt-3 grid grid-cols-1 gap-3 md:grid-cols-2">
+            <div>
+              <label className="mb-1 block text-xs font-medium text-zinc-200">{t.wizard.date}</label>
+              <div className="flex items-center gap-2 rounded-xl border border-zinc-700/60 bg-black/50 px-3 py-2">
+                <Calendar className="h-4 w-4 text-zinc-400" />
+                <input
+                  type="date"
+                  className="w-full bg-transparent text-sm outline-none"
+                  value={date}
+                  onChange={(e) => setDate(e.target.value)}
+                />
+              </div>
+            </div>
+
+            <div>
+              <label className="mb-1 block text-xs font-medium text-zinc-200">{t.wizard.time}</label>
+              <div className="flex items-center gap-2 rounded-xl border border-zinc-700/60 bg-black/50 px-3 py-2">
+                <Clock className="h-4 w-4 text-zinc-400" />
+                <input
+                  type="time"
+                  className="w-full bg-transparent text-sm outline-none"
+                  value={time}
+                  onChange={(e) => setTime(e.target.value)}
+                />
+              </div>
+            </div>
+          </div>
+        </>
+      )}
+
+      {isRent && (
+        <>
+          <div className="mt-3">
+            <label className="mb-1 block text-xs font-medium text-zinc-200">{t.wizard.cityBase}</label>
+            <div className="flex items-center gap-2 rounded-xl border border-zinc-700/60 bg-black/50 px-3 py-2">
+              <MapPin className="h-4 w-4 text-zinc-400" />
+              <select className="w-full bg-transparent text-sm outline-none" value={city} onChange={(e) => setCity(e.target.value)}>
+                {t.wizard.cityOptions.map((c) => (
+                  <option key={c} className="bg-black/50">
+                    {c}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
+
+          <div className="mt-3 grid grid-cols-1 gap-3 md:grid-cols-2">
+            <div>
+              <label className="mb-1 block text-xs font-medium text-zinc-200">{t.wizard.start}</label>
+              <div className="flex items-center gap-2 rounded-xl border border-zinc-700/60 bg-black/50 px-3 py-2">
+                <Calendar className="h-4 w-4 text-zinc-400" />
+                <input type="date" className="w-full bg-transparent text-sm outline-none" value={startDate} onChange={(e) => setStartDate(e.target.value)} />
+              </div>
+            </div>
+
+            <div>
+              <label className="mb-1 block text-xs font-medium text-zinc-200">{t.wizard.end}</label>
+              <div className="flex items-center gap-2 rounded-xl border border-zinc-700/60 bg-black/50 px-3 py-2">
+                <Calendar className="h-4 w-4 text-zinc-400" />
+                <input type="date" className="w-full bg-transparent text-sm outline-none" value={endDate} onChange={(e) => setEndDate(e.target.value)} />
+              </div>
+            </div>
+          </div>
+
+          <div className="mt-3">
+            <label className="mb-1 block text-xs font-medium text-zinc-200">{t.wizard.schedule}</label>
+            <div className="flex items-center gap-2 rounded-xl border border-zinc-700/60 bg-black/50 px-3 py-2">
+              <Clock className="h-4 w-4 text-zinc-400" />
+              <input
+                className="w-full bg-transparent text-sm outline-none placeholder:text-zinc-500"
+                placeholder={t.wizard.placeholders.schedule}
+                value={schedule}
+                onChange={(e) => setSchedule(e.target.value)}
+              />
+            </div>
+          </div>
+
+          <div className="mt-3">
+            <label className="mb-1 block text-xs font-medium text-zinc-200">{t.wizard.zones}</label>
+            <div className="flex items-center gap-2 rounded-xl border border-zinc-700/60 bg-black/50 px-3 py-2">
+              <MapPin className="h-4 w-4 text-zinc-400" />
+              <input
+                className="w-full bg-transparent text-sm outline-none placeholder:text-zinc-500"
+                placeholder={t.wizard.placeholders.zones}
+                value={zones}
+                onChange={(e) => setZones(e.target.value)}
+              />
+            </div>
+          </div>
+        </>
+      )}
+
+      {isCustody && (
+        <div className="mt-3 grid grid-cols-1 gap-3 md:grid-cols-2">
+          <div>
+            <label className="mb-1 block text-xs font-medium text-zinc-200">{t.wizard.custodians}</label>
+            <div className="flex items-center gap-2 rounded-xl border border-zinc-700/60 bg-black/50 px-3 py-2">
+              <UserCheck className="h-4 w-4 text-zinc-400" />
+              <select className="w-full bg-transparent text-sm outline-none" value={custodians} onChange={(e) => setCustodians(e.target.value)}>
+                <option className="bg-black/50">1</option>
+                <option className="bg-black/50">2</option>
+                <option className="bg-black/50">3+</option>
+              </select>
+            </div>
+          </div>
+
+          <div>
+            <label className="mb-1 block text-xs font-medium text-zinc-200">{t.wizard.custodyProfile}</label>
+            <div className="flex items-center gap-2 rounded-xl border border-zinc-700/60 bg-black/50 px-3 py-2">
+              <UserCheck className="h-4 w-4 text-zinc-400" />
+              <select className="w-full bg-transparent text-sm outline-none" value={custodyProfile} onChange={(e) => setCustodyProfile(e.target.value)}>
+                {t.wizard.custodyProfiles.map((p) => (
+                  <option key={p} className="bg-black/50">
+                    {p}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
+        </div>
+      )}
+
+      <div className="mt-4">
+        <a href={reservationHref} target="_blank" rel="noopener noreferrer">
+          <Button className="w-full rounded-2xl bg-[#25D366] text-[#0a0d14] hover:brightness-110">
+            <WhatsAppIcon className="mr-2 h-4 w-4" /> {t.wizard.sendWA}
+          </Button>
+        </a>
+        <p className="mt-2 text-center text-xs text-zinc-400">{t.wizard.avgReply}</p>
+      </div>
+    </div>
+  )}
+
+  <div className="flex items-center justify-between pt-2">
+    <Button
+      variant="outline"
+      className="rounded-2xl border-zinc-700 bg-transparent text-zinc-200 hover:border-[#e6e6e6] hover:text-[#e6e6e6]"
+      onClick={() => setStep((s) => (s === 1 ? 1 : ((s - 1) as 1 | 2 | 3)))}
+      disabled={step === 1}
+    >
+      {t.wizard.back}
+    </Button>
+
+    {step < 3 ? (
+      <Button
+        className="rounded-2xl bg-gradient-to-r from-[#e6e6e6] to-[#ffffff] text-[#0a0d14]"
+        onClick={() => setStep((s) => (s === 3 ? 3 : ((s + 1) as 1 | 2 | 3)))}
+        disabled={!canNext}
+      >
+        {t.wizard.next} <ChevronRight className="ml-2 h-4 w-4" />
+      </Button>
+    ) : (
+      <Button
+        variant="outline"
+        className="rounded-2xl border-zinc-700 bg-transparent text-zinc-200 hover:border-[#e6e6e6] hover:text-[#e6e6e6]"
+        onClick={() => setStep(1)}
+      >
+        {t.wizard.restart}
+      </Button>
+    )}
+  </div>
+
+  <p className="text-[11px] text-zinc-500">{t.wizard.tip}</p>
+</div>
+
               </CardContent>
             </Card>
           </div>
