@@ -298,7 +298,7 @@ const DICT = {
         "Sprinter & Vans",
         "Alojamientos de Alto Nivel",
       ],
-      contactList: ["CDMX · Monterrey · Guadalajara", "+52 (55) 0000 0000", "contacto@luxshield.mx"],
+      contactList: ["+52 56 2580 0567", "contacto@luxshield.mx"],
       legalList: ["Privacidad", "Términos", "Aviso de cookies"],
       rights: "Todos los derechos reservados",
     },
