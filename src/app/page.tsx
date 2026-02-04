@@ -13,6 +13,7 @@ import {
   Calendar,
   ChevronRight,
   CheckCircle2,
+  Sparkles,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -96,14 +97,8 @@ type Lang = "es" | "en";
 
 const DICT = {
   es: {
-    brand: {
-      name: "ELITE",
-      tagline: "Armored SUVs • Executive Services",
-    },
-    nav: {
-      services: "Servicios",
-      fleet: "Flota",
-    },
+    brand: { name: "ELITE", tagline: "Armored SUVs • Executive Services" },
+    nav: { services: "Servicios", fleet: "Flota" },
     hero: {
       h1a: "Llega con calma.",
       h1b: "Nosotros nos encargamos.",
@@ -128,29 +123,13 @@ const DICT = {
         { key: "Renta + Custodia", desc: "Disposición con custodia incluida." },
       ],
       unitCards: [
-        {
-          key: "Ejecutiva",
-          title: "Ejecutiva",
-          desc: "Agenda diaria y movilidad sin fricción.",
-          hint: "Ideal para traslados y disposición.",
-        },
-        {
-          key: "Blindada",
-          title: "Blindada",
-          desc: "Protección reforzada para agendas sensibles.",
-          hint: "Selecciona nivel según contexto.",
-        },
-        {
-          key: "Sprinter/Vans",
-          title: "Sprinter/Vans",
-          desc: "Comitivas, equipaje y logística coordinada.",
-          hint: "Recomendado 8+ pasajeros.",
-        },
+        { key: "Ejecutiva", title: "Ejecutiva", desc: "Agenda diaria y movilidad sin fricción.", hint: "Ideal para traslados y disposición." },
+        { key: "Blindada", title: "Blindada", desc: "Protección reforzada para agendas sensibles.", hint: "Selecciona nivel según contexto." },
+        { key: "Sprinter/Vans", title: "Sprinter/Vans", desc: "Comitivas, equipaje y logística coordinada.", hint: "Recomendado 8+ pasajeros." },
         { key: "Lujo", title: "Lujo", desc: "VIP, máximo confort.", hint: "Servicio flagship." },
       ],
       armorTitle: "Nivel de blindaje",
-      armorHelp:
-        "A mayor nivel, mayor protección. Si no estás seguro, IV suele funcionar bien para agenda ejecutiva.",
+      armorHelp: "A mayor nivel, mayor protección. Si no estás seguro, IV suele funcionar bien para agenda ejecutiva.",
       paxLabel: "Pasajeros",
       origin: "Origen",
       destination: "Destino",
@@ -208,11 +187,7 @@ const DICT = {
           title: "Unidades Blindadas",
           kicker: "Protección + confort premium",
           desc: "Blindaje de alto nivel con confort premium y ejecución impecable para agendas sensibles y traslados ejecutivos.",
-          bullets: [
-            "Niveles III / IV / V / V+ según contexto",
-            "Planeación operativa",
-            "Privacidad y confort premium a bordo",
-          ],
+          bullets: ["Niveles III / IV / V / V+ según contexto", "Planeación operativa", "Privacidad y confort premium a bordo"],
           highlights: ["Confidencialidad", "Coordinación 24/7", "Cobertura nacional"],
           visual: {
             img: "https://images.unsplash.com/photo-1525609004556-c46c7d6cf023?q=80&w=1600&auto=format&fit=crop",
@@ -224,11 +199,7 @@ const DICT = {
           title: "Unidades Ejecutivas",
           kicker: "Movilidad ejecutiva sin fricción",
           desc: "SUVs premium para agenda ejecutiva: puntualidad, confort y una experiencia fluida en cada traslado.",
-          bullets: [
-            "Interiores ejecutivos y máximo confort",
-            "Planeación operativa",
-            "Conectividad a bordo (carga y uso de dispositivos)",
-          ],
+          bullets: ["Interiores ejecutivos y máximo confort", "Planeación operativa", "Conectividad a bordo (carga y uso de dispositivos)"],
           highlights: ["Puntualidad", "Confort premium", "Atención VIP"],
           visual: {
             img: "https://images.unsplash.com/photo-1511919884226-fd3cad34687c?q=80&w=1600&auto=format&fit=crop",
@@ -240,12 +211,7 @@ const DICT = {
           title: "Custodia Ejecutiva",
           kicker: "Acompañamiento profesional",
           desc: "Acompañamiento profesional con planeación previa y ejecución sobria, adaptada al nivel de exposición del evento.",
-          bullets: [
-            "Perfil ejecutivo o de alto impacto",
-            "Planeación operativa",
-            "Coordinación con agenda",
-            "Elementos verificados y comunicación operativa",
-          ],
+          bullets: ["Perfil ejecutivo o de alto impacto", "Planeación operativa", "Coordinación con agenda", "Elementos verificados y comunicación operativa"],
           highlights: ["Perfiles por contexto", "Procesos de verificación", "Operación sobria"],
           visual: {
             img: "https://images.unsplash.com/photo-1550355291-bbee04a92027?q=80&w=1600&auto=format&fit=crop",
@@ -257,12 +223,7 @@ const DICT = {
           title: "Sprinter & Vans",
           kicker: "Comitivas y logística",
           desc: "Movilidad para comitivas y eventos: espacio, confort y logística coordinada para que tu grupo llegue junto y a tiempo.",
-          bullets: [
-            "Configuración para 8–15 pasajeros",
-            "Espacio para equipaje y comodidad",
-            "Aeropuerto / eventos / roadshows",
-            "Coordinación de pickups y horarios",
-          ],
+          bullets: ["Configuración para 8–15 pasajeros", "Espacio para equipaje y comodidad", "Aeropuerto / eventos / roadshows", "Coordinación de pickups y horarios"],
           highlights: ["8–15 pasajeros", "Equipaje", "Pickups coordinados"],
           visual: {
             img: "https://images.unsplash.com/photo-1465447142348-e9952c393450?q=80&w=1600&auto=format&fit=crop",
@@ -274,12 +235,7 @@ const DICT = {
           title: "Alojamientos de Alto Nivel",
           kicker: "Privacidad + ubicación + servicio",
           desc: "Alojamientos para itinerarios exigentes: villas privadas y hotelería 5★ seleccionada por privacidad, ubicación y servicio.",
-          bullets: [
-            "Villas privadas u hotelería 5★",
-            "Selección según ubicación y necesidades",
-            "Privacidad y coordinación de accesos",
-            "Coordinación de reservación y logística",
-          ],
+          bullets: ["Villas privadas u hotelería 5★", "Selección según ubicación y necesidades", "Privacidad y coordinación de accesos", "Coordinación de reservación y logística"],
           highlights: ["Selección a medida", "Privacidad", "Accesos coordinados"],
           visual: {
             img: "https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?q=80&w=1600&auto=format&fit=crop",
@@ -290,38 +246,21 @@ const DICT = {
       ],
     },
     footer: {
-      about:
-        "Operador de transporte blindado y servicios ejecutivos. Cobertura nacional y coordinación internacional.",
+      about: "Operador de transporte blindado y servicios ejecutivos. Cobertura nacional y coordinación internacional.",
       colServices: "Servicios",
       colContact: "Contacto",
       colLegal: "Legal",
-      servicesList: [
-        "Unidades Blindadas",
-        "Unidades Ejecutivas",
-        "Protección Ejecutiva",
-        "Sprinter & Vans",
-        "Alojamientos de Alto Nivel",
-      ],
+      servicesList: ["Unidades Blindadas", "Unidades Ejecutivas", "Protección Ejecutiva", "Sprinter & Vans", "Alojamientos de Alto Nivel"],
       contactList: ["CDMX · Monterrey · Guadalajara", "+52 (55) 0000 0000", "contacto@luxshield.mx"],
       legalList: ["Privacidad", "Términos", "Aviso de cookies"],
       rights: "Todos los derechos reservados",
     },
-    lang: {
-      es: "ES",
-      en: "EN",
-      aria: "Cambiar idioma",
-    },
+    lang: { es: "ES", en: "EN", aria: "Cambiar idioma" },
   },
 
   en: {
-    brand: {
-      name: "ELITE",
-      tagline: "Armored SUVs • Executive Services",
-    },
-    nav: {
-      services: "Services",
-      fleet: "Fleet",
-    },
+    brand: { name: "ELITE", tagline: "Armored SUVs • Executive Services" },
+    nav: { services: "Services", fleet: "Fleet" },
     hero: {
       h1a: "Arrive at ease.",
       h1b: "We handle the rest.",
@@ -346,29 +285,13 @@ const DICT = {
         { key: "Renta + Custodia", desc: "On-call service with security included." },
       ],
       unitCards: [
-        {
-          key: "Ejecutiva",
-          title: "Executive",
-          desc: "Smooth, discreet daily mobility.",
-          hint: "Ideal for transfers and on-call.",
-        },
-        {
-          key: "Blindada",
-          title: "Armored",
-          desc: "Enhanced protection for sensitive itineraries.",
-          hint: "Select a level by context.",
-        },
-        {
-          key: "Sprinter/Vans",
-          title: "Sprinter / Vans",
-          desc: "Teams, luggage, and coordinated logistics.",
-          hint: "Recommended for 8+ passengers.",
-        },
+        { key: "Ejecutiva", title: "Executive", desc: "Smooth, discreet daily mobility.", hint: "Ideal for transfers and on-call." },
+        { key: "Blindada", title: "Armored", desc: "Enhanced protection for sensitive itineraries.", hint: "Select a level by context." },
+        { key: "Sprinter/Vans", title: "Sprinter / Vans", desc: "Teams, luggage, and coordinated logistics.", hint: "Recommended for 8+ passengers." },
         { key: "Lujo", title: "Luxury", desc: "Flagship VIP comfort.", hint: "Top-tier experience." },
       ],
       armorTitle: "Armor level",
-      armorHelp:
-        "Higher level means higher protection. If unsure, Level IV is a strong default for executive itineraries.",
+      armorHelp: "Higher level means higher protection. If unsure, Level IV is a strong default for executive itineraries.",
       paxLabel: "Passengers",
       origin: "From",
       destination: "To",
@@ -386,12 +309,7 @@ const DICT = {
       back: "Back",
       next: "Continue",
       restart: "Restart",
-      placeholders: {
-        origin: "Airport, hotel, or city",
-        destination: "Office or area",
-        schedule: "e.g., 10:00–20:00",
-        zones: "e.g., Polanco, Reforma, Santa Fe",
-      },
+      placeholders: { origin: "Airport, hotel, or city", destination: "Office or area", schedule: "e.g., 10:00–20:00", zones: "e.g., Polanco, Reforma, Santa Fe" },
       paxOptions: ["1–4", "5–7", "8–10", "10+"],
       cityOptions: ["Mexico City", "Monterrey", "Guadalajara", "Other"],
       custodyProfiles: ["Executive", "High-profile"],
@@ -420,8 +338,7 @@ const DICT = {
       sub: "Select a service to see the exact scope. We’ll tailor it to your itinerary.",
       chips: ["Nationwide coverage", "24/7 coordination"],
       waCTA: "Arrange via WhatsApp",
-      recommend:
-        "Recommendation: if you’re unsure, we’ll select the right level and configuration for your itinerary.",
+      recommend: "Recommendation: if you’re unsure, we’ll select the right level and configuration for your itinerary.",
       items: [
         {
           title: "Armored SUVs",
@@ -486,8 +403,7 @@ const DICT = {
       ],
     },
     footer: {
-      about:
-        "Armored transportation operator and executive services. Nationwide coverage with international coordination.",
+      about: "Armored transportation operator and executive services. Nationwide coverage with international coordination.",
       colServices: "Services",
       colContact: "Contact",
       colLegal: "Legal",
@@ -496,15 +412,10 @@ const DICT = {
       legalList: ["Privacy", "Terms", "Cookie notice"],
       rights: "All rights reserved",
     },
-    lang: {
-      es: "ES",
-      en: "EN",
-      aria: "Change language",
-    },
+    lang: { es: "ES", en: "EN", aria: "Change language" },
   },
 } as const;
 
-// ✅ Tipos “union” para evitar el error ES vs EN
 type TServices = typeof DICT["es"]["services"] | typeof DICT["en"]["services"];
 
 function detectBrowserLang(): Lang {
@@ -549,7 +460,7 @@ interface SectionProps {
   className?: string;
 }
 const Section: React.FC<SectionProps> = ({ id, children, className = "" }) => (
-  <section id={id} className={`py-16 md:py-24 ${className}`}>
+  <section id={id} className={`${className}`}>
     {children}
   </section>
 );
@@ -599,13 +510,8 @@ function LangPill({
   );
 }
 
-function ServicesTabs({
-  tServices,
-  lang,
-}: {
-  tServices: TServices;
-  lang: Lang;
-}) {
+/* ---------------- Servicios (igual) ---------------- */
+function ServicesTabs({ tServices, lang }: { tServices: TServices; lang: Lang }) {
   const services = tServices.items;
   const [currentIndex, setCurrentIndex] = useState(0);
   const active = services[currentIndex];
@@ -938,7 +844,7 @@ function ServicesTabs({
   );
 }
 
-// ---------------- Wizard ----------------
+/* ---------------- Wizard (sin cambios funcionales) ---------------- */
 function StepPill({ index, current, label }: { index: number; current: number; label: string }) {
   const done = current > index;
   const active = current === index;
@@ -963,20 +869,10 @@ function StepPill({ index, current, label }: { index: number; current: number; l
   );
 }
 
-/* ---------------- Flota simplificada (Carrusel) ---------------- */
-function FleetCarousel({
-  lang,
-  title,
-  sub,
-}: {
-  lang: Lang;
-  title: string;
-  sub: string;
-}) {
+/* ---------------- Flota (ajustada a lo que pediste) ---------------- */
+function FleetCarousel({ lang, title, sub }: { lang: Lang; title: string; sub: string }) {
   const trackRef = useRef<HTMLDivElement | null>(null);
 
-  // ✅ Cambia estas imágenes por tus rutas en /public si quieres (recomendado)
-  // Ejemplo: "/fleet/suburban.jpg"
   const items = useMemo(
     () => [
       { name: "Suburban", img: "https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?q=80&w=1600&auto=format&fit=crop" },
@@ -994,17 +890,18 @@ function FleetCarousel({
     const el = trackRef.current;
     if (!el) return;
     const card = el.querySelector<HTMLElement>("[data-card]");
-    const step = (card?.offsetWidth ?? 320) + 16; // card width + gap
+    const step = (card?.offsetWidth ?? 320) + 16;
     el.scrollBy({ left: dir === "left" ? -step : step, behavior: "smooth" });
   };
 
-  const otherUnitMessage =
-    lang === "es"
-      ? "Hola, me interesa cotizar una unidad que no veo en el sitio. ¿Me apoyas con disponibilidad y precio? (Modelo / ciudad / fecha)"
-      : "Hello, I’d like to quote a vehicle I don’t see on the site. Can you help me with availability and pricing? (Model / city / date)";
-
   const digits = WHATSAPP_NUMBER.replace(/\D/g, "");
-  const otherUnitHref = `https://wa.me/${digits}?text=${encodeURIComponent(otherUnitMessage)}`;
+
+  const conciergeMessage =
+    lang === "es"
+      ? "Hola, quiero cotizar una unidad específica (o una configuración especial). ¿Me apoyas con disponibilidad, ciudad y fecha?"
+      : "Hello, I’d like to quote a specific vehicle (or a special configuration). Can you help with availability, city, and date?";
+
+  const conciergeHref = `https://wa.me/${digits}?text=${encodeURIComponent(conciergeMessage)}`;
 
   return (
     <div className="mx-auto max-w-7xl">
@@ -1018,29 +915,50 @@ function FleetCarousel({
         }
       `}</style>
 
-      {/* Header + CTA */}
-      <div className="mb-6 flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
+      {/* Header + Concierge CTA (más “diseño”) */}
+      <div className="mb-6 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
         <div>
           <h2 className="text-2xl font-semibold md:text-3xl">{title}</h2>
           <div className="mt-2 h-0.5 w-12 rounded-full bg-gradient-to-r from-[#e6e6e6] to-transparent" />
-          <p className="mt-2 max-w-2xl text-zinc-400">{sub}</p>
+          <p className="mt-2 max-w-3xl text-zinc-400">{sub}</p>
         </div>
 
-        <a href={otherUnitHref} target="_blank" rel="noopener noreferrer">
-          <Button
-            variant="outline"
-            className="rounded-2xl border-zinc-700 bg-black/40 text-zinc-200 hover:border-[#e6e6e6] hover:text-[#e6e6e6]"
-          >
-            {lang === "es" ? "Preguntar por otra unidad" : "Ask for another vehicle"}
-            <ChevronRight className="ml-2 h-4 w-4" />
-          </Button>
+        {/* Concierge chip */}
+        <a
+          href={conciergeHref}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="group rounded-3xl border border-white/10 bg-[linear-gradient(180deg,rgba(255,255,255,0.10),rgba(0,0,0,0.25))] p-[1px] md:max-w-sm"
+        >
+          <div className="rounded-3xl bg-black/50 p-4 backdrop-blur">
+            <div className="flex items-start gap-3">
+              <div className="mt-0.5 rounded-2xl border border-white/10 bg-white/5 p-2">
+                <Sparkles className="h-5 w-5 text-zinc-200" />
+              </div>
+              <div className="flex-1">
+                <p className="text-sm font-semibold text-zinc-100">
+                  {lang === "es" ? "Concierge de unidades" : "Vehicle concierge"}
+                </p>
+                <p className="mt-1 text-xs text-zinc-400">
+                  {lang === "es"
+                    ? "¿Buscas un modelo o configuración especial? Te la conseguimos."
+                    : "Need a specific model or configuration? We’ll source it."}
+                </p>
+
+                <div className="mt-3 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs text-zinc-200 transition group-hover:border-white/20">
+                  {lang === "es" ? "Pedir disponibilidad" : "Check availability"}
+                  <ChevronRight className="h-4 w-4 opacity-70" />
+                </div>
+              </div>
+            </div>
+          </div>
         </a>
       </div>
 
       {/* Controls */}
       <div className="mb-3 flex items-center justify-between">
         <p className="text-xs text-zinc-500">
-          {lang === "es" ? "Desliza para ver modelos" : "Swipe to browse models"}
+          {lang === "es" ? "Desliza para explorar la flota" : "Swipe to explore the fleet"}
         </p>
         <div className="flex items-center gap-2">
           <Button
@@ -1064,7 +982,7 @@ function FleetCarousel({
         </div>
       </div>
 
-      {/* Carousel */}
+      {/* Carousel (cards más altas/cuadradas + sin texto descriptivo dentro) */}
       <div
         ref={trackRef}
         className={[
@@ -1077,7 +995,7 @@ function FleetCarousel({
           const quickMessage =
             lang === "es"
               ? `Hola, me interesa cotizar ${it.name}. ¿Podemos coordinar disponibilidad, ciudad y fecha?`
-              : `Hello, I’m interested in quoting ${it.name}. Can we coordinate availability, city and date?`;
+              : `Hello, I’d like to quote ${it.name}. Can we coordinate availability, city and date?`;
 
           return (
             <div
@@ -1086,32 +1004,39 @@ function FleetCarousel({
               className="snap-start shrink-0 w-[78%] sm:w-[52%] md:w-[32%]"
             >
               <div className="relative overflow-hidden rounded-3xl border border-zinc-800 bg-black/50">
-                <div className="absolute inset-0">
-                  <img src={it.img} alt={it.name} className="h-full w-full object-cover opacity-80" />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/25 to-black/10" />
-                </div>
+                {/* altura más “cuadrada” */}
+                <div className="relative h-[360px] sm:h-[390px] md:h-[420px]">
+                  <img src={it.img} alt={it.name} className="absolute inset-0 h-full w-full object-cover" />
 
-                <div className="relative z-10 p-6">
-                  <div className="flex items-center justify-between gap-3">
-                    <h3 className="text-xl font-semibold">{it.name}</h3>
-                    <span className="rounded-full border border-white/10 bg-black/40 px-2 py-1 text-[11px] text-zinc-200 backdrop-blur">
-                      {lang === "es" ? "Disponible según agenda" : "Subject to schedule"}
-                    </span>
+                  {/* overlays */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/20 to-black/10" />
+                  <div className="absolute inset-0 bg-[radial-gradient(closest-side,rgba(255,255,255,0.10),transparent_70%)]" />
+
+                  {/* top label */}
+                  <div className="absolute left-5 top-5 inline-flex items-center gap-2 rounded-full border border-white/10 bg-black/45 px-3 py-1 text-xs text-zinc-200 backdrop-blur">
+                    <span className="h-1.5 w-1.5 rounded-full bg-white/70" />
+                    {lang === "es" ? "Disponibilidad bajo agenda" : "Subject to schedule"}
                   </div>
 
-                  <p className="mt-2 text-sm text-zinc-300">
-                    {lang === "es"
-                      ? "SUV premium para movilidad ejecutiva y servicios blindados."
-                      : "Premium SUV for executive mobility and armored services."}
-                  </p>
+                  {/* bottom content (solo nombre + botón compacto) */}
+                  <div className="absolute inset-x-0 bottom-0 p-5">
+                    <div className="flex items-end justify-between gap-3">
+                      <div>
+                        <p className="text-xl font-semibold leading-none">{it.name}</p>
+                        <p className="mt-1 text-xs text-zinc-300">
+                          {lang === "es" ? "Selección ejecutiva" : "Executive selection"}
+                        </p>
+                      </div>
 
-                  <div className="mt-5">
-                    <WhatsAppButton size="lg" message={quickMessage} className="w-full justify-center">
-                      {lang === "es" ? "Cotizar por WhatsApp" : "Quote via WhatsApp"}
-                    </WhatsAppButton>
+                      <WhatsAppButton
+                        size="sm"
+                        message={quickMessage}
+                        className="h-9 rounded-full px-3 text-sm"
+                      >
+                        {lang === "es" ? "Cotizar" : "Quote"}
+                      </WhatsAppButton>
+                    </div>
                   </div>
-
-                  <div className="pointer-events-none absolute inset-x-0 bottom-0 h-12 bg-[linear-gradient(to_top,rgba(0,0,0,0.35),transparent)]" />
                 </div>
               </div>
             </div>
@@ -1119,18 +1044,28 @@ function FleetCarousel({
         })}
       </div>
 
-      {/* Secondary CTA */}
-      <div className="mt-6 rounded-3xl border border-zinc-800 bg-black/40 p-5 md:p-6">
+      {/* Secondary CTA (más premium, ya sin “botón simple”) */}
+      <div className="mt-6 rounded-3xl border border-zinc-800 bg-[linear-gradient(180deg,rgba(255,255,255,0.06),rgba(0,0,0,0.25))] p-5 md:p-6">
         <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
-          <p className="text-sm text-zinc-300">
-            {lang === "es"
-              ? "¿Buscas un modelo específico o una configuración especial? Escríbenos y lo conseguimos."
-              : "Looking for a specific model or a special configuration? Message us—we’ll source it."}
-          </p>
+          <div className="flex items-start gap-3">
+            <div className="mt-0.5 rounded-2xl border border-white/10 bg-white/5 p-2">
+              <Sparkles className="h-5 w-5 text-zinc-200" />
+            </div>
+            <div>
+              <p className="text-sm font-semibold text-zinc-100">
+                {lang === "es" ? "Curaduría de unidades a medida" : "Curated vehicles on request"}
+              </p>
+              <p className="mt-1 text-sm text-zinc-300">
+                {lang === "es"
+                  ? "Trabajamos con distintas unidades premium (ejecutivas y blindadas). Si buscas un modelo específico, lo coordinamos con confidencialidad y precisión."
+                  : "We work with a range of premium vehicles (executive and armored). If you need a specific model, we’ll coordinate it with discretion and precision."}
+              </p>
+            </div>
+          </div>
 
-          <a href={otherUnitHref} target="_blank" rel="noopener noreferrer">
+          <a href={conciergeHref} target="_blank" rel="noopener noreferrer">
             <Button className="rounded-2xl bg-gradient-to-r from-[#e6e6e6] to-[#ffffff] text-[#0a0d14]">
-              {lang === "es" ? "Pedir otra unidad" : "Request another vehicle"}
+              {lang === "es" ? "Hablar con concierge" : "Talk to concierge"}
               <ChevronRight className="ml-2 h-4 w-4" />
             </Button>
           </a>
@@ -1166,16 +1101,13 @@ export default function LuxuryTransportHome() {
 
   // Custodia
   const [custodians, setCustodians] = useState<string>("1");
-  const [custodyProfile, setCustodyProfile] = useState<string>(
-    lang === "en" ? "Executive" : "Ejecutivo"
-  );
+  const [custodyProfile, setCustodyProfile] = useState<string>(lang === "en" ? "Executive" : "Ejecutivo");
 
   const isTransfer = serviceType === "Traslado (A → B)";
   const isRent = serviceType !== "Traslado (A → B)";
   const isCustody = serviceType === "Renta + Custodia";
   const isArmored = unitType === "Blindada";
 
-  // Defaults inteligentes
   useEffect(() => {
     if (serviceType === "Renta + Custodia") {
       setUnitType((prev) => (prev === "Blindada" ? prev : "Blindada"));
@@ -1189,7 +1121,6 @@ export default function LuxuryTransportHome() {
     }
   }, [unitType]);
 
-  // Ajuste de city/profile cuando cambias de idioma
   useEffect(() => {
     setCity((prev) => {
       if (lang === "en") {
@@ -1275,7 +1206,6 @@ export default function LuxuryTransportHome() {
     return true;
   }, [step, serviceType, unitType]);
 
-  // Glow decorativo responsivo
   useEffect(() => {
     const setVh = () => {
       document.documentElement.style.setProperty("--vh", `${window.innerHeight * 0.01}px`);
@@ -1285,7 +1215,6 @@ export default function LuxuryTransportHome() {
     return () => window.removeEventListener("resize", setVh);
   }, []);
 
-  // UNIT_CARDS traducido (con iconos consistentes)
   const UNIT_CARDS = useMemo(
     () =>
       t.wizard.unitCards.map((u) => ({
@@ -1346,7 +1275,6 @@ export default function LuxuryTransportHome() {
             </a>
           </nav>
 
-          {/* Pill idioma */}
           <div className="ml-auto md:ml-0">
             <LangPill lang={lang} onChange={setLang} labels={t.lang} />
           </div>
@@ -1526,7 +1454,6 @@ export default function LuxuryTransportHome() {
                       </div>
                       <p className="mt-1 text-xs text-zinc-400">{step3Help}</p>
 
-                      {/* Pasajeros */}
                       <div className="mt-4">
                         <label className="mb-1 block text-xs font-medium text-zinc-200">{t.wizard.paxLabel}</label>
                         <div className="flex items-center gap-2 rounded-xl border border-zinc-700/60 bg-black/50 px-3 py-2">
@@ -1546,7 +1473,6 @@ export default function LuxuryTransportHome() {
                         </div>
                       </div>
 
-                      {/* Traslado */}
                       {isTransfer && (
                         <>
                           <div className="mt-3">
@@ -1605,7 +1531,6 @@ export default function LuxuryTransportHome() {
                         </>
                       )}
 
-                      {/* Renta */}
                       {isRent && (
                         <>
                           <div className="mt-3">
@@ -1682,7 +1607,6 @@ export default function LuxuryTransportHome() {
                         </>
                       )}
 
-                      {/* Custodia */}
                       {isCustody && (
                         <div className="mt-3 grid grid-cols-1 gap-3 md:grid-cols-2">
                           <div>
@@ -1732,7 +1656,6 @@ export default function LuxuryTransportHome() {
                     </div>
                   )}
 
-                  {/* Nav buttons */}
                   <div className="flex items-center justify-between pt-2">
                     <Button
                       variant="outline"
@@ -1770,23 +1693,23 @@ export default function LuxuryTransportHome() {
         </div>
       </div>
 
-      {/* Servicios */}
-      <Section id="servicios" className="bg-transparent">
+      {/* Servicios (menos padding abajo para acercar Flota) */}
+      <Section id="servicios" className="bg-transparent pt-16 md:pt-24 pb-6 md:pb-8">
         <div className="mx-auto max-w-7xl px-4">
           <ServicesTabs tServices={t.services} lang={lang} />
         </div>
       </Section>
 
-      {/* Flota (simplificada + menos espacio arriba) */}
-      <Section id="flota" className="bg-transparent pt-8 md:pt-10 pb-12 md:pb-16">
+      {/* Flota (menos espacio arriba + copy premium) */}
+      <Section id="flota" className="bg-transparent pt-6 md:pt-6 pb-12 md:pb-16">
         <div className="px-4">
           <FleetCarousel
             lang={lang}
             title={lang === "es" ? "Flota" : "Fleet"}
             sub={
               lang === "es"
-                ? "Contamos con SUVs premium. Selecciona un modelo para cotizar o pregúntanos por otra unidad."
-                : "We offer premium SUVs. Select a model to quote—or ask for another vehicle."
+                ? "Unidades premium curadas para agenda ejecutiva: SUVs blindadas y ejecutivas con atención discreta, coordinación 24/7 y estándares de lujo."
+                : "Curated premium vehicles for executive itineraries: armored and executive SUVs with discreet service, 24/7 coordination, and luxury standards."
             }
           />
         </div>
