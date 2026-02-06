@@ -48,7 +48,7 @@ export async function POST(req: Request) {
   );
 }
 
-const { error } = await resend.emails.send({
+const result = await resend.emails.send({
   from,
   to,
   subject,
@@ -56,12 +56,15 @@ const { error } = await resend.emails.send({
   replyTo: email,
 });
 
+if (result.error) {
+  return NextResponse.json(
+    { ok: false, error: "No se pudo enviar email", details: result.error },
+    { status: 500 }
+  );
+}
 
-    if (error) {
-      return NextResponse.json({ ok: false, error: "No se pudo enviar email" }, { status: 500 });
-    }
+return NextResponse.json({ ok: true, id: result.data?.id ?? null }, { status: 200 });
 
-    return NextResponse.json({ ok: true }, { status: 200 });
   } catch {
     return NextResponse.json({ ok: false, error: "Solicitud inválida" }, { status: 400 });
   }
