@@ -1,7 +1,8 @@
 import { NextResponse } from "next/server";
 import { Resend } from "resend";
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+const RESEND_KEY = process.env.RESEND_API_KEY || "";
+const resend = RESEND_KEY ? new Resend(RESEND_KEY) : null;
 
 function isEmail(value: string) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
@@ -40,13 +41,21 @@ export async function POST(req: Request) {
       message,
     ].join("\n");
 
-    const { error } = await resend.emails.send({
-      from,
-      to,
-      subject,
-      text,
-      replyTo: email,
-    });
+    if (!resend) {
+  return NextResponse.json(
+    { ok: false, error: "Falta configurar RESEND_API_KEY en el servidor" },
+    { status: 500 }
+  );
+}
+
+const { error } = await resend.emails.send({
+  from,
+  to,
+  subject,
+  text,
+  replyTo: email,
+});
+
 
     if (error) {
       return NextResponse.json({ ok: false, error: "No se pudo enviar email" }, { status: 500 });
