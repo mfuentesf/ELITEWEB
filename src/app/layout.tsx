@@ -5,8 +5,8 @@ import "./globals.css";
 export const metadata: Metadata = {
   metadataBase: new URL("https://www.eliteprotectionmexico.com"),
   title: {
-    default: "ELITE PROTECTION",
-    template: "%s | ELITE PROTECTION",
+    default: "Elite Protection",
+    template: "%s | Elite Protection",
   },
   description:
     "SUV blindadas, escolta ejecutiva, traslados VIP y alojamientos de alto nivel. Coordinación 24/7 y cobertura nacional.",
