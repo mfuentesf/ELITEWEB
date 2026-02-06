@@ -9,7 +9,7 @@ export const metadata: Metadata = {
     template: "%s | ELITE PROTECTION",
   },
   description:
-    "SUV blindadas, custodia ejecutiva, traslados VIP y alojamientos de alto nivel. Coordinación 24/7 y cobertura nacional.",
+    "SUV blindadas, escolta ejecutiva, traslados VIP y alojamientos de alto nivel. Coordinación 24/7 y cobertura nacional.",
 
   alternates: {
     canonical: "/",
