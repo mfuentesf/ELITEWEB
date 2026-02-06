@@ -18,6 +18,8 @@ import {
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import FooterContactForm from "@/components/FooterContactForm";
+
 
 // --- WhatsApp helpers ---
 const WHATSAPP_NUMBER = "+52 1 56 2580 0567";
@@ -1752,6 +1754,8 @@ export default function LuxuryTransportHome() {
                 <li key={c}>{c}</li>
               ))}
             </ul>
+
+             <FooterContactForm lang={lang} />
           </div>
 
           <div>
